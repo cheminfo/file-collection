@@ -1,11 +1,13 @@
 import { FileItem } from './FileItem';
 import { FilterOptions, Options } from './Options';
 import { SourceItem } from './SourceItem';
+import { WebSource } from './WebSourceFile';
 import { ZipFileContent } from './ZipFileContent';
 import { appendArrayBuffer } from './append/appendArrayBuffer';
 import { appendFileList } from './append/appendFileList';
 import { appendPath } from './append/appendPath';
 import { appendText } from './append/appendText';
+import { appendWebSource } from './append/appendWebSource';
 import { fromIum } from './fromIum';
 import { toIum } from './toIum';
 import { expandAndFilter } from './utilities/expand/expandAndFilter';
@@ -38,6 +40,9 @@ export class FileCollection {
     return appendFileList(this, fileList);
   }
 
+  appendWebSource(webSource: WebSource, options: { baseURL: string } = {}) {
+    return appendWebSource(this, webSource, options);
+  }
   /**
    * This method can only be used from nodejs and will throw an error in the browser
    */
