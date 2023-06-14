@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <script src="../dist/filelist-utils.js"></script>
+  </head>
+  <body>
+    <script>
+      async function doAll() {
+        const fileCollection = await FileListUtil.fileCollectionFromWebservice(
+          'https://zakodium-oss.github.io/analysis-dataset/gcms.json',
+        );
+
+        for (let i = 0; i < 10; i++) {
+          console.log(await fileCollection.files[0].text());
+          console.log(await fileCollection.files[0].arrayBuffer());
+          await delay(5000);
+        }
+      }
+
+      function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      doAll();
+    </script>
+    FileList
+  </body>
+</html>

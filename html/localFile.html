@@ -1,0 +1,25 @@
+<html>
+  <head> </head>
+  <body>
+    <button onclick="selectFile()">Select File</button>
+    <script>
+      async function selectFile() {
+        const opts = {
+          types: [
+            {
+              description: 'Text files',
+              accept: {
+                'text/plain': ['.txt'],
+              },
+            },
+          ],
+        };
+        const handle = await window.showOpenFilePicker(opts);
+        const file = await handle[0].getFile();
+        debugger;
+        const text = await file.text();
+        console.log(text);
+      }
+    </script>
+  </body>
+</html>

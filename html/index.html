@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <script src="../dist/filelist-utils.js"></script>
+  </head>
+  <body>
+    <p>
+      You should build the project `npm run build` before testing this page.
+    </p>
+    Select files:
+    <input
+      type="file"
+      id="filepicker"
+      name="fileCollection"
+      multiple
+      onchange="onChange(event)"
+    />
+    or select directories:
+    <input
+      type="file"
+      id="filepicker"
+      name="fileCollection"
+      multiple
+      webkitdirectory="true"
+      onchange="onChange(event)"
+    />
+    <div style="display: flex">
+      <div style="background-color: pink" id="listing"></div>
+      <div style="background-color: lightgreen" id="listingCollection"></div>
+    </div>
+
+    <script>
+      async function onChange(event) {
+        let files = event.target.files;
+        console.log({ files });
+        for (const file of files) {
+          console.log(file);
+        }
+        displayFileList(files);
+        const fileCollection = await FileListUtil.fileCollectionFromFileList(
+          files,
+        );
+        console.log(fileCollection);
+        displayFileCollection(fileCollection);
+      }
+
+      async function displayFileList(files) {
+        let listing = document.getElementById('listing');
+        let html = [];
+        html.push('<table>');
+        html.push(
+          '<tr><th>webkitRelativePath</th><th>name</th><th>Text size</th><th>ArrayBuffer size</th></tr>',
+        );
+        for (let file of files) {
+          html.push(`
+            <tr>
+              <td>
+                ${file.webkitRelativePath}
+              </td><td>
+                ${file.name}
+              </td><td>
+                ${(await file.text()).length}
+              </td><td>
+                ${(await file.arrayBuffer()).byteLength}
+              </td>
+            </tr>
+          `);
+        }
+        html.push('</table>');
+        listing.innerHTML = html.join('\n');
+      }
+
+      async function displayFileCollection(fileCollection) {
+        let listing = document.getElementById('listingCollection');
+        let html = [];
+        html.push('<table>');
+        html.push(
+          '<tr><th>relativePath</th><th>name</th><th>Text size</th><th>ArrayBuffer size</th></tr>',
+        );
+        for (let file of fileCollection) {
+          html.push(`
+            <tr>
+              <td>
+                ${file.relativePath}
+              </td><td>
+                ${file.name}
+              </td><td>
+                ${(await file.text()).length}
+              </td><td>
+                ${(await file.arrayBuffer()).byteLength}
+              </td>
+            </tr>
+          `);
+        }
+        html.push('</table>');
+        listing.innerHTML = html.join('\n');
+      }
+    </script>
+    <ul id="listing"></ul>
+  </body>
+</html>
