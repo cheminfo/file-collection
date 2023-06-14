@@ -2,6 +2,7 @@
   "name": "file-collection",
   "version": "0.0.1",
   "description": "Library to manage large amount of files coming from different sources",
+  "type": "module",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "types": "./lib/index.d.ts",
