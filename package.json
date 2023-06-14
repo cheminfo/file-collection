@@ -8,7 +8,9 @@
   "types": "./lib/index.d.ts",
   "browser": {
     "./lib-esm/utilities/expand/ungzipStream.js": "./lib-esm/utilities/expand/ungzipStream.browser.js",
-    "./lib/utilities/expand/ungzipStream.js": "./lib/utilities/expand/ungzipStream.browser.js"
+    "./lib/utilities/expand/ungzipStream.js": "./lib/utilities/expand/ungzipStream.browser.js",
+    "./lib-esm/append/appendPath.js": "./lib-esm/append/appendPath.browser.js",
+    "./lib/append/appendPath.js": "./lib/append/appendPath.browser.js"
   },
   "keywords": [],
   "author": "Luc Patiny",
