@@ -13,7 +13,14 @@ This library allows to manipulate a large amount of files coming from local or r
 
 In order to make compatible code between the browser and node and to allow drag and drop of a folder it is useful to an abstraction level.
 
-This package allows to create a `file-collection` than can further be saved as a `ium` file (zip file containing all the data and an index.json file).
+This package allows to create a `file-collection` than can further be saved as a `ium` file (zip file containing all the data
+and an index.json file).
+
+The structure of the zip file is at follow:
+
+- index.json
+- data/
+  - all the files
 
 ## Installation
 
