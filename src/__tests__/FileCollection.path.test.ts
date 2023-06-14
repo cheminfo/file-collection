@@ -33,7 +33,7 @@ test('appendPath dataUnzip', async () => {
   expect(text).toStrictEqual('c');
 });
 
-test.only('appendPath dataUnzip no unzip', async () => {
+test('appendPath dataUnzip no unzip', async () => {
   const fileCollection = new FileCollection({ unzip: { zipExtensions: [] } });
 
   await fileCollection.appendPath(
@@ -81,14 +81,72 @@ test('appendPath dataUngzip', async () => {
     '/dataUngzip/dir2/c.txt',
     '/dataUngzip/dir2/d.txt',
   ]);
-  expect(
-    newCollection.files.map((source) => source.relativePath),
-  ).toStrictEqual([
+  expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
     '/dataUngzip/dir1/a.txt',
     '/dataUngzip/dir1/b.txt',
     '/dataUngzip/dir1/dir3/e.txt',
     '/dataUngzip/dir1/dir3/f.txt',
     '/dataUngzip/dir2/c.txt',
     '/dataUngzip/dir2/d.txt',
+  ]);
+});
+
+test('appendPath dataUnzip with custom extension', async () => {
+  const fileCollection = new FileCollection({
+    unzip: { zipExtensions: ['zipped'] },
+  });
+
+  await fileCollection.appendPath(
+    new URL('dataUnzip/', import.meta.url).pathname,
+  );
+  expect(fileCollection.sources).toHaveLength(8);
+  expect(fileCollection.files).toHaveLength(9);
+
+  const ium = await fileCollection.toIum();
+
+  const newCollection = await FileCollection.fromIum(ium);
+  expect(newCollection.sources).toHaveLength(8);
+  expect(newCollection.files).toHaveLength(9);
+
+  expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
+    '/dataUnzip/data.zip',
+    '/dataUnzip/dir1/a.txt',
+    '/dataUnzip/dir1/b.txt',
+    '/dataUnzip/dir1/dir3/e.txt',
+    '/dataUnzip/dir1/dir3/f.txt',
+    '/dataUnzip/dir2/c.txt',
+    '/dataUnzip/dir2/d.txt',
+    '/dataUnzip/dir2/data.zipped/data/subDir1/c.txt',
+    '/dataUnzip/dir2/data.zipped/data/subDir1/d.txt',
+  ]);
+});
+
+test('appendPath data with keep dotfiles', async () => {
+  const fileCollection = new FileCollection({
+    filter: { ignoreDotfiles: false },
+  });
+
+  await fileCollection.appendPath(new URL('data/', import.meta.url).pathname);
+  expect(fileCollection.sources).toHaveLength(11);
+  expect(fileCollection.files).toHaveLength(11);
+
+  const ium = await fileCollection.toIum();
+
+  const newCollection = await FileCollection.fromIum(ium);
+  expect(newCollection.sources).toHaveLength(11);
+  expect(newCollection.files).toHaveLength(11);
+
+  expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
+    '/data/.dotFile',
+    '/data/.dotFolder/a.txt',
+    '/data/dir1/a.txt',
+    '/data/dir1/b.txt',
+    '/data/dir1/dir3/e.txt',
+    '/data/dir1/dir3/f.txt',
+    '/data/dir2/c.txt',
+    '/data/dir2/d.txt',
+    '/data/dir3/a.MpT',
+    '/data/dir3/a.mpr',
+    '/data/dir3/a.mps',
   ]);
 });
