@@ -109,9 +109,9 @@ describe('fileCollectionFromWebSource', () => {
       baseURL: 'http://localhost/',
     };
 
-    const fileCollection = await fileCollectionFromWebSource(source, {
-      cache: true,
-    });
+    const fileCollection = new FileCollection({ cache: true });
+    await fileCollection.appendWebSource(source);
+
     expect(fileCollection.files).toHaveLength(2);
     const first = await fileCollection.files[0].text();
     expect(first).toBe('a');
@@ -130,9 +130,8 @@ describe('fileCollectionFromWebSource', () => {
       baseURL: 'http://localhost/',
     };
 
-    const fileCollection = await fileCollectionFromWebSource(source, {
-      cache: true,
-    });
+    const fileCollection = new FileCollection({ cache: true });
+    await fileCollection.appendWebSource(source);
     expect(fileCollection.files).toHaveLength(1);
     const first = await fileCollection.files[0].arrayBuffer();
     const array = Array.from(Buffer.from(first));

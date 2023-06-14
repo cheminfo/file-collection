@@ -6,7 +6,7 @@ import { shouldAddItem } from '../utilities/shouldAddItem';
 export async function appendWebSource(
   fileCollection: FileCollection,
   webSource: WebSource,
-  options: { baseURL: string } = {},
+  options: { baseURL?: string } = {},
 ): Promise<void> {
   const { filter } = fileCollection;
   const { entries, baseURL } = webSource;
@@ -23,7 +23,7 @@ export async function appendWebSource(
   }
 }
 
-function getSource(entry: any, realBaseURL: string): SourceItem {
+function getSource(entry: any, realBaseURL: string | false): SourceItem {
   if (!realBaseURL) {
     throw new Error(`We could not find a baseURL for ${entry.relativePath}`);
   }

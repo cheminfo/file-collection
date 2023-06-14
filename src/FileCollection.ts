@@ -1,3 +1,4 @@
+import { CachedFileItem } from './CachedFileItem';
 import { FileItem } from './FileItem';
 import { FilterOptions, Options } from './Options';
 import { SourceItem } from './SourceItem';
@@ -18,12 +19,14 @@ export class FileCollection {
   readonly sources: SourceItem[];
   readonly options: Options;
   readonly filter: FilterOptions;
+  readonly cache: boolean;
 
   constructor(options: Options = {}) {
     this.options = options;
     this.filter = options.filter || {};
     this.files = [];
     this.sources = [];
+    this.cache = options.cache ?? false;
   }
 
   /**
@@ -33,14 +36,28 @@ export class FileCollection {
   async appendSource(source: SourceItem): Promise<void> {
     if (!shouldAddItem(source.relativePath, this.filter)) return;
     this.sources.push(source);
-    this.files.push(...(await expandAndFilter(source, this.options)));
+    const files = await expandAndFilter(source, this.options);
+    for (const file of files) {
+      if (
+        this.files.some(
+          (existing) => existing.relativePath === file.relativePath,
+        )
+      ) {
+        throw new Error(`Duplicate relativePath: ${file.relativePath}`);
+      }
+      if (this.cache) {
+        this.files.push(new CachedFileItem(file));
+      } else {
+        this.files.push(file);
+      }
+    }
   }
 
   appendFileList(fileList: FileList): Promise<void> {
     return appendFileList(this, fileList);
   }
 
-  appendWebSource(webSource: WebSource, options: { baseURL: string } = {}) {
+  appendWebSource(webSource: WebSource, options: { baseURL?: string } = {}) {
     return appendWebSource(this, webSource, options);
   }
   /**

@@ -48,4 +48,9 @@ export type Options = {
    */
   ungzip?: UngzipExpandOptions;
   logger?: Logger;
+  /**
+   * Should we cache the data for each fileItem ?
+   * This allows to prevent fetching or unzipping the same file many times
+   */
+  cache?: boolean;
 };
