@@ -1,6 +1,5 @@
 import JSZip from 'jszip';
 
-import { FileCollection } from '../../FileCollection';
 import { FileItem } from '../../FileItem';
 import { Options } from '../../Options';
 import { shouldAddItem } from '../shouldAddItem';

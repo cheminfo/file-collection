@@ -1,7 +1,6 @@
-import JSZip, { JSZipObject } from 'jszip';
+import JSZip from 'jszip';
 
 import { FileCollection } from './FileCollection';
-import { FileItem } from './FileItem';
 import { ZipFileContent } from './ZipFileContent';
 
 export async function fromIum(
