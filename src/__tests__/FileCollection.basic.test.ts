@@ -1,4 +1,4 @@
-import { test } from 'vitest';
+import { test, expect } from 'vitest';
 
 import { FileCollection } from '../FileCollection';
 
@@ -10,7 +10,14 @@ test('FileCollection basic ium tests', async () => {
   const ium = await fileCollection.toIum();
 
   const newCollection = [...(await FileCollection.fromIum(ium))];
-  console.log(newCollection);
+  expect(newCollection).toHaveLength(1);
+  expect(newCollection).toMatchObject([
+    {
+      relativePath: '/hello.txt',
+      name: 'hello.txt',
+      baseURL: 'ium:/',
+    },
+  ]);
   const text = await newCollection[0].text();
-  console.log(text);
+  expect(text).toStrictEqual('Hello word');
 });
