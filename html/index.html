@@ -1,57 +1,57 @@
 <html>
-  <head>
-    <script src="../dist/filelist-utils.js"></script>
-  </head>
-  <body>
-    <p>
-      You should build the project `npm run build` before testing this page.
-    </p>
-    Select files:
-    <input
-      type="file"
-      id="filepicker"
-      name="fileCollection"
-      multiple
-      onchange="onChange(event)"
-    />
-    or select directories:
-    <input
-      type="file"
-      id="filepicker"
-      name="fileCollection"
-      multiple
-      webkitdirectory="true"
-      onchange="onChange(event)"
-    />
-    <div style="display: flex">
-      <div style="background-color: pink" id="listing"></div>
-      <div style="background-color: lightgreen" id="listingCollection"></div>
-    </div>
 
-    <script>
-      async function onChange(event) {
-        let files = event.target.files;
-        console.log({ files });
-        for (const file of files) {
-          console.log(file);
-        }
-        displayFileList(files);
-        const fileCollection = await FileListUtil.fileCollectionFromFileList(
-          files,
-        );
-        console.log(fileCollection);
-        displayFileCollection(fileCollection);
+<head>
+  <script src="../dist/file-collection.js"></script>
+</head>
+
+<body>
+  <p>
+    You should build the project `npm run build` before testing this page.
+  </p>
+  Select files:
+  <input type="file" id="filepicker" name="fileCollection" multiple onchange="uploadFiles(event)" />
+  or select directories:
+  <input type="file" id="filepicker" name="fileCollection" multiple webkitdirectory="true"
+    onchange="uploadFiles(event)" />
+  Upload a 'ium' (zip) file
+  <input type="file" id="filepicker" name="fileCollection" onchange="fromIum(event)" />
+  <button onclick="downloadZip()">Download zip</button>
+  <div style="display: flex">
+    <div style="background-color: pink" id="listing"></div>
+    <div style="background-color: lightgreen" id="listingCollection"></div>
+  </div>
+
+  <script>
+
+    let fileCollection
+    async function uploadFiles(event) {
+      let files = event.target.files;
+      console.log({ files });
+      for (const file of files) {
+        console.log(file);
       }
+      displayFileList(files);
+      fileCollection = new FileCollection.FileCollection();
+      await fileCollection.appendFileList(files);
+      displayFileCollection(fileCollection);
+    }
 
-      async function displayFileList(files) {
-        let listing = document.getElementById('listing');
-        let html = [];
-        html.push('<table>');
-        html.push(
-          '<tr><th>webkitRelativePath</th><th>name</th><th>Text size</th><th>ArrayBuffer size</th></tr>',
-        );
-        for (let file of files) {
-          html.push(`
+    async function fromIum(event) {
+      let files = event.target.files;
+      displayFileList(files);
+      fileCollection = await FileCollection.FileCollection.fromIum(files[0]);
+      displayFileCollection(fileCollection);
+    }
+
+    async function displayFileList(files) {
+      let listing = document.getElementById('listing');
+      let html = [];
+      html.push('<table>');
+      html.push(
+        '<tr><th>webkitRelativePath</th><th>name</th><th>Text size</th><th>ArrayBuffer size</th></tr>',
+      );
+      for (let file of files) {
+        html.push(`
             <tr>
               <td>
                 ${file.webkitRelativePath}
@@ -64,20 +64,20 @@
               </td>
             </tr>
           `);
-        }
-        html.push('</table>');
-        listing.innerHTML = html.join('\n');
       }
+      html.push('</table>');
+      listing.innerHTML = html.join('\n');
+    }
 
-      async function displayFileCollection(fileCollection) {
-        let listing = document.getElementById('listingCollection');
-        let html = [];
-        html.push('<table>');
-        html.push(
-          '<tr><th>relativePath</th><th>name</th><th>Text size</th><th>ArrayBuffer size</th></tr>',
-        );
-        for (let file of fileCollection) {
-          html.push(`
+    async function displayFileCollection(fileCollection) {
+      let listing = document.getElementById('listingCollection');
+      let html = [];
+      html.push('<table>');
+      html.push(
+        '<tr><th>relativePath</th><th>name</th><th>Text size</th><th>ArrayBuffer size</th></tr>',
+      );
+      for (let file of fileCollection) {
+        html.push(`
             <tr>
               <td>
                 ${file.relativePath}
@@ -90,11 +90,22 @@
               </td>
             </tr>
           `);
-        }
-        html.push('</table>');
-        listing.innerHTML = html.join('\n');
       }
-    </script>
-    <ul id="listing"></ul>
-  </body>
+      html.push('</table>');
+      listing.innerHTML = html.join('\n');
+    }
+
+    async function downloadZip(e) {
+      var blob = new Blob([await fileCollection.toIum()], { type: "application/zip" });
+      var url = window.URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = 'data.zip';
+      a.click();
+    }
+
+  </script>
+  <ul id="listing"></ul>
+</body>
+
 </html>
