@@ -11,6 +11,7 @@ import { appendText } from './append/appendText';
 import { appendWebSource } from './append/appendWebSource';
 import { fromIum } from './fromIum';
 import { toIum } from './toIum';
+import { convertSourceToFile } from './utilities/convertSourceToFile';
 import { expandAndFilter } from './utilities/expand/expandAndFilter';
 import { shouldAddItem } from './utilities/shouldAddItem';
 
@@ -32,11 +33,13 @@ export class FileCollection {
   /**
    * This is unexpected to be used directly
    * @param source
+   * @private
    */
   async appendSource(source: SourceItem): Promise<void> {
     if (!shouldAddItem(source.relativePath, this.filter)) return;
     this.sources.push(source);
-    const files = await expandAndFilter(source, this.options);
+    const sourceFile = convertSourceToFile(source);
+    const files = await expandAndFilter(sourceFile, this.options);
     for (const file of files) {
       if (
         this.files.some(

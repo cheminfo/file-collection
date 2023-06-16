@@ -1,3 +1,4 @@
+import { v4 } from '@lukeed/uuid';
 import { FileCollection } from '../FileCollection';
 import { SourceItem } from '../SourceItem';
 
@@ -7,6 +8,7 @@ export async function appendFileList(
 ) {
   for (const file of fileList) {
     const source: SourceItem = {
+      uuid: v4(),
       name: file.name,
       size: file.size,
       baseURL: 'ium:/',

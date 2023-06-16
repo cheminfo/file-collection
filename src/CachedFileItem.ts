@@ -41,4 +41,7 @@ export class CachedFileItem {
   get size() {
     return this.fileItem.size;
   }
+  get sourceUUID() {
+    return this.fileItem.sourceUUID;
+  }
 }

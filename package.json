@@ -2,7 +2,6 @@
   "name": "file-collection",
   "version": "0.0.1",
   "description": "Library to manage large amount of files coming from different sources",
-  "type": "module",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "types": "./lib/index.d.ts",
@@ -60,6 +59,7 @@
     "vitest": "^0.32.0"
   },
   "dependencies": {
+    "@lukeed/uuid": "^2.0.1",
     "cheminfo-types": "^1.7.2",
     "cross-fetch": "^3.1.6",
     "jszip": "^3.10.1",

@@ -1,3 +1,5 @@
+import { v4 } from '@lukeed/uuid';
+
 import { FileCollection } from '../FileCollection';
 import { SourceItem } from '../SourceItem';
 
@@ -7,29 +9,27 @@ export async function appendText(
   text: string | Promise<string>,
   options: { dateModified?: number } = {},
 ) {
-  const source = getSourceFromText(relativePath, text, options);
+  const source = await getSourceFromText(relativePath, text, options);
   await fileCollection.appendSource(source);
 }
 
-function getSourceFromText(
+async function getSourceFromText(
   relativePath: string,
   text: string | Promise<string>,
   options: { dateModified?: number } = {},
-): SourceItem {
+): Promise<SourceItem> {
   const url = new URL(relativePath, 'ium:/');
 
+  const blob = new Blob([await text], { type: 'text/plain' });
+
   return {
+    uuid: v4(),
     relativePath: url.pathname,
     name: relativePath.split('/').pop() as string,
     lastModified: options.dateModified || Date.now(),
     baseURL: 'ium:/',
-    text: async () => {
-      return text;
-    },
-    arrayBuffer: async () => {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(await text);
-      return data.buffer;
-    },
+    text: () => blob.text(),
+    stream: () => blob.stream(),
+    arrayBuffer: () => blob.arrayBuffer(),
   };
 }

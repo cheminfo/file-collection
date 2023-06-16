@@ -8,6 +8,7 @@ export type ZipFileContent = Parameters<typeof JSZip.loadAsync>[0];
 
 export async function fileItemsFromZip(
   zipContent: ZipFileContent,
+  sourceUUID: string,
   options: Options = {},
 ) {
   const jsZip = new JSZip();
@@ -19,6 +20,7 @@ export async function fileItemsFromZip(
     if (!shouldAddItem(entry.name, options.filter)) continue;
     const item = {
       name: entry.name.replace(/^.*\//, ''),
+      sourceUUID,
       relativePath: entry.name,
       lastModified: entry.date.getTime(),
       // @ts-expect-error _data is not exposed because missing for folder   but it is really there

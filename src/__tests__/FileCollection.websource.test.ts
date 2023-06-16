@@ -96,6 +96,32 @@ describe('fileCollectionFromWebSource', () => {
     }).rejects.toThrow('We could not find a baseURL for data/dir1/a.txt');
   });
 
+  test('without baseURL but with a global location href', async () => {
+    // @ts-expect-error we want to test the behavior when location is set like in the browser
+    global.location = { href: 'http://localhost/' };
+    const source = {
+      entries: [
+        {
+          relativePath: 'data/dir1/a.txt',
+        },
+        {
+          relativePath: 'data/dir1/b.txt',
+        },
+      ],
+    };
+
+    const fileCollection = new FileCollection();
+    await fileCollection.appendWebSource(source);
+
+    const first = await fileCollection.files[0].text();
+    expect(first).toBe('a');
+    const second = await fileCollection.files[1].text();
+    expect(second).toBe('b');
+
+    // @ts-expect-error need to remove it for the next test
+    delete global.location;
+  });
+
   test('with cache', async () => {
     const source = {
       entries: [

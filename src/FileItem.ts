@@ -4,7 +4,8 @@ export interface FileItem {
   lastModified?: number;
   size?: number;
   baseURL?: string;
-  arrayBuffer(): Promise<ArrayBuffer>;
-  stream(): ReadableStream<Uint8Array>;
-  text(): Promise<string>;
+  arrayBuffer: () => Promise<ArrayBuffer>;
+  stream: () => ReadableStream<Uint8Array>;
+  text: () => Promise<string>;
+  sourceUUID: string;
 }

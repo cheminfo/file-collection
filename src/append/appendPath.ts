@@ -5,6 +5,7 @@ import { Readable } from 'node:stream';
 
 import { FileCollection } from '../FileCollection';
 import { SourceItem } from '../SourceItem';
+import { v4 } from '@lukeed/uuid';
 
 export async function appendPath(fileCollection: FileCollection, path: string) {
   path = resolve(path);
@@ -27,6 +28,7 @@ async function appendFiles(
     } else {
       const relativePath = `${base}/${entry}`;
       const source: SourceItem = {
+        uuid: v4(),
         name: entry,
         baseURL: 'ium:/',
         size: info.size,

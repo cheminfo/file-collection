@@ -1,3 +1,5 @@
+import { v4 } from '@lukeed/uuid';
+
 import { FileCollection } from '../FileCollection';
 import { SourceItem } from '../SourceItem';
 import { WebSource } from '../WebSourceFile';
@@ -13,22 +15,25 @@ export async function appendWebSource(
   for (const entry of entries) {
     const { relativePath } = entry;
     if (!shouldAddItem(relativePath, filter)) continue;
-    const realBaseURL =
-      entry.baseURL ||
-      baseURL ||
-      options.baseURL ||
-      (typeof location !== 'undefined' && location.href);
+    const realBaseURL = entry.baseURL || baseURL || options.baseURL;
+
     const source = getSource(entry, realBaseURL);
     await fileCollection.appendSource(source);
   }
 }
 
-function getSource(entry: any, realBaseURL: string | false): SourceItem {
+function getSource(entry: any, realBaseURL: string | undefined): SourceItem {
   if (!realBaseURL) {
-    throw new Error(`We could not find a baseURL for ${entry.relativePath}`);
+    if (typeof location === 'undefined' || !location.href) {
+      throw new Error(`We could not find a baseURL for ${entry.relativePath}`);
+    } else {
+      realBaseURL = location.href;
+    }
   }
+
   const fileURL = new URL(entry.relativePath, realBaseURL);
   const source: SourceItem = {
+    uuid: v4(),
     name: entry.relativePath.split('/').pop() || '',
     size: entry.size,
     baseURL: realBaseURL,
@@ -41,6 +46,12 @@ function getSource(entry: any, realBaseURL: string | false): SourceItem {
     arrayBuffer: async (): Promise<ArrayBuffer> => {
       const response = await fetch(fileURL.toString());
       return response.arrayBuffer();
+    },
+    // @ts-expect-error Should contain stream
+    stream: async (): Promise<ArrayBuffer> => {
+      const response = await fetch(fileURL.toString());
+      //@ts-expect-error Should contain stream
+      return response.stream();
     },
   };
   return source;

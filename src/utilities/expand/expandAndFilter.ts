@@ -1,7 +1,5 @@
 import { FileItem } from '../../FileItem';
 import { Options } from '../../Options';
-import { SourceItem } from '../../SourceItem';
-import { ensureStream } from '../ensureStream';
 import { shouldAddItem } from '../shouldAddItem';
 
 import { fileItemUngzip } from './fileItemUngzip';
@@ -14,20 +12,22 @@ import { fileItemUnzip } from './fileItemUnzip';
  * @returns
  */
 export async function expandAndFilter(
-  sourceItem: SourceItem | FileItem,
+  originalFileItem: FileItem,
   options: Options = {},
 ): Promise<FileItem[]> {
   const { filter = {} } = options;
 
-  if (!shouldAddItem(sourceItem.relativePath, filter)) {
+  if (!shouldAddItem(originalFileItem.relativePath, filter)) {
     return [];
   }
 
-  let fileItem = ensureStream(sourceItem);
+  let fileItem = await fileItemUngzip(originalFileItem, options);
 
-  fileItem = await fileItemUngzip(fileItem, options);
+  const fileItems = await fileItemUnzip(fileItem, options);
 
-  const fileItems = fileItemUnzip(fileItem, options);
+  for (const fileItem of fileItems) {
+    fileItem.sourceUUID = originalFileItem.sourceUUID;
+  }
 
   return fileItems;
 }

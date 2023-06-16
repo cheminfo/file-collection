@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { test, expect } from 'vitest';
 
 import { FileCollection } from '../FileCollection';
@@ -5,7 +7,7 @@ import { FileCollection } from '../FileCollection';
 test('appendPath data folder', async () => {
   const fileCollection = new FileCollection();
 
-  await fileCollection.appendPath(new URL('data/', import.meta.url).pathname);
+  await fileCollection.appendPath(join(__dirname, 'data/'));
 
   const ium = await fileCollection.toIum();
 
@@ -18,27 +20,27 @@ test('appendPath data folder', async () => {
 test('appendPath dataUnzip', async () => {
   const fileCollection = new FileCollection();
 
-  await fileCollection.appendPath(
-    new URL('dataUnzip/', import.meta.url).pathname,
-  );
+  await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(15);
 
   const ium = await fileCollection.toIum();
-
   const newCollection = await FileCollection.fromIum(ium);
   expect(newCollection.sources).toHaveLength(8);
   expect(newCollection.files).toHaveLength(15);
   const text = await newCollection.files[0].text();
   expect(text).toStrictEqual('c');
+
+  const sourceUUIDs = fileCollection.files
+    .map((file) => file.sourceUUID)
+    .filter((source) => source);
+  expect(sourceUUIDs).toHaveLength(15);
 });
 
 test('appendPath dataUnzip no unzip', async () => {
   const fileCollection = new FileCollection({ unzip: { zipExtensions: [] } });
 
-  await fileCollection.appendPath(
-    new URL('dataUnzip/', import.meta.url).pathname,
-  );
+  await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(8);
 
@@ -57,9 +59,7 @@ test('appendPath dataUnzip no unzip', async () => {
 test('appendPath dataUngzip', async () => {
   const fileCollection = new FileCollection();
 
-  await fileCollection.appendPath(
-    new URL('dataUngzip/', import.meta.url).pathname,
-  );
+  await fileCollection.appendPath(join(__dirname, 'dataUngzip/'));
   expect(fileCollection.sources).toHaveLength(6);
   expect(fileCollection.files).toHaveLength(6);
 
@@ -96,9 +96,7 @@ test('appendPath dataUnzip with custom extension', async () => {
     unzip: { zipExtensions: ['zipped'] },
   });
 
-  await fileCollection.appendPath(
-    new URL('dataUnzip/', import.meta.url).pathname,
-  );
+  await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(9);
 
@@ -126,7 +124,7 @@ test('appendPath data with keep dotfiles', async () => {
     filter: { ignoreDotfiles: false },
   });
 
-  await fileCollection.appendPath(new URL('data/', import.meta.url).pathname);
+  await fileCollection.appendPath(join(__dirname, 'data/'));
   expect(fileCollection.sources).toHaveLength(11);
   expect(fileCollection.files).toHaveLength(11);
 

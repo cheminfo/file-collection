@@ -37,6 +37,7 @@ export async function fileItemUngzip(
   }
 
   return {
+    sourceUUID: fileItem.sourceUUID,
     name: fileItem.name.replace(/\.[^.]+$/, ''),
     size: fileItem.size,
     relativePath: fileItem.relativePath.replace(/\.[^.]+$/, ''),

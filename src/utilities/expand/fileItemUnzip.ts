@@ -23,6 +23,10 @@ export async function fileItemUnzip(
   zipExtensions = zipExtensions.map((extension) => extension.toLowerCase());
   const extension = fileItem.name.replace(/^.*\./, '').toLowerCase();
 
+  if (!fileItem.sourceUUID) {
+    throw new Error('fileItem.sourceUUID is not defined');
+  }
+
   if (!zipExtensions.includes(extension)) {
     return [fileItem];
   }
@@ -37,11 +41,16 @@ export async function fileItemUnzip(
     }
     return [fileItem];
   }
-  const zipFileItems = await fileItemsFromZip(buffer, options);
+  const zipFileItems = await fileItemsFromZip(
+    buffer,
+    fileItem.sourceUUID,
+    options,
+  );
 
   const fileItems: FileItem[] = [];
   for (let zipEntry of zipFileItems) {
     zipEntry.relativePath = `${fileItem.relativePath}/${zipEntry.relativePath}`;
+    zipEntry.sourceUUID = fileItem.sourceUUID;
     if (recursive) {
       fileItems.push(...(await expandAndFilter(zipEntry, options)));
     } else if (shouldAddItem(zipEntry.relativePath, filter)) {
