@@ -3,9 +3,10 @@ import { readdir, stat, readFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { Readable } from 'node:stream';
 
+import { v4 } from '@lukeed/uuid';
+
 import { FileCollection } from '../FileCollection';
 import { SourceItem } from '../SourceItem';
-import { v4 } from '@lukeed/uuid';
 
 export async function appendPath(fileCollection: FileCollection, path: string) {
   path = resolve(path);
