@@ -9,12 +9,12 @@ Library to manage large amount of files coming from different sources
 
 ## Introduction
 
-This library allows to manipulate a large amount of files coming from local or remote source.
+This library allows to manipulate a large amount of files coming from local or remote sources.
 
-In order to make compatible code between the browser and node and to allow drag and drop of a folder it is useful to an abstraction level.
+This library allows to have the same code in the browser and in nodejs.
 
 This package allows to create a `file-collection` than can further be saved as a `ium` file (zip file containing all the data
-and an index.json file).
+and an `index.json` file).
 
 The structure of the zip file is at follow:
 
@@ -59,6 +59,45 @@ for (const file of fileCollection) {
   console.log(file.name);
   console.log(await file.text());
 }
+```
+
+## Using in a react component
+
+A webSource is a URL to data like for example `https://image-js.github.io/image-dataset-demo/index.json`:
+
+```tsx
+<MyComponent webSource onchange={(fileCollection) => {}}></MyComponent>
+```
+
+Inside the component we should:
+
+```js
+const fileCollection = new FileCollection();
+if (webSource) fileCollection.appendWebSource(webSource);
+```
+
+If we drag / drop some files we should:
+
+```js
+fileCollection.appendFileList(fileList);
+```
+
+If we drag / drop a 'ium' file we should replace the full `fileCollection`
+
+```js
+const fileCollection = FileCollection.fromIum(iumArrayBuffer);
+```
+
+If we want to save as a `ium` file:
+
+```js
+fileCollection.toIum();
+```
+
+When `fileCollection` changes we can always retrieve the various files using:
+
+```js
+const files = [...fileCollection]; // fileCollection is iterable on its files property
 ```
 
 ## License

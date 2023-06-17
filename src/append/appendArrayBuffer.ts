@@ -9,7 +9,7 @@ export async function appendArrayBuffer(
   arrayBuffer: ArrayBuffer | Promise<ArrayBuffer>,
   options: { dateModified?: number } = {},
 ) {
-  const source = await getSourceFromArrayBuffer(
+  const source = await getExtendedSourceFromArrayBuffer(
     relativePath,
     arrayBuffer,
     options,
@@ -17,7 +17,7 @@ export async function appendArrayBuffer(
   await fileCollection.appendExtendedSource(source);
 }
 
-async function getSourceFromArrayBuffer(
+async function getExtendedSourceFromArrayBuffer(
   relativePath: string,
   arrayBuffer: ArrayBuffer | Promise<ArrayBuffer | Uint8Array> | Uint8Array,
   options: { dateModified?: number } = {},

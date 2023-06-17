@@ -9,11 +9,11 @@ export async function appendText(
   text: string | Promise<string>,
   options: { dateModified?: number } = {},
 ) {
-  const source = await getSourceFromText(relativePath, text, options);
+  const source = await getExtendedSourceFromText(relativePath, text, options);
   await fileCollection.appendExtendedSource(source);
 }
 
-async function getSourceFromText(
+async function getExtendedSourceFromText(
   relativePath: string,
   text: string | Promise<string>,
   options: { dateModified?: number } = {},
