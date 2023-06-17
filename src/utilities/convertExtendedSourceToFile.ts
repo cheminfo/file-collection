@@ -1,7 +1,10 @@
+import { ExtendedSourceItem } from '../ExtendedSourceItem';
 import { FileItem } from '../FileItem';
-import { SourceItem } from '../SourceItem';
 
-export function convertSourceToFile(this: void, source: SourceItem): FileItem {
+export function convertExtendedSourceToFile(
+  this: void,
+  source: ExtendedSourceItem,
+): FileItem {
   let stream = source.stream
     ? () => source.stream?.()
     : (): ReadableStream => {

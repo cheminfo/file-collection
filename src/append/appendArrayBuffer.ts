@@ -1,7 +1,7 @@
 import { v4 } from '@lukeed/uuid';
 
+import { ExtendedSourceItem } from '../ExtendedSourceItem';
 import { FileCollection } from '../FileCollection';
-import { SourceItem } from '../SourceItem';
 
 export async function appendArrayBuffer(
   fileCollection: FileCollection,
@@ -14,14 +14,14 @@ export async function appendArrayBuffer(
     arrayBuffer,
     options,
   );
-  await fileCollection.appendSource(source);
+  await fileCollection.appendExtendedSource(source);
 }
 
 async function getSourceFromArrayBuffer(
   relativePath: string,
   arrayBuffer: ArrayBuffer | Promise<ArrayBuffer | Uint8Array> | Uint8Array,
   options: { dateModified?: number } = {},
-): Promise<SourceItem> {
+): Promise<ExtendedSourceItem> {
   const blob = new Blob([await arrayBuffer], {
     type: 'application/octet-stream',
   });

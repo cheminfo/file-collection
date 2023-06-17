@@ -1,24 +1,24 @@
 import { CachedFileItem } from './CachedFileItem';
+import { ExtendedSourceItem } from './ExtendedSourceItem';
 import { FileItem } from './FileItem';
 import { FilterOptions, Options } from './Options';
-import { SourceItem } from './SourceItem';
-import { WebSource } from './WebSourceFile';
+import { Source } from './Source';
 import { ZipFileContent } from './ZipFileContent';
 import { appendArrayBuffer } from './append/appendArrayBuffer';
 import { appendFileList } from './append/appendFileList';
 import { appendPath } from './append/appendPath';
 import { appendText } from './append/appendText';
+import { appendSource } from './append/appendSource';
 import { appendWebSource } from './append/appendWebSource';
-import { appendWebSourceURL } from './append/appendWebSourceURL';
 import { fromIum } from './fromIum';
 import { ToIumOptions, toIum } from './toIum';
-import { convertSourceToFile } from './utilities/convertSourceToFile';
+import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile';
 import { expandAndFilter } from './utilities/expand/expandAndFilter';
 import { shouldAddItem } from './utilities/shouldAddItem';
 
 export class FileCollection {
   readonly files: FileItem[];
-  readonly sources: SourceItem[];
+  readonly sources: ExtendedSourceItem[];
   readonly options: Options;
   readonly filter: FilterOptions;
   readonly cache: boolean;
@@ -36,10 +36,10 @@ export class FileCollection {
    * @param source
    * @private
    */
-  async appendSource(source: SourceItem): Promise<void> {
+  async appendExtendedSource(source: ExtendedSourceItem): Promise<void> {
     if (!shouldAddItem(source.relativePath, this.filter)) return;
     this.sources.push(source);
-    const sourceFile = convertSourceToFile(source);
+    const sourceFile = convertExtendedSourceToFile(source);
     const files = await expandAndFilter(sourceFile, this.options);
     for (const file of files) {
       if (
@@ -57,19 +57,19 @@ export class FileCollection {
     }
   }
 
-  appendWebSourceURL(
+  appendWebSource(
     webSourceURL: string,
     options: { baseURL?: string } = {},
   ): Promise<void> {
-    return appendWebSourceURL(this, webSourceURL, options);
+    return appendWebSource(this, webSourceURL, options);
   }
 
   appendFileList(fileList: FileList): Promise<void> {
     return appendFileList(this, fileList);
   }
 
-  appendWebSource(webSource: WebSource, options: { baseURL?: string } = {}) {
-    return appendWebSource(this, webSource, options);
+  appendSource(webSource: Source, options: { baseURL?: string } = {}) {
+    return appendSource(this, webSource, options);
   }
   /**
    * This method can only be used from nodejs and will throw an error in the browser
@@ -106,7 +106,7 @@ export class FileCollection {
   }
 
   alphabetical() {
-    this.sources.sort((a: SourceItem, b: SourceItem) =>
+    this.sources.sort((a: ExtendedSourceItem, b: ExtendedSourceItem) =>
       a.relativePath < b.relativePath ? -1 : 1,
     );
     this.files.sort((a: FileItem, b: FileItem) =>

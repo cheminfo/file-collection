@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 
 import { FileCollection } from './FileCollection';
 import { ZipFileContent } from './ZipFileContent';
-import { getWebSource } from './append/appendWebSource';
+import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem';
 
 export async function fromIum(
   zipContent: ZipFileContent,
@@ -30,7 +30,9 @@ export async function fromIum(
         zipEntry.async('arraybuffer'),
       );
     } else {
-      await fileCollection.appendSource(getWebSource(source, undefined));
+      await fileCollection.appendExtendedSource(
+        sourceItemToExtendedSourceItem(source, undefined),
+      );
       // should come from the web
     }
   }

@@ -5,8 +5,8 @@ import { Readable } from 'node:stream';
 
 import { v4 } from '@lukeed/uuid';
 
+import { ExtendedSourceItem } from '../ExtendedSourceItem';
 import { FileCollection } from '../FileCollection';
-import { SourceItem } from '../SourceItem';
 
 export async function appendPath(fileCollection: FileCollection, path: string) {
   path = resolve(path);
@@ -28,7 +28,7 @@ async function appendFiles(
       await appendFiles(fileCollection, current, `${base}/${entry}`);
     } else {
       const relativePath = `${base}/${entry}`;
-      const source: SourceItem = {
+      const source: ExtendedSourceItem = {
         uuid: v4(),
         name: entry,
         baseURL: 'ium:/',
@@ -53,7 +53,7 @@ async function appendFiles(
           );
         },
       };
-      await fileCollection.appendSource(source);
+      await fileCollection.appendExtendedSource(source);
     }
   }
 }

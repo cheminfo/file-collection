@@ -1,14 +1,14 @@
 import { v4 } from '@lukeed/uuid';
 
+import { ExtendedSourceItem } from '../ExtendedSourceItem';
 import { FileCollection } from '../FileCollection';
-import { SourceItem } from '../SourceItem';
 
 export async function appendFileList(
   fileCollection: FileCollection,
   fileList: FileList,
 ) {
   for (const file of fileList) {
-    const source: SourceItem = {
+    const source: ExtendedSourceItem = {
       uuid: v4(),
       name: file.name,
       size: file.size,
@@ -20,6 +20,6 @@ export async function appendFileList(
       arrayBuffer: () => file.arrayBuffer(),
       stream: () => file.stream(),
     };
-    await fileCollection.appendSource(source);
+    await fileCollection.appendExtendedSource(source);
   }
 }

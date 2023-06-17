@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 
 import { FileCollection } from './FileCollection';
-import { WebSourceFile } from './WebSourceFile';
+import { SourceItem } from './SourceItem';
 
 export type ToIumOptions = {
   /**
@@ -22,7 +22,7 @@ export async function toIum(
   const jsZip = new JSZip();
   const { includeData = true } = options;
 
-  const sources: WebSourceFile[] = [];
+  const sources: SourceItem[] = [];
   for (const source of fileCollection.sources) {
     const newSource = {
       relativePath: source.relativePath,

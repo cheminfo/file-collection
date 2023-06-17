@@ -1,7 +1,7 @@
 import { v4 } from '@lukeed/uuid';
 
+import { ExtendedSourceItem } from '../ExtendedSourceItem';
 import { FileCollection } from '../FileCollection';
-import { SourceItem } from '../SourceItem';
 
 export async function appendText(
   fileCollection: FileCollection,
@@ -10,14 +10,14 @@ export async function appendText(
   options: { dateModified?: number } = {},
 ) {
   const source = await getSourceFromText(relativePath, text, options);
-  await fileCollection.appendSource(source);
+  await fileCollection.appendExtendedSource(source);
 }
 
 async function getSourceFromText(
   relativePath: string,
   text: string | Promise<string>,
   options: { dateModified?: number } = {},
-): Promise<SourceItem> {
+): Promise<ExtendedSourceItem> {
   const url = new URL(relativePath, 'ium:/');
 
   const blob = new Blob([await text], { type: 'text/plain' });
