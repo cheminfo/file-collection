@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.0](https://github.com/cheminfo/file-collection/compare/v0.0.1...v0.1.0) (2023-06-17)
+
+
+### Features
+
+* add appendWebSource and fix many bugs ([c34605e](https://github.com/cheminfo/file-collection/commit/c34605e0db500315d8830d99590298167bbdeb5b))
+* add appendWebSourceURL ([8e99623](https://github.com/cheminfo/file-collection/commit/8e996230182f7baf653115600c25dace830061bb))
+* add cache ([6800440](https://github.com/cheminfo/file-collection/commit/6800440b6c99e35e7c855589174e797abd20790b))
+
+
+### Bug Fixes
+
+* build for browser is working now correctly ([ac7326f](https://github.com/cheminfo/file-collection/commit/ac7326f6bd8ebfcec3d7527a1ea7509a6dc3e4b8))
+* deal correctly with unzip and ungzip options ([d851341](https://github.com/cheminfo/file-collection/commit/d851341d00520aa4a646e069eeec2164fddf08a6))
+
+
+### Documentation
+
+* improve README ([15cde97](https://github.com/cheminfo/file-collection/commit/15cde976e3941e1d672c2862ce1af410baf71ea9))
+* improve README ([abf9614](https://github.com/cheminfo/file-collection/commit/abf9614a01274e7568a7b5119f5c3219039f7267))
+
 ## 0.0.1 (2023-06-14)
 
 
