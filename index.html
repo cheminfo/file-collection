@@ -28,9 +28,18 @@
 <a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
   <h2>Introduction</h2>
 </a>
-<p>This library allows to manipulate a large amount of files coming from local or remote source.</p>
-<p>In order to make compatible code between the browser and node and to allow drag and drop of a folder it is useful to an abstraction level.</p>
-<p>This package allows to create a <code>file-collection</code> than can further be saved as a <code>ium</code> file (zip file containing all the data and an index.json file).</p>
+<p>This library allows to manipulate a large amount of files coming from local or remote sources.</p>
+<p>This library allows to have the same code in the browser and in nodejs.</p>
+<p>This package allows to create a <code>file-collection</code> than can further be saved as a <code>ium</code> file (zip file containing all the data
+and an <code>index.json</code> file).</p>
+<p>The structure of the zip file is at follow:</p>
+<ul>
+<li>index.json</li>
+<li>data/<ul>
+<li>all the files</li>
+</ul>
+</li>
+</ul>
 
 <a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
   <h2>Installation</h2>
@@ -51,6 +60,28 @@
   <h3>Reload a &#39;ium&#39; file</h3>
 </a>
 <pre><code class="language-js"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">fromIum</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;file-collection&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">fileCollection</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-7">fromIum</span><span class="hl-1">(</span><span class="hl-2">iumFile</span><span class="hl-1">);</span><br/><br/><span class="hl-0">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">file</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-2">fileCollection</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-2">file</span><span class="hl-1">.</span><span class="hl-2">name</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">file</span><span class="hl-1">.</span><span class="hl-7">text</span><span class="hl-1">());</span><br/><span class="hl-1">}</span>
+</code></pre>
+
+<a href="#using-in-a-react-component" id="using-in-a-react-component" style="color: inherit; text-decoration: none;">
+  <h2>Using in a react component</h2>
+</a>
+<p>A webSource is a URL to data like for example <code>https://image-js.github.io/image-dataset-demo/index.json</code>:</p>
+<pre><code class="language-tsx"><span class="hl-8">&lt;</span><span class="hl-9">MyComponent</span><span class="hl-1"> </span><span class="hl-10">webSource</span><span class="hl-1"> </span><span class="hl-10">onchange</span><span class="hl-1">=</span><span class="hl-4">{</span><span class="hl-11">(</span><span class="hl-2">fileCollection</span><span class="hl-11">) </span><span class="hl-4">=&gt;</span><span class="hl-11"> {}</span><span class="hl-4">}</span><span class="hl-8">&gt;&lt;/</span><span class="hl-9">MyComponent</span><span class="hl-8">&gt;</span>
+</code></pre>
+<p>Inside the component we should:</p>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">fileCollection</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-7">FileCollection</span><span class="hl-1">();</span><br/><span class="hl-0">if</span><span class="hl-1"> (</span><span class="hl-2">webSource</span><span class="hl-1">) </span><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">appendWebSource</span><span class="hl-1">(</span><span class="hl-2">webSource</span><span class="hl-1">);</span>
+</code></pre>
+<p>If we drag / drop some files we should:</p>
+<pre><code class="language-js"><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">appendFileList</span><span class="hl-1">(</span><span class="hl-2">fileList</span><span class="hl-1">);</span>
+</code></pre>
+<p>If we drag / drop a &#39;ium&#39; file we should replace the full <code>fileCollection</code></p>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">fileCollection</span><span class="hl-1"> = </span><span class="hl-2">FileCollection</span><span class="hl-1">.</span><span class="hl-7">fromIum</span><span class="hl-1">(</span><span class="hl-2">iumArrayBuffer</span><span class="hl-1">);</span>
+</code></pre>
+<p>If we want to save as a <code>ium</code> file:</p>
+<pre><code class="language-js"><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">toIum</span><span class="hl-1">();</span>
+</code></pre>
+<p>When <code>fileCollection</code> changes we can always retrieve the various files using:</p>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">files</span><span class="hl-1"> = [...</span><span class="hl-2">fileCollection</span><span class="hl-1">]; </span><span class="hl-6">// fileCollection is iterable on its files property</span>
 </code></pre>
 
 <a href="#license" id="license" style="color: inherit; text-decoration: none;">
