@@ -30,7 +30,7 @@ test('webSourceURL and save with data', async () => {
   ]);
 });
 
-test.only('webSourceURL and save original link', async () => {
+test('webSourceURL and save original link', async () => {
   const url = 'https://image-js.github.io/image-dataset-demo/';
   const fileCollection = new FileCollection();
   await fileCollection.appendWebSource(url);
