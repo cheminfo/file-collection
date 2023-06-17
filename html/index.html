@@ -16,6 +16,8 @@
   Upload a 'ium' (zip) file
   <input type="file" id="filepicker" name="fileCollection" onchange="fromIum(event)" />
   <button onclick="downloadZip()">Download zip</button>
+  <button onclick="appendWebSourceURL()">appendWebSourceURL</button>
+
   <div style="display: flex">
     <div style="background-color: pink" id="listing"></div>
     <div style="background-color: lightgreen" id="listingCollection"></div>
@@ -24,6 +26,13 @@
   <script>
 
     let fileCollection
+
+    async function appendWebSourceURL() {
+      fileCollection = new FileCollection.FileCollection();
+      await fileCollection.appendWebSourceURL('https://image-js.github.io/image-dataset-demo/index.json');
+
+    }
+
     async function uploadFiles(event) {
       let files = event.target.files;
       console.log({ files });

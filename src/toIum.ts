@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 
 import { FileCollection } from './FileCollection';
+import { WebSourceFile } from './WebSourceFile';
 
 export type ToIumOptions = {
   /**
@@ -21,22 +22,26 @@ export async function toIum(
   const jsZip = new JSZip();
   const { includeData = true } = options;
 
+  const sources: WebSourceFile[] = [];
   for (const source of fileCollection.sources) {
+    const newSource = {
+      relativePath: source.relativePath,
+      baseURL: source.baseURL,
+      name: source.name,
+      lastModified: source.lastModified,
+      size: source.size,
+    };
+    sources.push(newSource);
     if (includeData || source.baseURL === 'ium:/') {
-      const url = new URL(`data/${source.relativePath}`, source.baseURL);
+      newSource.baseURL = 'ium:/';
+      const url = new URL(`data/${source.relativePath}`, newSource.baseURL);
       jsZip.file(url.pathname, await source.arrayBuffer());
     }
   }
 
   const index = {
     options: fileCollection.options,
-    sources: fileCollection.sources.map((source) => ({
-      relativePath: source.relativePath,
-      baseURL: source.baseURL,
-      name: source.name,
-      lastModified: source.lastModified,
-      size: source.size,
-    })),
+    sources,
   };
 
   const url = new URL('index.json', 'ium:/');

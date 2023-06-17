@@ -15,28 +15,32 @@ export async function appendWebSource(
   for (const entry of entries) {
     const { relativePath } = entry;
     if (!shouldAddItem(relativePath, filter)) continue;
-    const realBaseURL = entry.baseURL || baseURL || options.baseURL;
+    const alternativeBaseURL = baseURL || options.baseURL;
 
-    const source = getSource(entry, realBaseURL);
+    const source = getWebSource(entry, alternativeBaseURL);
     await fileCollection.appendSource(source);
   }
 }
 
-function getSource(entry: any, realBaseURL: string | undefined): SourceItem {
-  if (!realBaseURL) {
+export function getWebSource(
+  entry: any,
+  alternativeBaseURL: string | undefined,
+): SourceItem {
+  let baseURL = entry.baseURL || alternativeBaseURL;
+  if (!baseURL) {
     if (typeof location === 'undefined' || !location.href) {
       throw new Error(`We could not find a baseURL for ${entry.relativePath}`);
     } else {
-      realBaseURL = location.href;
+      baseURL = location.href;
     }
   }
 
-  const fileURL = new URL(entry.relativePath, realBaseURL);
+  const fileURL = new URL(entry.relativePath, baseURL);
   const source: SourceItem = {
     uuid: v4(),
     name: entry.relativePath.split('/').pop() || '',
     size: entry.size,
-    baseURL: realBaseURL,
+    baseURL,
     relativePath: entry.relativePath,
     lastModified: entry.lastModified,
     text: async (): Promise<string> => {

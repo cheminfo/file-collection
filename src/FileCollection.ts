@@ -9,8 +9,9 @@ import { appendFileList } from './append/appendFileList';
 import { appendPath } from './append/appendPath';
 import { appendText } from './append/appendText';
 import { appendWebSource } from './append/appendWebSource';
+import { appendWebSourceURL } from './append/appendWebSourceURL';
 import { fromIum } from './fromIum';
-import { toIum } from './toIum';
+import { ToIumOptions, toIum } from './toIum';
 import { convertSourceToFile } from './utilities/convertSourceToFile';
 import { expandAndFilter } from './utilities/expand/expandAndFilter';
 import { shouldAddItem } from './utilities/shouldAddItem';
@@ -56,6 +57,13 @@ export class FileCollection {
     }
   }
 
+  appendWebSourceURL(
+    webSourceURL: string,
+    options: { baseURL?: string } = {},
+  ): Promise<void> {
+    return appendWebSourceURL(this, webSourceURL, options);
+  }
+
   appendFileList(fileList: FileList): Promise<void> {
     return appendFileList(this, fileList);
   }
@@ -86,9 +94,9 @@ export class FileCollection {
     return appendArrayBuffer(this, relativePath, arrayBuffer, options);
   }
 
-  toIum() {
+  toIum(options: ToIumOptions = {}) {
     this.alphabetical();
-    return toIum(this);
+    return toIum(this, options);
   }
 
   static async fromIum(ium: ZipFileContent) {
