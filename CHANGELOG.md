@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/cheminfo/file-collection/compare/v0.1.0...v0.2.0) (2023-06-18)
+
+
+### Features
+
+* add get / set methods ([9e48da2](https://github.com/cheminfo/file-collection/commit/9e48da204e347324a7dfc6da9010a4a0e3869fc4))
+
 ## [0.1.0](https://github.com/cheminfo/file-collection/compare/v0.0.1...v0.1.0) (2023-06-17)
 
 
