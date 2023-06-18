@@ -7,13 +7,14 @@ import { ZipFileContent } from './ZipFileContent';
 import { appendArrayBuffer } from './append/appendArrayBuffer';
 import { appendFileList } from './append/appendFileList';
 import { appendPath } from './append/appendPath';
-import { appendText } from './append/appendText';
 import { appendSource } from './append/appendSource';
+import { appendText } from './append/appendText';
 import { appendWebSource } from './append/appendWebSource';
 import { fromIum } from './fromIum';
 import { ToIumOptions, toIum } from './toIum';
 import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile';
 import { expandAndFilter } from './utilities/expand/expandAndFilter';
+import { getNameInfo } from './utilities/getNameInfo';
 import { shouldAddItem } from './utilities/shouldAddItem';
 
 export class FileCollection {
@@ -55,6 +56,51 @@ export class FileCollection {
         this.files.push(file);
       }
     }
+  }
+
+  /**
+   * Save an object to the collection. This method will convert typed array to normal array and will
+   * replace potentially existing file with the same name.
+   * @param key
+   * @param value
+   * @returns
+   */
+  set(key: string, value: any): Promise<void> {
+    this.removeFile(key);
+    const string = JSON.stringify(value, (key, value) =>
+      ArrayBuffer.isView(value) ? Array.from(value as any) : value,
+    );
+    return this.appendText(key, string);
+  }
+
+  removeFile(originalRelativePath: string): void | FileItem {
+    const { relativePath } = getNameInfo(originalRelativePath);
+    const index = this.files.findIndex((f) => f.relativePath === relativePath);
+    let removedFile;
+    if (index !== -1) {
+      const sourceUUID = this.files[index].sourceUUID;
+      removedFile = this.files.splice(index, 1)[0];
+      // any other files with the same sourceUUID?
+      if (this.files.some((f) => f.sourceUUID === sourceUUID)) return;
+      // delete the source
+      const sourceIndex = this.sources.findIndex((s) => s.uuid === sourceUUID);
+      if (sourceIndex !== -1) {
+        this.sources.splice(sourceIndex, 1);
+      } else {
+        throw new Error(`Source not found for UUID: ${sourceUUID}`);
+      }
+    }
+    return removedFile;
+  }
+
+  async get(key: string): Promise<any> {
+    const { relativePath } = getNameInfo(key);
+    const file = this.files.find((f) => f.relativePath === relativePath);
+    if (!file) {
+      throw new Error(`Key not found: ${key}`);
+    }
+    const string = await file.text();
+    return JSON.parse(string);
   }
 
   appendWebSource(

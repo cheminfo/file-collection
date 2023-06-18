@@ -86,12 +86,14 @@ If we drag / drop a 'ium' file we should replace the full `fileCollection`
 
 ```js
 const fileCollection = FileCollection.fromIum(iumArrayBuffer);
+const state = fileCollection.get('state');
 ```
 
 If we want to save as a `ium` file:
 
 ```js
-fileCollection.toIum();
+fileCollection.set('state', myCurrentState);
+const toSave = fileCollection.toIum();
 ```
 
 When `fileCollection` changes we can always retrieve the various files using:
@@ -99,6 +101,8 @@ When `fileCollection` changes we can always retrieve the various files using:
 ```js
 const files = [...fileCollection]; // fileCollection is iterable on its files property
 ```
+
+Referencing files in the fileCollection
 
 ## License
 

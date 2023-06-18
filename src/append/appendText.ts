@@ -2,6 +2,7 @@ import { v4 } from '@lukeed/uuid';
 
 import { ExtendedSourceItem } from '../ExtendedSourceItem';
 import { FileCollection } from '../FileCollection';
+import { getNameInfo } from '../utilities/getNameInfo';
 
 export async function appendText(
   fileCollection: FileCollection,
@@ -14,18 +15,18 @@ export async function appendText(
 }
 
 async function getExtendedSourceFromText(
-  relativePath: string,
+  originalRelativePath: string,
   text: string | Promise<string>,
   options: { dateModified?: number } = {},
 ): Promise<ExtendedSourceItem> {
-  const url = new URL(relativePath, 'ium:/');
+  const { relativePath, name } = getNameInfo(originalRelativePath);
 
   const blob = new Blob([await text], { type: 'text/plain' });
 
   return {
     uuid: v4(),
-    relativePath: url.pathname,
-    name: relativePath.split('/').pop() as string,
+    relativePath,
+    name,
     lastModified: options.dateModified || Date.now(),
     baseURL: 'ium:/',
     text: () => blob.text(),
