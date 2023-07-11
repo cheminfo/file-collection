@@ -75,14 +75,15 @@ and an <code>index.json</code> file).</p>
 <pre><code class="language-js"><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">appendFileList</span><span class="hl-1">(</span><span class="hl-2">fileList</span><span class="hl-1">);</span>
 </code></pre>
 <p>If we drag / drop a &#39;ium&#39; file we should replace the full <code>fileCollection</code></p>
-<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">fileCollection</span><span class="hl-1"> = </span><span class="hl-2">FileCollection</span><span class="hl-1">.</span><span class="hl-7">fromIum</span><span class="hl-1">(</span><span class="hl-2">iumArrayBuffer</span><span class="hl-1">);</span>
+<pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">fileCollection</span><span class="hl-1"> = </span><span class="hl-2">FileCollection</span><span class="hl-1">.</span><span class="hl-7">fromIum</span><span class="hl-1">(</span><span class="hl-2">iumArrayBuffer</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">state</span><span class="hl-1"> = </span><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">get</span><span class="hl-1">(</span><span class="hl-3">&#39;state&#39;</span><span class="hl-1">);</span>
 </code></pre>
 <p>If we want to save as a <code>ium</code> file:</p>
-<pre><code class="language-js"><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">toIum</span><span class="hl-1">();</span>
+<pre><code class="language-js"><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">set</span><span class="hl-1">(</span><span class="hl-3">&#39;state&#39;</span><span class="hl-1">, </span><span class="hl-2">myCurrentState</span><span class="hl-1">);</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">toSave</span><span class="hl-1"> = </span><span class="hl-2">fileCollection</span><span class="hl-1">.</span><span class="hl-7">toIum</span><span class="hl-1">();</span>
 </code></pre>
 <p>When <code>fileCollection</code> changes we can always retrieve the various files using:</p>
 <pre><code class="language-js"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">files</span><span class="hl-1"> = [...</span><span class="hl-2">fileCollection</span><span class="hl-1">]; </span><span class="hl-6">// fileCollection is iterable on its files property</span>
 </code></pre>
+<p>Referencing files in the fileCollection</p>
 
 <a href="#license" id="license" style="color: inherit; text-decoration: none;">
   <h2>License</h2>
