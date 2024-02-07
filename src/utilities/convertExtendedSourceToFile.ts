@@ -5,7 +5,7 @@ export function convertExtendedSourceToFile(
   this: void,
   source: ExtendedSourceItem,
 ): FileItem {
-  let stream = source.stream
+  const stream = source.stream
     ? () => source.stream?.()
     : (): ReadableStream => {
         return new ReadableStream({

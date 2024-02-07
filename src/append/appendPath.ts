@@ -20,7 +20,7 @@ async function appendFiles(
   base: string,
 ) {
   const entries = await readdir(currentDir);
-  for (let entry of entries) {
+  for (const entry of entries) {
     const current = join(currentDir, entry);
     const info = await stat(current);
 

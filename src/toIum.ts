@@ -3,13 +3,13 @@ import JSZip from 'jszip';
 import { FileCollection } from './FileCollection';
 import { SourceItem } from './SourceItem';
 
-export type ToIumOptions = {
+export interface ToIumOptions {
   /**
    * If true, the data of the files will be always included in the zip.
    * @default true
    */
   includeData?: boolean;
-};
+}
 /**
  * This method will zip a file collection and return the zip as an ArrayBuffer
  * @param fileCollecrtion

@@ -13,8 +13,8 @@ export async function fileItemsFromZip(
 ) {
   const jsZip = new JSZip();
   const zip = await jsZip.loadAsync(zipContent);
-  let fileItems: FileItem[] = [];
-  for (let key in zip.files) {
+  const fileItems: FileItem[] = [];
+  for (const key in zip.files) {
     const entry = zip.files[key];
     if (entry.dir) continue;
     if (!shouldAddItem(entry.name, options.filter)) continue;

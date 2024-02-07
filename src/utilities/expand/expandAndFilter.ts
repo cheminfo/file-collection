@@ -21,7 +21,7 @@ export async function expandAndFilter(
     return [];
   }
 
-  let fileItem = await fileItemUngzip(originalFileItem, options);
+  const fileItem = await fileItemUngzip(originalFileItem, options);
 
   const fileItems = await fileItemUnzip(fileItem, options);
 

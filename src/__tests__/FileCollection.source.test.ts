@@ -2,7 +2,7 @@ import { readdir, stat, readFile } from 'fs/promises';
 import { join } from 'path';
 
 import { fetch } from 'cross-fetch';
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   beforeAll,
@@ -18,16 +18,16 @@ import { FileCollection } from '../FileCollection';
 
 let fileRequestedCounter = 0;
 const server = setupServer(
-  rest.get('http://localhost/data*', async (req, res, ctx) => {
-    const pathname = join(__dirname, req.url.pathname);
+  http.get('http://localhost/data*', async ({ request }) => {
+    const pathname = join(__dirname, new URL(request.url).pathname);
     const pathnameStat = await stat(pathname);
     if (pathnameStat.isDirectory()) {
       const source = await getJSON(join(__dirname, 'dataUnzip'));
-      return res(ctx.json(source));
+      return HttpResponse.json(source);
     } else if (pathnameStat.isFile()) {
       fileRequestedCounter++;
       const data = await readFile(pathname);
-      return res(ctx.body(data));
+      return HttpResponse.arrayBuffer(data);
     } else {
       throw new Error(`unknown path: ${pathname}`);
     }
@@ -229,7 +229,7 @@ describe('fileCollectionFromWebSource', () => {
 });
 
 async function getJSON(path: string) {
-  let entries: any = [];
+  const entries: any = [];
   await appendFiles(entries, path);
   entries.forEach((entry: any) => {
     entry.relativePath = entry.relativePath.replace(/.*__tests__\//, '');
@@ -239,7 +239,7 @@ async function getJSON(path: string) {
 
 async function appendFiles(files: any, currentDir: string) {
   const entries = await readdir(currentDir);
-  for (let entry of entries) {
+  for (const entry of entries) {
     const current = join(currentDir, entry);
     const info = await stat(current);
 

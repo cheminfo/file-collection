@@ -9,7 +9,7 @@ export function sourceItemToExtendedSourceItem(
 ): ExtendedSourceItem {
   let baseURL = entry.baseURL || alternativeBaseURL;
   if (!baseURL) {
-    if (typeof location === 'undefined' || !location.href) {
+    if (!location?.href) {
       throw new Error(`We could not find a baseURL for ${entry.relativePath}`);
     } else {
       baseURL = location.href;
