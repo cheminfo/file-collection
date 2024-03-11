@@ -7,6 +7,7 @@ export async function appendFileList(
   fileCollection: FileCollection,
   fileList: FileList,
 ) {
+  const promises = [];
   for (const file of fileList) {
     const source: ExtendedSourceItem = {
       uuid: v4(),
@@ -20,6 +21,7 @@ export async function appendFileList(
       arrayBuffer: () => file.arrayBuffer(),
       stream: () => file.stream(),
     };
-    await fileCollection.appendExtendedSource(source);
+    promises.push(fileCollection.appendExtendedSource(source));
   }
+  await Promise.all(promises);
 }

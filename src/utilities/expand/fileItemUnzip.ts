@@ -53,6 +53,8 @@ export async function fileItemUnzip(
     zipEntry.relativePath = `${fileItem.relativePath}/${zipEntry.relativePath}`;
     zipEntry.sourceUUID = fileItem.sourceUUID;
     if (recursive) {
+      // todo could improve this by using a promise.all
+      // eslint-disable-next-line no-await-in-loop
       fileItems.push(...(await expandAndFilter(zipEntry, options)));
     } else if (shouldAddItem(zipEntry.relativePath, filter)) {
       fileItems.push(zipEntry);

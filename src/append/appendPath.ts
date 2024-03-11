@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { createReadStream } from 'node:fs';
 import { readdir, stat, readFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';

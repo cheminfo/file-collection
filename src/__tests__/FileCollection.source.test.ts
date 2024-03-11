@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { readdir, stat, readFile } from 'fs/promises';
 import { join } from 'path';
 
@@ -98,7 +99,7 @@ describe('fileCollectionFromWebSource', () => {
 
   test('without baseURL but with a global location href', async () => {
     // @ts-expect-error we want to test the behavior when location is set like in the browser
-    global.location = { href: 'http://localhost/' };
+    globalThis.location = { href: 'http://localhost/' };
     const source = {
       entries: [
         {
@@ -119,7 +120,7 @@ describe('fileCollectionFromWebSource', () => {
     expect(second).toBe('b');
 
     // @ts-expect-error need to remove it for the next test
-    delete global.location;
+    delete globalThis.location;
   });
 
   test('with cache', async () => {
@@ -197,6 +198,11 @@ describe('fileCollectionFromWebSource', () => {
     const fileCollection = new FileCollection();
     await fileCollection.appendSource(source);
 
+    // it seems acceptable to me that the order is not guaranteed when appending a source
+    fileCollection.files.sort((a, b) =>
+      a.relativePath.localeCompare(b.relativePath),
+    );
+
     expect(fileCollection.files).toHaveLength(15);
     const first = await fileCollection.files[0].text();
     expect(first).toBe('c');
@@ -217,6 +223,11 @@ describe('fileCollectionFromWebSource', () => {
 
     const fileCollection = new FileCollection();
     await fileCollection.appendSource(source);
+
+    // it seems acceptable to me that the order is not guaranteed when appending a source
+    fileCollection.files.sort((a, b) =>
+      a.relativePath.localeCompare(b.relativePath),
+    );
 
     expect(fileCollection.files).toHaveLength(15);
     const first = await fileCollection.files[0].text();

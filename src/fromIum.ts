@@ -18,6 +18,7 @@ export async function fromIum(
 
   const fileCollection = new FileCollection(index.options);
 
+  const promises: Array<Promise<void>> = [];
   for (const source of index.sources) {
     const url = new URL(source.relativePath, source.baseURL);
     if (url.protocol === 'ium:') {
@@ -25,17 +26,21 @@ export async function fromIum(
       if (!zipEntry) {
         throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
-      await fileCollection.appendArrayBuffer(
-        url.pathname,
-        zipEntry.async('arraybuffer'),
+      promises.push(
+        fileCollection.appendArrayBuffer(
+          url.pathname,
+          zipEntry.async('arraybuffer'),
+        ),
       );
     } else {
-      await fileCollection.appendExtendedSource(
-        sourceItemToExtendedSourceItem(source, undefined),
+      promises.push(
+        fileCollection.appendExtendedSource(
+          sourceItemToExtendedSourceItem(source, undefined),
+        ),
       );
       // should come from the web
     }
   }
-
+  await Promise.all(promises);
   return fileCollection;
 }

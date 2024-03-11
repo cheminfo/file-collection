@@ -11,12 +11,13 @@ export async function appendSource(
 ): Promise<void> {
   const { filter } = fileCollection;
   const { entries, baseURL } = source;
+  const promises: Array<Promise<void>> = [];
   for (const entry of entries) {
     const { relativePath } = entry;
     if (!shouldAddItem(relativePath, filter)) continue;
     const alternativeBaseURL = baseURL || options.baseURL;
-
     const source = sourceItemToExtendedSourceItem(entry, alternativeBaseURL);
-    await fileCollection.appendExtendedSource(source);
+    promises.push(fileCollection.appendExtendedSource(source));
   }
+  await Promise.all(promises);
 }

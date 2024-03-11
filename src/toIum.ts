@@ -23,6 +23,7 @@ export async function toIum(
   const { includeData = true } = options;
 
   const sources: SourceItem[] = [];
+  const promises: Array<Promise<void>> = [];
   for (const source of fileCollection.sources) {
     const newSource = {
       relativePath: source.relativePath,
@@ -35,9 +36,14 @@ export async function toIum(
     if (includeData || source.baseURL === 'ium:/') {
       newSource.baseURL = 'ium:/';
       const url = new URL(`data/${source.relativePath}`, newSource.baseURL);
-      jsZip.file(url.pathname, await source.arrayBuffer());
+      promises.push(
+        (async () => {
+          jsZip.file(url.pathname, await source.arrayBuffer());
+        })(),
+      );
     }
   }
+  await Promise.all(promises);
 
   const index = {
     options: fileCollection.options,
