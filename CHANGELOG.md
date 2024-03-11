@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/cheminfo/file-collection/compare/v0.2.0...v1.0.0) (2024-03-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* update depencies
+
+### Miscellaneous Chores
+
+* update depencies ([bbf1875](https://github.com/cheminfo/file-collection/commit/bbf1875acfd29a36c2bfee1b93efcfecceb3f066))
+
 ## [0.2.0](https://github.com/cheminfo/file-collection/compare/v0.1.0...v0.2.0) (2023-06-18)
 
 
