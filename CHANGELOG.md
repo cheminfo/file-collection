@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0](https://github.com/cheminfo/file-collection/compare/v0.2.0...v1.0.0) (2024-07-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* update depencies
+
+### Features
+
+* add keepBasename option in appendPath ([83af64f](https://github.com/cheminfo/file-collection/commit/83af64fc8b1f15a8da4298aba0174f9702735120))
+
+
+### Miscellaneous Chores
+
+* update depencies ([bbf1875](https://github.com/cheminfo/file-collection/commit/bbf1875acfd29a36c2bfee1b93efcfecceb3f066))
+
 ## [0.2.0](https://github.com/cheminfo/file-collection/compare/v0.1.0...v0.2.0) (2023-06-18)
 
 
