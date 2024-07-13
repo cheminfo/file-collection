@@ -9,9 +9,14 @@ import { v4 } from '@lukeed/uuid';
 import { ExtendedSourceItem } from '../ExtendedSourceItem';
 import { FileCollection } from '../FileCollection';
 
-export async function appendPath(fileCollection: FileCollection, path: string) {
+export async function appendPath(
+  fileCollection: FileCollection,
+  path: string,
+  options: { keepBasename?: boolean } = {},
+) {
+  const { keepBasename = true } = options;
   path = resolve(path);
-  const base = basename(path);
+  const base = keepBasename ? basename(path) : '';
   await appendFiles(fileCollection, path, base);
 }
 
@@ -26,7 +31,11 @@ async function appendFiles(
     const info = await stat(current);
 
     if (info.isDirectory()) {
-      await appendFiles(fileCollection, current, `${base}/${entry}`);
+      if (base) {
+        await appendFiles(fileCollection, current, `${base}/${entry}`);
+      } else {
+        await appendFiles(fileCollection, current, entry);
+      }
     } else {
       const relativePath = `${base}/${entry}`;
       const source: ExtendedSourceItem = {

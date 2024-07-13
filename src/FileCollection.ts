@@ -120,8 +120,11 @@ export class FileCollection {
   /**
    * This method can only be used from nodejs and will throw an error in the browser
    */
-  appendPath(path: string): Promise<void> {
-    return appendPath(this, path);
+  appendPath(
+    path: string,
+    options: { keepBasename?: boolean } = {},
+  ): Promise<void> {
+    return appendPath(this, path, options);
   }
 
   appendText(

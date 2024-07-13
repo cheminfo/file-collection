@@ -17,6 +17,46 @@ test('appendPath data folder', async () => {
   expect(text).toStrictEqual('a');
 });
 
+test('appendPath data folder and keepBasename', async () => {
+  const fileCollection = new FileCollection();
+
+  await fileCollection.appendPath(join(__dirname, 'data/'), {
+    keepBasename: true,
+  });
+  const relativePaths = fileCollection.files.map((file) => file.relativePath);
+  expect(relativePaths).toStrictEqual([
+    'data/dir1/a.txt',
+    'data/dir1/b.txt',
+    'data/dir1/dir3/e.txt',
+    'data/dir1/dir3/f.txt',
+    'data/dir2/c.txt',
+    'data/dir2/d.txt',
+    'data/dir3/a.MpT',
+    'data/dir3/a.mpr',
+    'data/dir3/a.mps',
+  ]);
+});
+
+test('appendPath data folder and do not keepBasename', async () => {
+  const fileCollection = new FileCollection();
+
+  await fileCollection.appendPath(join(__dirname, 'data/'), {
+    keepBasename: false,
+  });
+  const relativePaths = fileCollection.files.map((file) => file.relativePath);
+  expect(relativePaths).toStrictEqual([
+    'dir1/a.txt',
+    'dir1/b.txt',
+    'dir1/dir3/e.txt',
+    'dir1/dir3/f.txt',
+    'dir2/c.txt',
+    'dir2/d.txt',
+    'dir3/a.MpT',
+    'dir3/a.mpr',
+    'dir3/a.mps',
+  ]);
+});
+
 test('appendPath dataUnzip', async () => {
   const fileCollection = new FileCollection();
 
