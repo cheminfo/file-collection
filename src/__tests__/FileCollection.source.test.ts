@@ -2,7 +2,6 @@
 import { readdir, stat, readFile } from 'fs/promises';
 import { join } from 'path';
 
-import { fetch } from 'cross-fetch';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
