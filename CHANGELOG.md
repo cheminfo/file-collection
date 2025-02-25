@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/cheminfo/file-collection/compare/v1.0.0...v1.0.1) (2025-02-25)
+
+
+### Bug Fixes
+
+* remove @lukeed/uuid dependency and use crypto uuid generator ([d9baf96](https://github.com/cheminfo/file-collection/commit/d9baf96ebb3e8768f4f59ee192c8d70fd13d0dfe))
+
 ## [1.0.0](https://github.com/cheminfo/file-collection/compare/v0.2.0...v1.0.0) (2024-07-13)
 
 
