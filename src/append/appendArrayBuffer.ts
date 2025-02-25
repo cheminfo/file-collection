@@ -1,7 +1,7 @@
 import { v4 } from '@lukeed/uuid';
 
-import { ExtendedSourceItem } from '../ExtendedSourceItem';
-import { FileCollection } from '../FileCollection';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem';
+import type { FileCollection } from '../FileCollection';
 import { getNameInfo } from '../utilities/getNameInfo';
 
 export async function appendArrayBuffer(

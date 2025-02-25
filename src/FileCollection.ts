@@ -1,9 +1,9 @@
 import { CachedFileItem } from './CachedFileItem';
-import { ExtendedSourceItem } from './ExtendedSourceItem';
-import { FileItem } from './FileItem';
-import { FilterOptions, Options } from './Options';
-import { Source } from './Source';
-import { ZipFileContent } from './ZipFileContent';
+import type { ExtendedSourceItem } from './ExtendedSourceItem';
+import type { FileItem } from './FileItem';
+import type { FilterOptions, Options } from './Options';
+import type { Source } from './Source';
+import type { ZipFileContent } from './ZipFileContent';
 import { appendArrayBuffer } from './append/appendArrayBuffer';
 import { appendFileList } from './append/appendFileList';
 import { appendPath } from './append/appendPath';
@@ -11,7 +11,8 @@ import { appendSource } from './append/appendSource';
 import { appendText } from './append/appendText';
 import { appendWebSource } from './append/appendWebSource';
 import { fromIum } from './fromIum';
-import { ToIumOptions, toIum } from './toIum';
+import type { ToIumOptions } from './toIum';
+import { toIum } from './toIum';
 import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile';
 import { expandAndFilter } from './utilities/expand/expandAndFilter';
 import { getNameInfo } from './utilities/getNameInfo';
@@ -119,6 +120,9 @@ export class FileCollection {
   }
   /**
    * This method can only be used from nodejs and will throw an error in the browser
+   * @param path
+   * @param options
+   * @param options.keepBasename
    */
   appendPath(
     path: string,

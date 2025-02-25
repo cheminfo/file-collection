@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
-import { readdir, stat, readFile } from 'fs/promises';
-import { join } from 'path';
+import { readdir, stat, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
@@ -216,9 +216,9 @@ describe('fileCollectionFromWebSource', () => {
     const response = await fetch(url);
     const source = await response.json();
 
-    source.entries.forEach((entry: any) => {
+    for (const entry of source.entries) {
       entry.baseURL = 'http://localhost/';
-    });
+    }
 
     const fileCollection = new FileCollection();
     await fileCollection.appendSource(source);
@@ -241,9 +241,9 @@ describe('fileCollectionFromWebSource', () => {
 async function getJSON(path: string) {
   const entries: any = [];
   await appendFiles(entries, path);
-  entries.forEach((entry: any) => {
+  for (const entry of entries) {
     entry.relativePath = entry.relativePath.replace(/.*__tests__\//, '');
-  });
+  }
   return { entries };
 }
 
@@ -259,7 +259,7 @@ async function appendFiles(files: any, currentDir: string) {
       files.push({
         name: entry,
         size: info.size,
-        relativePath: join(currentDir, entry).replace(/\\/g, '/'),
+        relativePath: join(currentDir, entry).replaceAll('\\', '/'),
         lastModified: Math.round(info.mtimeMs),
       });
     }

@@ -1,5 +1,5 @@
-import { FileItem } from '../../FileItem';
-import { Options } from '../../Options';
+import type { FileItem } from '../../FileItem';
+import type { Options } from '../../Options';
 import { shouldAddItem } from '../shouldAddItem';
 
 import { expandAndFilter } from './expandAndFilter';
@@ -10,6 +10,7 @@ import { fileItemsFromZip } from './fileItemsFromZip';
  * The method will actually not really unzip the files but only add them in the fileItems.
  * Unzipping will only take place when you want to actually retrieve the data.
  * @param fileItems
+ * @param fileItem
  * @param options
  * @returns
  */

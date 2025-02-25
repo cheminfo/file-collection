@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 
 import { FileCollection } from './FileCollection';
-import { ZipFileContent } from './ZipFileContent';
+import type { ZipFileContent } from './ZipFileContent';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem';
 
 export async function fromIum(

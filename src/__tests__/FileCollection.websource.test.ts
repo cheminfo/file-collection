@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 
 import { FileCollection } from '../FileCollection';
+import type { FileItem } from '../FileItem';
 
 test('webSourceURL and save with data', async () => {
   const url = 'https://image-js.github.io/image-dataset-demo/biology/';
@@ -8,10 +9,10 @@ test('webSourceURL and save with data', async () => {
   await fileCollection.appendWebSource(url);
 
   expect(fileCollection.files.length).toBeGreaterThan(2);
-  const pngs = fileCollection.files.filter((file) =>
+  const png = fileCollection.files.find((file) =>
     file.name.endsWith('.png'),
-  );
-  const first = await pngs[0].arrayBuffer();
+  ) as FileItem;
+  const first = await png.arrayBuffer();
 
   expect(Array.from(Buffer.from(first)).slice(0, 4)).toStrictEqual([
     137,
@@ -39,10 +40,10 @@ test('webSourceURL and save original link', async () => {
   await fileCollection.appendWebSource(url);
 
   expect(fileCollection.files.length).toBeGreaterThan(2);
-  const pngs = fileCollection.files.filter((file) =>
+  const png = fileCollection.files.find((file) =>
     file.name.endsWith('.png'),
-  );
-  const first = await pngs[0].arrayBuffer();
+  ) as FileItem;
+  const first = await png.arrayBuffer();
 
   expect(Array.from(Buffer.from(first)).slice(0, 4)).toStrictEqual([
     137,

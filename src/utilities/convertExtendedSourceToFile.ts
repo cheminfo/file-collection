@@ -1,5 +1,5 @@
-import { ExtendedSourceItem } from '../ExtendedSourceItem';
-import { FileItem } from '../FileItem';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem';
+import type { FileItem } from '../FileItem';
 
 export function convertExtendedSourceToFile(
   this: void,

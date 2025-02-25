@@ -1,4 +1,4 @@
-import { Logger } from 'cheminfo-types';
+import type { Logger } from 'cheminfo-types';
 
 export interface FilterOptions {
   /**

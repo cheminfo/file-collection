@@ -6,8 +6,8 @@ import { Readable } from 'node:stream';
 
 import { v4 } from '@lukeed/uuid';
 
-import { ExtendedSourceItem } from '../ExtendedSourceItem';
-import { FileCollection } from '../FileCollection';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem';
+import type { FileCollection } from '../FileCollection';
 
 export async function appendPath(
   fileCollection: FileCollection,

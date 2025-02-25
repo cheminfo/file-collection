@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 
-import { FileCollection } from './FileCollection';
-import { SourceItem } from './SourceItem';
+import type { FileCollection } from './FileCollection';
+import type { SourceItem } from './SourceItem';
 
 export interface ToIumOptions {
   /**
@@ -13,6 +13,8 @@ export interface ToIumOptions {
 /**
  * This method will zip a file collection and return the zip as an ArrayBuffer
  * @param fileCollecrtion
+ * @param fileCollection
+ * @param options
  * @returns
  */
 export async function toIum(

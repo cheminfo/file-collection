@@ -1,5 +1,5 @@
-import { FileCollection } from '../FileCollection';
-import { Source } from '../Source';
+import type { FileCollection } from '../FileCollection';
+import type { Source } from '../Source';
 
 import { appendSource } from './appendSource';
 

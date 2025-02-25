@@ -1,7 +1,7 @@
-import { ReadStream } from 'fs';
-import { createGunzip } from 'zlib';
+import { ReadStream } from 'node:fs';
+import { createGunzip } from 'node:zlib';
 
-import { FileItem } from '../../FileItem';
+import type { FileItem } from '../../FileItem';
 
 export function ungzipStream(file: FileItem) {
   if (ReadStream.toWeb) {

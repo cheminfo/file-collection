@@ -1,8 +1,9 @@
-import { FilterOptions } from '../Options';
+import type { FilterOptions } from '../Options';
 
 /**
  * Utility function that allows to filter files from a FileCollection ignore by default the dotFiles
  * @param fileCollection
+ * @param relativePath
  * @param options
  * @returns
  */

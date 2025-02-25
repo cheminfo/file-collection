@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 
-import { FileItem } from '../../FileItem';
-import { Options } from '../../Options';
+import type { FileItem } from '../../FileItem';
+import type { Options } from '../../Options';
 import { shouldAddItem } from '../shouldAddItem';
 
 export type ZipFileContent = Parameters<typeof JSZip.loadAsync>[0];

@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join } from 'node:path';
 
 import { test, expect } from 'vitest';
 
@@ -73,7 +73,7 @@ test('appendPath dataUnzip', async () => {
 
   const sourceUUIDs = fileCollection.files
     .map((file) => file.sourceUUID)
-    .filter((source) => source);
+    .filter(Boolean);
   expect(sourceUUIDs).toHaveLength(15);
 });
 

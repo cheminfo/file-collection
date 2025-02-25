@@ -1,4 +1,4 @@
-import { SourceItem } from './SourceItem';
+import type { SourceItem } from './SourceItem';
 
 export interface ExtendedSourceItem extends SourceItem {
   uuid: string;

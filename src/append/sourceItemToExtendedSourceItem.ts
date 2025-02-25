@@ -1,7 +1,7 @@
 import { v4 } from '@lukeed/uuid';
 
-import { ExtendedSourceItem } from '../ExtendedSourceItem';
-import { SourceItem } from '../SourceItem';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem';
+import type { SourceItem } from '../SourceItem';
 
 export function sourceItemToExtendedSourceItem(
   entry: SourceItem,

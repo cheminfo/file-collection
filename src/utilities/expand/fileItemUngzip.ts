@@ -1,7 +1,7 @@
 import { ungzip } from 'pako';
 
-import { FileItem } from '../../FileItem';
-import { Options } from '../../Options';
+import type { FileItem } from '../../FileItem';
+import type { Options } from '../../Options';
 
 import { ungzipStream } from './ungzipStream';
 
@@ -10,6 +10,7 @@ import { ungzipStream } from './ungzipStream';
  * The method will actually not really ungzip the files but decompress them if you need.
  * During this process the extension .gz will be removed
  * @param fileItems
+ * @param fileItem
  * @param options
  * @returns
  */
