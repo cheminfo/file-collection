@@ -1,5 +1,3 @@
-import { v4 } from '@lukeed/uuid';
-
 import type { ExtendedSourceItem } from '../ExtendedSourceItem';
 import type { SourceItem } from '../SourceItem';
 
@@ -18,7 +16,7 @@ export function sourceItemToExtendedSourceItem(
 
   const fileURL = new URL(entry.relativePath, baseURL);
   const source: ExtendedSourceItem = {
-    uuid: v4(),
+    uuid: crypto.randomUUID(),
     name: entry.relativePath.split('/').pop() || '',
     size: entry.size,
     baseURL,

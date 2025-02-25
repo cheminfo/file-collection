@@ -59,7 +59,6 @@
     "vitest": "^3.0.7"
   },
   "dependencies": {
-    "@lukeed/uuid": "^2.0.1",
     "cheminfo-types": "^1.8.1",
     "jszip": "^3.10.1",
     "pako": "^2.1.0"

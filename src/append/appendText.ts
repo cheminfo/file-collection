@@ -1,5 +1,3 @@
-import { v4 } from '@lukeed/uuid';
-
 import type { ExtendedSourceItem } from '../ExtendedSourceItem';
 import type { FileCollection } from '../FileCollection';
 import { getNameInfo } from '../utilities/getNameInfo';
@@ -24,7 +22,7 @@ async function getExtendedSourceFromText(
   const blob = new Blob([await text], { type: 'text/plain' });
 
   return {
-    uuid: v4(),
+    uuid: crypto.randomUUID(),
     relativePath,
     name,
     lastModified: options.dateModified || Date.now(),

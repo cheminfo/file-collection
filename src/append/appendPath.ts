@@ -4,8 +4,6 @@ import { readdir, stat, readFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { Readable } from 'node:stream';
 
-import { v4 } from '@lukeed/uuid';
-
 import type { ExtendedSourceItem } from '../ExtendedSourceItem';
 import type { FileCollection } from '../FileCollection';
 
@@ -39,7 +37,7 @@ async function appendFiles(
     } else {
       const relativePath = `${base}/${entry}`;
       const source: ExtendedSourceItem = {
-        uuid: v4(),
+        uuid: crypto.randomUUID(),
         name: entry,
         baseURL: 'ium:/',
         size: info.size,

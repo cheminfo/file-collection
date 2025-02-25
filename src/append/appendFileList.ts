@@ -1,5 +1,3 @@
-import { v4 } from '@lukeed/uuid';
-
 import type { ExtendedSourceItem } from '../ExtendedSourceItem';
 import type { FileCollection } from '../FileCollection';
 
@@ -10,7 +8,7 @@ export async function appendFileList(
   const promises = [];
   for (const file of fileList) {
     const source: ExtendedSourceItem = {
-      uuid: v4(),
+      uuid: crypto.randomUUID(),
       name: file.name,
       size: file.size,
       baseURL: 'ium:/',
