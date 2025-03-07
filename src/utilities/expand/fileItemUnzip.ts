@@ -51,6 +51,7 @@ export async function fileItemUnzip(
 
   const fileItems: FileItem[] = [];
   for (const zipEntry of zipFileItems) {
+    zipEntry.parent = fileItem;
     zipEntry.relativePath = `${fileItem.relativePath}/${zipEntry.relativePath}`;
     zipEntry.sourceUUID = fileItem.sourceUUID;
     if (recursive) {

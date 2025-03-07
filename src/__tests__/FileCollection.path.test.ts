@@ -103,6 +103,38 @@ test('appendPath dataUngzip', async () => {
   expect(fileCollection.sources).toHaveLength(6);
   expect(fileCollection.files).toHaveLength(6);
 
+  expect(
+    fileCollection.files.map((file) => ({
+      relativePath: file.relativePath,
+      parentRelativePath: file.parent?.relativePath,
+    })),
+  ).toStrictEqual([
+    {
+      relativePath: 'dataUngzip/dir1/a.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUngzip/dir1/b.txt',
+      parentRelativePath: 'dataUngzip/dir1/b.txt.gz',
+    },
+    {
+      relativePath: 'dataUngzip/dir1/dir3/e.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUngzip/dir1/dir3/f.txt',
+      parentRelativePath: 'dataUngzip/dir1/dir3/f.txt.gz',
+    },
+    {
+      relativePath: 'dataUngzip/dir2/c.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUngzip/dir2/d.txt',
+      parentRelativePath: undefined,
+    },
+  ]);
+
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
@@ -139,6 +171,47 @@ test('appendPath dataUnzip with custom extension', async () => {
   await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(9);
+
+  expect(
+    fileCollection.files.map((file) => ({
+      relativePath: file.relativePath,
+      parentRelativePath: file.parent?.relativePath,
+    })),
+  ).toStrictEqual([
+    { relativePath: 'dataUnzip/data.zip', parentRelativePath: undefined },
+    {
+      relativePath: 'dataUnzip/dir1/a.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUnzip/dir1/b.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUnzip/dir1/dir3/e.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUnzip/dir1/dir3/f.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUnzip/dir2/c.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUnzip/dir2/d.txt',
+      parentRelativePath: undefined,
+    },
+    {
+      relativePath: 'dataUnzip/dir2/data.zipped/data/subDir1/c.txt',
+      parentRelativePath: 'dataUnzip/dir2/data.zipped',
+    },
+    {
+      relativePath: 'dataUnzip/dir2/data.zipped/data/subDir1/d.txt',
+      parentRelativePath: 'dataUnzip/dir2/data.zipped',
+    },
+  ]);
 
   const ium = await fileCollection.toIum();
 
