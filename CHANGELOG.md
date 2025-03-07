@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/cheminfo/file-collection/compare/v2.0.0...v3.0.0) (2025-03-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* ungzip create a relativePath that contains the .gz file and the name is appended
+
+### Features
+
+* ungzip create a relativePath that contains the .gz file and the name is appended ([6819ac9](https://github.com/cheminfo/file-collection/commit/6819ac93b2fd56912cd6c7d30432545257f8bc18))
+
 ## [2.0.0](https://github.com/cheminfo/file-collection/compare/v1.0.0...v2.0.0) (2025-03-07)
 
 
