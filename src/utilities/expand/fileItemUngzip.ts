@@ -42,7 +42,7 @@ export async function fileItemUngzip(
     parent: fileItem,
     name: fileItem.name.replace(/\.[^.]+$/, ''),
     size: fileItem.size,
-    relativePath: fileItem.relativePath.replace(/\.[^.]+$/, ''),
+    relativePath: `${fileItem.relativePath}/${fileItem.name.replace(/\.[^.]+$/, '')}`,
     lastModified: fileItem.lastModified,
     text: (): Promise<string> => {
       return fileItem.arrayBuffer().then((arrayBuffer) => {

@@ -114,7 +114,7 @@ test('appendPath dataUngzip', async () => {
       parentRelativePath: undefined,
     },
     {
-      relativePath: 'dataUngzip/dir1/b.txt',
+      relativePath: 'dataUngzip/dir1/b.txt.gz/b.txt',
       parentRelativePath: 'dataUngzip/dir1/b.txt.gz',
     },
     {
@@ -122,7 +122,7 @@ test('appendPath dataUngzip', async () => {
       parentRelativePath: undefined,
     },
     {
-      relativePath: 'dataUngzip/dir1/dir3/f.txt',
+      relativePath: 'dataUngzip/dir1/dir3/f.txt.gz/f.txt',
       parentRelativePath: 'dataUngzip/dir1/dir3/f.txt.gz',
     },
     {
@@ -134,7 +134,6 @@ test('appendPath dataUngzip', async () => {
       parentRelativePath: undefined,
     },
   ]);
-
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
@@ -155,9 +154,9 @@ test('appendPath dataUngzip', async () => {
   ]);
   expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
     '/dataUngzip/dir1/a.txt',
-    '/dataUngzip/dir1/b.txt',
+    '/dataUngzip/dir1/b.txt.gz/b.txt',
     '/dataUngzip/dir1/dir3/e.txt',
-    '/dataUngzip/dir1/dir3/f.txt',
+    '/dataUngzip/dir1/dir3/f.txt.gz/f.txt',
     '/dataUngzip/dir2/c.txt',
     '/dataUngzip/dir2/d.txt',
   ]);
@@ -259,5 +258,31 @@ test('appendPath data with keep dotfiles', async () => {
     '/data/dir3/a.MpT',
     '/data/dir3/a.mpr',
     '/data/dir3/a.mps',
+  ]);
+});
+
+test('appendPath data with keep duplicates', async () => {
+  const fileCollection = new FileCollection({});
+
+  await fileCollection.appendPath(join(__dirname, 'duplicates/'));
+  expect(fileCollection.sources).toHaveLength(3);
+  expect(fileCollection.files).toHaveLength(3);
+
+  expect(fileCollection.files.map((file) => file.relativePath)).toStrictEqual([
+    'duplicates/a.txt',
+    'duplicates/a.txt.gz/a.txt',
+    'duplicates/a.txt.zip/a.txt',
+  ]);
+
+  const ium = await fileCollection.toIum();
+
+  const newCollection = await FileCollection.fromIum(ium);
+  expect(newCollection.sources).toHaveLength(3);
+  expect(newCollection.files).toHaveLength(3);
+
+  expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
+    '/duplicates/a.txt',
+    '/duplicates/a.txt.gz/a.txt',
+    '/duplicates/a.txt.zip/a.txt',
   ]);
 });
