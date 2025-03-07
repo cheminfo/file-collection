@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.0.0](https://github.com/cheminfo/file-collection/compare/v1.0.0...v2.0.0) (2025-03-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove support of node 18 to use crypto.randomUUID
+* remove support of node 18 to use crypto.randomUUID
+
+### Features
+
+* add parent FileItem if item is decompressed ([3c60b18](https://github.com/cheminfo/file-collection/commit/3c60b188c4d2f4ebb02333ef3d85d430dfed736b))
+* remove support of node 18 to use crypto.randomUUID ([4006fe5](https://github.com/cheminfo/file-collection/commit/4006fe50e8224b49bd5e084864abb8e13275672f))
+* remove support of node 18 to use crypto.randomUUID ([4006fe5](https://github.com/cheminfo/file-collection/commit/4006fe50e8224b49bd5e084864abb8e13275672f))
+
+
+### Bug Fixes
+
+* remove @lukeed/uuid dependency and use crypto uuid generator ([d9baf96](https://github.com/cheminfo/file-collection/commit/d9baf96ebb3e8768f4f59ee192c8d70fd13d0dfe))
+
 ## [1.0.0](https://github.com/cheminfo/file-collection/compare/v0.2.0...v1.0.0) (2024-07-13)
 
 
