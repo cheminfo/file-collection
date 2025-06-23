@@ -11,6 +11,10 @@
   "keywords": [],
   "author": "Luc Patiny",
   "license": "MIT",
+  "files": [
+    "src",
+    "lib"
+  ],
   "scripts": {
     "build": "npm run tsc && cheminfo-build --entry lib/index.js --root FileCollection",
     "check-types": "tsc --noEmit",
