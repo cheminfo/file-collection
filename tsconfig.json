@@ -2,8 +2,7 @@
   "extends": "@zakodium/tsconfig",
   "compilerOptions": {
     "outDir": "lib",
-    "lib": ["DOM", "DOM.Iterable", "ES2023"],
-    "target": "es2022"
+    "lib": ["DOM", "DOM.Iterable", "ES2023"]
   },
   "include": ["src", "vite*.ts"]
 }
