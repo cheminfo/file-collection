@@ -6,7 +6,7 @@ export async function appendFileList(
   fileList: FileList,
 ) {
   const promises = [];
-  for (const file of Array.from(fileList)) {
+  for (const file of fileList) {
     const source: ExtendedSourceItem = {
       uuid: crypto.randomUUID(),
       name: file.name,
