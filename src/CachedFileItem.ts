@@ -1,4 +1,4 @@
-import type { FileItem } from './FileItem';
+import type { FileItem } from './FileItem.ts';
 
 export interface CacheOptions {
   /**

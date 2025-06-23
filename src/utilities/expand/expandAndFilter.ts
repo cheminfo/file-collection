@@ -1,9 +1,9 @@
-import type { FileItem } from '../../FileItem';
-import type { Options } from '../../Options';
-import { shouldAddItem } from '../shouldAddItem';
+import type { FileItem } from '../../FileItem.ts';
+import type { Options } from '../../Options.ts';
+import { shouldAddItem } from '../shouldAddItem.ts';
 
-import { fileItemUngzip } from './fileItemUngzip';
-import { fileItemUnzip } from './fileItemUnzip';
+import { fileItemUngzip } from './fileItemUngzip.ts';
+import { fileItemUnzip } from './fileItemUnzip.ts';
 
 /**
  * Utility function that allows to expand gzip and zip files without really expanding them

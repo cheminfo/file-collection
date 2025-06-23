@@ -4,8 +4,8 @@ import { readdir, stat, readFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { Readable } from 'node:stream';
 
-import type { ExtendedSourceItem } from '../ExtendedSourceItem';
-import type { FileCollection } from '../FileCollection';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import type { FileCollection } from '../FileCollection.ts';
 
 export async function appendPath(
   fileCollection: FileCollection,

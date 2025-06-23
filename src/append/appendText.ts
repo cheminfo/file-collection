@@ -1,6 +1,6 @@
-import type { ExtendedSourceItem } from '../ExtendedSourceItem';
-import type { FileCollection } from '../FileCollection';
-import { getNameInfo } from '../utilities/getNameInfo';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import type { FileCollection } from '../FileCollection.ts';
+import { getNameInfo } from '../utilities/getNameInfo.ts';
 
 export async function appendText(
   fileCollection: FileCollection,

@@ -1,8 +1,8 @@
-import type { FileCollection } from '../FileCollection';
-import type { Source } from '../Source';
-import { shouldAddItem } from '../utilities/shouldAddItem';
+import type { FileCollection } from '../FileCollection.ts';
+import type { Source } from '../Source.ts';
+import { shouldAddItem } from '../utilities/shouldAddItem.ts';
 
-import { sourceItemToExtendedSourceItem } from './sourceItemToExtendedSourceItem';
+import { sourceItemToExtendedSourceItem } from './sourceItemToExtendedSourceItem.ts';
 
 export async function appendSource(
   fileCollection: FileCollection,

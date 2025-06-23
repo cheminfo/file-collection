@@ -1,5 +1,5 @@
-import type { ExtendedSourceItem } from '../ExtendedSourceItem';
-import type { SourceItem } from '../SourceItem';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import type { SourceItem } from '../SourceItem.ts';
 
 export function sourceItemToExtendedSourceItem(
   entry: SourceItem,

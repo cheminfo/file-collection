@@ -1,9 +1,9 @@
 import { ungzip } from 'pako';
 
-import type { FileItem } from '../../FileItem';
-import type { Options } from '../../Options';
+import type { FileItem } from '../../FileItem.ts';
+import type { Options } from '../../Options.ts';
 
-import { ungzipStream } from './ungzipStream';
+import { ungzipStream } from './ungzipStream.ts';
 
 /**
  * Some files in the fileItems may actually be gzip. This method will ungzip those files.

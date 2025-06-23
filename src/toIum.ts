@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 
-import type { FileCollection } from './FileCollection';
-import type { SourceItem } from './SourceItem';
+import type { FileCollection } from './FileCollection.ts';
+import type { SourceItem } from './SourceItem.ts';
 
 export interface ToIumOptions {
   /**

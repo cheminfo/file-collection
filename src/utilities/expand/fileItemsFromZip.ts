@@ -1,8 +1,8 @@
 import JSZip from 'jszip';
 
-import type { FileItem } from '../../FileItem';
-import type { Options } from '../../Options';
-import { shouldAddItem } from '../shouldAddItem';
+import type { FileItem } from '../../FileItem.ts';
+import type { Options } from '../../Options.ts';
+import { shouldAddItem } from '../shouldAddItem.ts';
 
 export type ZipFileContent = Parameters<typeof JSZip.loadAsync>[0];
 
@@ -14,8 +14,7 @@ export async function fileItemsFromZip(
   const jsZip = new JSZip();
   const zip = await jsZip.loadAsync(zipContent);
   const fileItems: FileItem[] = [];
-  for (const key in zip.files) {
-    const entry = zip.files[key];
+  for (const entry of Object.values(zip.files)) {
     if (entry.dir) continue;
     if (!shouldAddItem(entry.name, options.filter)) continue;
     const item = {

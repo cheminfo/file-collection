@@ -2,13 +2,10 @@
   "name": "file-collection",
   "version": "3.0.0",
   "description": "Library to manage large amount of files coming from different sources",
-  "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
-  "types": "./lib/index.d.ts",
+  "type": "module",
+  "exports": "./lib/index.js",
   "browser": {
-    "./lib-esm/utilities/expand/ungzipStream.js": "./lib-esm/utilities/expand/ungzipStream.browser.js",
     "./lib/utilities/expand/ungzipStream.js": "./lib/utilities/expand/ungzipStream.browser.js",
-    "./lib-esm/append/appendPath.js": "./lib-esm/append/appendPath.browser.js",
     "./lib/append/appendPath.js": "./lib/append/appendPath.browser.js"
   },
   "keywords": [],
@@ -16,23 +13,21 @@
   "license": "MIT",
   "files": [
     "src",
-    "lib",
-    "lib-esm"
+    "lib"
   ],
   "scripts": {
-    "build": "npm run tsc-esm && cheminfo-build --entry lib-esm/index.js --root FileCollection",
+    "build": "npm run tsc && cheminfo-build --entry lib/index.js --root FileCollection",
     "check-types": "tsc --noEmit",
-    "clean": "rimraf lib lib-esm",
-    "eslint": "eslint src --cache",
-    "eslint-fix": "npm run eslint -- --fix",
+    "clean": "rimraf lib",
+    "eslint": "eslint --cache .",
+    "eslint-fix": "eslint --cache --fix .",
     "prepack": "npm run tsc",
-    "prettier": "prettier --check src",
-    "prettier-write": "prettier --write src",
+    "prettier": "prettier --check .",
+    "prettier-write": "prettier --write .",
     "test": "npm run test-only && npm run eslint && npm run prettier && npm run check-types",
-    "test-only": "vitest --coverage",
-    "tsc": "npm run clean && npm run tsc-cjs && npm run tsc-esm",
-    "tsc-cjs": "tsc --project tsconfig.cjs.json",
-    "tsc-esm": "tsc --project tsconfig.esm.json"
+    "test-only": "vitest --run --coverage",
+    "tsc": "npm run clean && npm run tsc-build",
+    "tsc-build": "tsc --project tsconfig.build.json"
   },
   "repository": {
     "type": "git",
@@ -48,6 +43,7 @@
     "@types/node": "^22.13.9",
     "@types/pako": "^2.0.3",
     "@vitest/coverage-v8": "^3.0.8",
+    "@zakodium/tsconfig": "^1.0.2",
     "cheminfo-build": "^1.2.1",
     "eslint": "^9.21.0",
     "eslint-config-cheminfo-typescript": "^17.0.0",
@@ -55,7 +51,7 @@
     "msw": "^2.7.3",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "vitest": "^3.0.8"
   },
   "dependencies": {

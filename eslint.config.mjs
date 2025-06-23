@@ -1,7 +1,9 @@
+import { defineConfig, globalIgnores } from 'eslint/config';
 import cheminfo from 'eslint-config-cheminfo-typescript';
 
-export default [
-  ...cheminfo,
+export default defineConfig(
+  globalIgnores(['coverage', 'lib', 'dist', 'html']),
+  cheminfo,
   {
     languageOptions: {},
     rules: {
@@ -18,4 +20,4 @@ export default [
       ],
     },
   },
-];
+);

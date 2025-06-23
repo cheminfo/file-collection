@@ -1,12 +1,12 @@
-import type { ExtendedSourceItem } from '../ExtendedSourceItem';
-import type { FileCollection } from '../FileCollection';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import type { FileCollection } from '../FileCollection.ts';
 
 export async function appendFileList(
   fileCollection: FileCollection,
   fileList: FileList,
 ) {
   const promises = [];
-  for (const file of fileList) {
+  for (const file of Array.from(fileList)) {
     const source: ExtendedSourceItem = {
       uuid: crypto.randomUUID(),
       name: file.name,
