@@ -1,47 +1,63 @@
-import JSZip from 'jszip';
+import {
+  BlobReader,
+  TextWriter,
+  ZipReader,
+  Uint8ArrayWriter,
+} from '@zip.js/zip.js';
 
 import type { FileItem } from '../../FileItem.ts';
 import type { Options } from '../../Options.ts';
 import { shouldAddItem } from '../shouldAddItem.ts';
 
-export type ZipFileContent = Parameters<typeof JSZip.loadAsync>[0];
-
+/**
+ * Extracts file items from a zip file buffer.
+ * @param buffer - The zip file as ArrayBuffer.
+ * @param sourceUUID - The UUID of the source from which the zip file was created.
+ * @param options - Options to filter the files.
+ * @returns A promise that resolves to an array of file items.
+ */
 export async function fileItemsFromZip(
-  zipContent: ZipFileContent,
+  buffer: ArrayBuffer,
   sourceUUID: string,
   options: Options = {},
 ) {
-  const jsZip = new JSZip();
-  const zip = await jsZip.loadAsync(zipContent);
+  const zipReader = new ZipReader(new BlobReader(new Blob([buffer])));
+
   const fileItems: FileItem[] = [];
-  for (const entry of Object.values(zip.files)) {
-    if (entry.dir) continue;
-    if (!shouldAddItem(entry.name, options.filter)) continue;
-    const item = {
-      name: entry.name.replace(/^.*\//, ''),
+  for await (const entry of zipReader.getEntriesGenerator()) {
+    if (entry.directory) continue;
+    if (!shouldAddItem(entry.filename, options.filter)) continue;
+    const getData = entry.getData?.bind(entry);
+    if (!getData) continue;
+
+    fileItems.push({
+      name: entry.filename.replace(/^.*\//, ''),
       sourceUUID,
-      relativePath: entry.name,
-      lastModified: entry.date.getTime(),
-      // @ts-expect-error _data is not exposed because missing for folder   but it is really there
-      size: entry._data.uncompressedSize,
+      relativePath: entry.filename,
+      lastModified: entry.lastModDate.getTime(),
+      size: entry.uncompressedSize,
       text: () => {
-        return entry.async('text');
+        return getData(new TextWriter());
       },
-      arrayBuffer: () => {
-        return entry.async('arraybuffer');
+      arrayBuffer: async () => {
+        const stream = new TransformStream();
+        const buffer = new Response(stream.readable).arrayBuffer();
+
+        await getData(stream.writable);
+
+        return await buffer;
       },
       stream: () => {
         return new ReadableStream({
           start(controller) {
-            void entry.async('arraybuffer').then((arrayBuffer) => {
-              controller.enqueue(arrayBuffer);
+            void getData(new Uint8ArrayWriter()).then((buffer) => {
+              controller.enqueue(buffer);
               controller.close();
             });
           },
         });
       },
-    };
-    fileItems.push(item);
+    });
   }
   return fileItems;
 }
