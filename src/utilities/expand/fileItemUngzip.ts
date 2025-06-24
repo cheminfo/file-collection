@@ -24,11 +24,9 @@ export async function fileItemUngzip(
   }
 
   if (!(await isGzip(fileItem))) {
-    if (logger) {
-      logger.info(
-        `Could not ungzip the following file: ${fileItem.relativePath}`,
-      );
-    }
+    logger?.info(
+      `Could not ungzip the following file: ${fileItem.relativePath}`,
+    );
     return fileItem;
   }
 
@@ -39,7 +37,7 @@ export async function fileItemUngzip(
     size: fileItem.size,
     relativePath: `${fileItem.relativePath}/${fileItem.name.replace(/\.[^.]+$/, '')}`,
     lastModified: fileItem.lastModified,
-    text: async (): Promise<string> => {
+    text: (): Promise<string> => {
       const stream = toUngzip(fileItem);
 
       // Simplest way to convert a stream to text
