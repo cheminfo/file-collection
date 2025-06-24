@@ -50,22 +50,14 @@ describe('fileItemUngzip.ts', () => {
   test('ungzip gzip stream should be equal to original payload', async () => {
     const ungziped = await fileItemUngzip(gzipFile);
 
-    const fileStreamReader = ungziped.stream().getReader();
-    const ungzipedStreamReader = file.stream().getReader();
-
     const fileChunks: Uint8Array[] = [];
-    while (true) {
-      // eslint-disable-next-line no-await-in-loop
-      const { done, value } = await fileStreamReader.read();
-      if (done) break;
-      fileChunks.push(value);
+    for await (const chunk of file.stream()) {
+      fileChunks.push(chunk);
     }
+
     const ungzippedChunks: Uint8Array[] = [];
-    while (true) {
-      // eslint-disable-next-line no-await-in-loop
-      const { done, value } = await ungzipedStreamReader.read();
-      if (done) break;
-      ungzippedChunks.push(value);
+    for await (const chunk of ungziped.stream()) {
+      ungzippedChunks.push(chunk);
     }
 
     const flatFileChunks = fileChunks.flatMap((v) => Array.from(v));
