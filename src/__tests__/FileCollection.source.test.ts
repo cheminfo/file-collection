@@ -12,9 +12,10 @@ import {
   describe,
   expect,
   test,
+  assert,
 } from 'vitest';
 
-import { FileCollection } from '../FileCollection';
+import { FileCollection } from '../FileCollection.ts';
 
 let fileRequestedCounter = 0;
 const server = setupServer(
@@ -69,12 +70,19 @@ describe('fileCollectionFromWebSource', () => {
     const fileCollection = new FileCollection();
     await fileCollection.appendSource(source);
     expect(fileCollection.files).toHaveLength(2);
-    const first = await fileCollection.files[0].text();
+
+    const firstFile = fileCollection.files[0];
+    const secondFile = fileCollection.files[1];
+    assert(firstFile);
+    assert(secondFile);
+
+    const first = await firstFile.text();
     expect(first).toBe('a');
-    await fileCollection.files[0].text();
+    await firstFile.text();
+
     // no cache it is reloaded a second time
     expect(fileRequestedCounter).toBe(2);
-    const second = await fileCollection.files[1].arrayBuffer();
+    const second = await secondFile.arrayBuffer();
     expect(Array.from(Buffer.from(second))).toStrictEqual([98]);
   });
 
@@ -113,9 +121,14 @@ describe('fileCollectionFromWebSource', () => {
     const fileCollection = new FileCollection();
     await fileCollection.appendSource(source);
 
-    const first = await fileCollection.files[0].text();
+    const firstFile = fileCollection.files[0];
+    const secondFile = fileCollection.files[1];
+    assert(firstFile);
+    assert(secondFile);
+
+    const first = await firstFile.text();
     expect(first).toBe('a');
-    const second = await fileCollection.files[1].text();
+    const second = await secondFile.text();
     expect(second).toBe('b');
 
     // @ts-expect-error need to remove it for the next test
@@ -139,9 +152,13 @@ describe('fileCollectionFromWebSource', () => {
     await fileCollection.appendSource(source);
 
     expect(fileCollection.files).toHaveLength(2);
-    const first = await fileCollection.files[0].text();
+
+    const file = fileCollection.files[0];
+    assert(file);
+
+    const first = await file.text();
     expect(first).toBe('a');
-    await fileCollection.files[0].text();
+    await file.text();
     // cached it is loaded only once
     expect(fileRequestedCounter).toBe(1);
   });
@@ -159,11 +176,13 @@ describe('fileCollectionFromWebSource', () => {
     const fileCollection = new FileCollection({ cache: true });
     await fileCollection.appendSource(source);
     expect(fileCollection.files).toHaveLength(1);
-    const first = await fileCollection.files[0].arrayBuffer();
+    const file = fileCollection.files[0];
+    assert(file);
+    const first = await file.arrayBuffer();
     const array = Array.from(Buffer.from(first));
     expect(array[0]).toBe(97);
     // cached it is loaded only once and we convert the arrayBuffer to text
-    const text = await fileCollection.files[0].text();
+    const text = await file.text();
     expect(text).toBe('a');
     expect(fileRequestedCounter).toBe(1);
   });
@@ -203,11 +222,18 @@ describe('fileCollectionFromWebSource', () => {
     );
 
     expect(fileCollection.files).toHaveLength(15);
-    const first = await fileCollection.files[0].text();
+    const firstFile = fileCollection.files[0];
+    const secondFile = fileCollection.files[1];
+    const lastFile = fileCollection.files[14];
+    assert(firstFile);
+    assert(secondFile);
+    assert(lastFile);
+
+    const first = await firstFile.text();
     expect(first).toBe('c');
-    const second = await fileCollection.files[1].arrayBuffer();
+    const second = await secondFile.arrayBuffer();
     expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
-    const third = await fileCollection.files[14].arrayBuffer();
+    const third = await lastFile.arrayBuffer();
     expect(Array.from(Buffer.from(third))).toHaveLength(580);
   });
 
@@ -229,11 +255,18 @@ describe('fileCollectionFromWebSource', () => {
     );
 
     expect(fileCollection.files).toHaveLength(15);
-    const first = await fileCollection.files[0].text();
+    const firstFile = fileCollection.files[0];
+    const secondFile = fileCollection.files[1];
+    const lastFile = fileCollection.files[14];
+    assert(firstFile);
+    assert(secondFile);
+    assert(lastFile);
+
+    const first = await firstFile.text();
     expect(first).toBe('c');
-    const second = await fileCollection.files[1].arrayBuffer();
+    const second = await secondFile.arrayBuffer();
     expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
-    const third = await fileCollection.files[14].arrayBuffer();
+    const third = await lastFile.arrayBuffer();
     expect(Array.from(Buffer.from(third))).toHaveLength(580);
   });
 });

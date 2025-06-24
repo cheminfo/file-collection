@@ -1,8 +1,8 @@
 import JSZip from 'jszip';
 
-import { FileCollection } from './FileCollection';
-import type { ZipFileContent } from './ZipFileContent';
-import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem';
+import { FileCollection } from './FileCollection.ts';
+import type { ZipFileContent } from './ZipFileContent.ts';
+import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
 
 export async function fromIum(
   zipContent: ZipFileContent,

@@ -1,9 +1,9 @@
-import type { FileItem } from '../../FileItem';
-import type { Options } from '../../Options';
-import { shouldAddItem } from '../shouldAddItem';
+import type { FileItem } from '../../FileItem.ts';
+import type { Options } from '../../Options.ts';
+import { shouldAddItem } from '../shouldAddItem.ts';
 
-import { expandAndFilter } from './expandAndFilter';
-import { fileItemsFromZip } from './fileItemsFromZip';
+import { expandAndFilter } from './expandAndFilter.ts';
+import { fileItemsFromZip } from './fileItemsFromZip.ts';
 
 /**
  * Some files in the fileItems may actually be zip. This method will unzip those files.

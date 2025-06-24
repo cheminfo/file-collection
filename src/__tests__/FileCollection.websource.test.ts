@@ -1,7 +1,7 @@
-import { expect, test } from 'vitest';
+import { assert, expect, test } from 'vitest';
 
-import { FileCollection } from '../FileCollection';
-import type { FileItem } from '../FileItem';
+import { FileCollection } from '../FileCollection.ts';
+import type { FileItem } from '../FileItem.ts';
 
 test('webSourceURL and save with data', async () => {
   const url = 'https://image-js.github.io/image-dataset-demo/biology/';
@@ -25,7 +25,9 @@ test('webSourceURL and save with data', async () => {
 
   const fileCollection2 = await FileCollection.fromIum(ium);
   expect(fileCollection2.files.length).toBeGreaterThan(2);
-  const first2 = await fileCollection2.files[0].arrayBuffer();
+  const file = fileCollection2.files[0];
+  assert(file);
+  const first2 = await file.arrayBuffer();
   expect(Array.from(Buffer.from(first2)).slice(0, 4)).toStrictEqual([
     137,
     80,
@@ -56,7 +58,9 @@ test('webSourceURL and save original link', async () => {
 
   const fileCollection2 = await FileCollection.fromIum(ium);
   expect(fileCollection2.files.length).toBeGreaterThan(2);
-  const first2 = await fileCollection2.files[0].arrayBuffer();
+  const file = fileCollection2.files[0];
+  assert(file);
+  const first2 = await file.arrayBuffer();
   expect(Array.from(Buffer.from(first2)).slice(0, 4)).toStrictEqual([
     137,
     80,

@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { FileCollection } from '../FileCollection';
+import { FileCollection } from '../FileCollection.ts';
 
 test('FileCollection get set', async () => {
   const fileCollection = new FileCollection();

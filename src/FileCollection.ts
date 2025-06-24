@@ -1,22 +1,22 @@
-import { CachedFileItem } from './CachedFileItem';
-import type { ExtendedSourceItem } from './ExtendedSourceItem';
-import type { FileItem } from './FileItem';
-import type { FilterOptions, Options } from './Options';
-import type { Source } from './Source';
-import type { ZipFileContent } from './ZipFileContent';
-import { appendArrayBuffer } from './append/appendArrayBuffer';
-import { appendFileList } from './append/appendFileList';
-import { appendPath } from './append/appendPath';
-import { appendSource } from './append/appendSource';
-import { appendText } from './append/appendText';
-import { appendWebSource } from './append/appendWebSource';
-import { fromIum } from './fromIum';
-import type { ToIumOptions } from './toIum';
-import { toIum } from './toIum';
-import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile';
-import { expandAndFilter } from './utilities/expand/expandAndFilter';
-import { getNameInfo } from './utilities/getNameInfo';
-import { shouldAddItem } from './utilities/shouldAddItem';
+import { CachedFileItem } from './CachedFileItem.ts';
+import type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
+import type { FileItem } from './FileItem.ts';
+import type { FilterOptions, Options } from './Options.ts';
+import type { Source } from './Source.ts';
+import type { ZipFileContent } from './ZipFileContent.ts';
+import { appendArrayBuffer } from './append/appendArrayBuffer.ts';
+import { appendFileList } from './append/appendFileList.ts';
+import { appendPath } from './append/appendPath.ts';
+import { appendSource } from './append/appendSource.ts';
+import { appendText } from './append/appendText.ts';
+import { appendWebSource } from './append/appendWebSource.ts';
+import { fromIum } from './fromIum.ts';
+import type { ToIumOptions } from './toIum.ts';
+import { toIum } from './toIum.ts';
+import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile.ts';
+import { expandAndFilter } from './utilities/expand/expandAndFilter.ts';
+import { getNameInfo } from './utilities/getNameInfo.ts';
+import { shouldAddItem } from './utilities/shouldAddItem.ts';
 
 export class FileCollection {
   readonly files: FileItem[];
@@ -79,7 +79,8 @@ export class FileCollection {
     const index = this.files.findIndex((f) => f.relativePath === relativePath);
     let removedFile;
     if (index !== -1) {
-      const sourceUUID = this.files[index].sourceUUID;
+      const file = this.files[index];
+      const sourceUUID = file?.sourceUUID;
       removedFile = this.files.splice(index, 1)[0];
       // any other files with the same sourceUUID?
       if (this.files.some((f) => f.sourceUUID === sourceUUID)) return;

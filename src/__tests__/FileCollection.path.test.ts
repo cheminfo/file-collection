@@ -1,8 +1,8 @@
 import { join } from 'node:path';
 
-import { test, expect } from 'vitest';
+import { test, expect, assert } from 'vitest';
 
-import { FileCollection } from '../FileCollection';
+import { FileCollection } from '../FileCollection.ts';
 
 test('appendPath data folder', async () => {
   const fileCollection = new FileCollection();
@@ -13,7 +13,9 @@ test('appendPath data folder', async () => {
 
   const newCollection = [...(await FileCollection.fromIum(ium))];
   expect(newCollection).toHaveLength(9);
-  const text = await newCollection[0].text();
+  const firstFile = newCollection[0];
+  assert(firstFile);
+  const text = await firstFile.text();
   expect(text).toStrictEqual('a');
 });
 
@@ -68,7 +70,9 @@ test('appendPath dataUnzip', async () => {
   const newCollection = await FileCollection.fromIum(ium);
   expect(newCollection.sources).toHaveLength(8);
   expect(newCollection.files).toHaveLength(15);
-  const text = await newCollection.files[0].text();
+  const firstFile = newCollection.files[0];
+  assert(firstFile);
+  const text = await firstFile.text();
   expect(text).toStrictEqual('c');
 
   const sourceUUIDs = fileCollection.files
@@ -89,9 +93,9 @@ test('appendPath dataUnzip no unzip', async () => {
   const newCollection = await FileCollection.fromIum(ium);
   expect(newCollection.sources).toHaveLength(8);
   expect(newCollection.files).toHaveLength(8);
-  const array = new Uint8Array(
-    await newCollection.files[0].arrayBuffer(),
-  ).slice(0, 2);
+  const firstFile = newCollection.files[0];
+  assert(firstFile);
+  const array = new Uint8Array(await firstFile.arrayBuffer()).slice(0, 2);
 
   expect(array).toStrictEqual(new Uint8Array([80, 75])); // PK
 });
@@ -139,7 +143,9 @@ test('appendPath dataUngzip', async () => {
   const newCollection = await FileCollection.fromIum(ium);
   expect(newCollection.sources).toHaveLength(6);
   expect(newCollection.files).toHaveLength(6);
-  const text = await newCollection.files[0].text();
+  const firstFile = newCollection.files[0];
+  assert(firstFile);
+  const text = await firstFile.text();
   expect(text).toStrictEqual('a');
 
   expect(

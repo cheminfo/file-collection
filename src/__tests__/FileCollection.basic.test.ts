@@ -1,6 +1,6 @@
-import { test, expect } from 'vitest';
+import { test, expect, assert } from 'vitest';
 
-import { FileCollection } from '../FileCollection';
+import { FileCollection } from '../FileCollection.ts';
 
 test('FileCollection basic ium tests', async () => {
   const fileCollection = new FileCollection();
@@ -18,6 +18,8 @@ test('FileCollection basic ium tests', async () => {
       baseURL: 'ium:/',
     },
   ]);
-  const text = await newCollection[0].text();
+  const firstFile = newCollection[0];
+  assert(firstFile);
+  const text = await firstFile.text();
   expect(text).toStrictEqual('Hello word');
 });

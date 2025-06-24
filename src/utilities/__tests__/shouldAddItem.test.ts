@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 
-import { shouldAddItem } from '../shouldAddItem';
+import { shouldAddItem } from '../shouldAddItem.ts';
 
 test('shouldAddItem', async () => {
   expect(shouldAddItem('a.txt')).toBe(true);

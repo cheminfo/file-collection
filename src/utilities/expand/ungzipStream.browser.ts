@@ -1,6 +1,6 @@
 import { ungzip } from 'pako';
 
-import type { FileItem } from '../../FileItem';
+import type { FileItem } from '../../FileItem.ts';
 
 export function ungzipStream(file: FileItem) {
   return new ReadableStream({

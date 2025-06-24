@@ -1,7 +1,7 @@
-import type { FileCollection } from '../FileCollection';
-import type { Source } from '../Source';
+import type { FileCollection } from '../FileCollection.ts';
+import type { Source } from '../Source.ts';
 
-import { appendSource } from './appendSource';
+import { appendSource } from './appendSource.ts';
 
 export async function appendWebSource(
   fileCollection: FileCollection,
