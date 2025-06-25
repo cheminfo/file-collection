@@ -36,7 +36,11 @@ export async function toIum(
     sources.push(newSource);
     if (includeData || source.baseURL === 'ium:/') {
       newSource.baseURL = 'ium:/';
-      const url = new URL(`data/${source.relativePath}`, newSource.baseURL);
+      const url = new URL(
+        // ensure the path is relative and does not start with a slash
+        `data/${source.relativePath.replace(/^\/+/, '')}`,
+        newSource.baseURL,
+      );
       promises.push(
         zipWriter.add(url.pathname, source.stream()).then(() => void 0),
       );

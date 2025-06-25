@@ -54,7 +54,6 @@
   },
   "dependencies": {
     "@zip.js/zip.js": "^2.7.62",
-    "cheminfo-types": "^1.8.1",
-    "jszip": "^3.10.1"
+    "cheminfo-types": "^1.8.1"
   }
 }
