@@ -30,11 +30,25 @@ export function sourceItemToExtendedSourceItem(
       const response = await fetch(fileURL.toString());
       return response.arrayBuffer();
     },
-    // @ts-expect-error Should contain stream
-    stream: async (): Promise<ArrayBuffer> => {
-      const response = await fetch(fileURL.toString());
-      //@ts-expect-error Should contain stream
-      return response.stream();
+    stream: () => {
+      const stream = new TransformStream<Uint8Array, Uint8Array>();
+
+      async function pipeFetchToStream() {
+        try {
+          const response = await fetch(fileURL.toString());
+          const body = response.body;
+          if (!body) {
+            throw new Error('Did not receive a body from the response');
+          }
+          await body.pipeTo(stream.writable);
+        } catch (error: unknown) {
+          await stream.readable.cancel(error);
+          await stream.writable.abort(error);
+        }
+      }
+      void pipeFetchToStream();
+
+      return stream.readable;
     },
   };
   return source;
