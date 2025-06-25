@@ -3,6 +3,7 @@ import {
   Uint8ArrayReader,
   TextWriter,
   Uint8ArrayWriter,
+  BlobReader,
 } from '@zip.js/zip.js';
 import type { Entry } from '@zip.js/zip.js';
 
@@ -10,10 +11,15 @@ import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
 
+/**
+ * Creates a FileCollection from an IUM zip file.
+ * @param zipContent - The content of the IUM zip file, which can be a Uint8Array, ArrayBuffer, Blob, or ReadableStream.
+ * @returns A Promise that resolves to a FileCollection containing the data from the IUM file.
+ */
 export async function fromIum(
   zipContent: ZipFileContent,
 ): Promise<FileCollection> {
-  const zipReader = new ZipReader(new Uint8ArrayReader(zipContent));
+  const zipReader = new ZipReader(getZipContentReader(zipContent));
   const zipFiles = new Map<string, Entry>();
   for await (const entry of zipReader.getEntriesGenerator()) {
     zipFiles.set(entry.filename, entry);
@@ -63,4 +69,20 @@ async function appendEntry(
   await fileCollection.appendArrayBuffer(url.pathname, buffer, {
     dateModified: entry.lastModDate.getTime(),
   });
+}
+
+function getZipContentReader(
+  zipContent: ZipFileContent,
+): ConstructorParameters<typeof ZipReader>[0] {
+  if (zipContent instanceof Uint8Array) {
+    return new Uint8ArrayReader(zipContent);
+  } else if (zipContent instanceof ArrayBuffer) {
+    return new Uint8ArrayReader(new Uint8Array(zipContent));
+  } else if (zipContent instanceof Blob) {
+    return new BlobReader(zipContent);
+  } else if (zipContent instanceof ReadableStream) {
+    return zipContent;
+  }
+
+  throw new Error('Unsupported zip content type');
 }
