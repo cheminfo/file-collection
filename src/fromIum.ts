@@ -4,7 +4,6 @@ import {
   TextWriter,
   Uint8ArrayWriter,
   BlobReader,
-  TextReader,
 } from '@zip.js/zip.js';
 import type { Entry } from '@zip.js/zip.js';
 
