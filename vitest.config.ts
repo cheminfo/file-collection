@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       include: ['src/**'],
+      exclude: ['**/*.browser.ts'],
     },
   },
 });
