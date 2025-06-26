@@ -8,7 +8,7 @@ import {
 import { expect, test, describe } from 'vitest';
 
 import { FileCollection } from '../FileCollection.js';
-import { encode } from '../base64.js';
+import { UNSUPPORTED_ZIP_CONTENT_ERROR } from '../fromIum.js';
 
 describe('invalid ium file', () => {
   test('missing index.json', async () => {
@@ -74,15 +74,9 @@ describe('check input types', async () => {
     await expect(FileCollection.fromIum(stream)).resolves.not.toThrow();
   });
 
-  test('string', async () => {
-    const bufferStr = await encode(ium);
-
-    await expect(FileCollection.fromIum(bufferStr)).resolves.not.toThrow();
-  });
-
   test('unknown', async () => {
     await expect(FileCollection.fromIum(null as never)).rejects.toThrow(
-      'Unsupported zip content type, if you passed a Node.js Stream convert it to Web Stream',
+      UNSUPPORTED_ZIP_CONTENT_ERROR,
     );
   });
 });

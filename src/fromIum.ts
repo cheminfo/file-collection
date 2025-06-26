@@ -10,7 +10,6 @@ import type { Entry } from '@zip.js/zip.js';
 import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
-import { decode } from './base64.js';
 
 /**
  * Creates a FileCollection from an IUM zip file.
@@ -72,6 +71,9 @@ async function appendEntry(
   });
 }
 
+export const UNSUPPORTED_ZIP_CONTENT_ERROR = `Unsupported zip content type.
+If you passed a Node.js Stream convert it to Web Stream.
+If you passed a (binary) string, decode it to Uint8Array.`;
 async function getZipContentReader(
   zipContent: ZipFileContent,
 ): Promise<ConstructorParameters<typeof ZipReader>[0]> {
@@ -83,11 +85,7 @@ async function getZipContentReader(
     return new BlobReader(zipContent);
   } else if (zipContent instanceof ReadableStream) {
     return zipContent;
-  } else if (typeof zipContent === 'string') {
-    return new Uint8ArrayReader(await decode(zipContent));
   }
 
-  throw new Error(
-    'Unsupported zip content type, if you passed a Node.js Stream convert it to Web Stream',
-  );
+  throw new Error(UNSUPPORTED_ZIP_CONTENT_ERROR);
 }
