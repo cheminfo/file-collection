@@ -31,24 +31,28 @@ export function sourceItemToExtendedSourceItem(
       return response.arrayBuffer();
     },
     stream: () => {
-      const stream = new TransformStream<Uint8Array, Uint8Array>();
+      const { writable, readable } = new TransformStream<
+        Uint8Array,
+        Uint8Array
+      >();
 
-      async function pipeFetchToStream() {
-        try {
-          const response = await fetch(fileURL.toString());
-          const body = response.body;
-          if (!body) {
-            throw new Error('Did not receive a body from the response');
-          }
-          await body.pipeTo(stream.writable);
-        } catch (error: unknown) {
-          await stream.readable.cancel(error);
-          await stream.writable.abort(error);
-        }
+      async function propagateErrorToStream(error: unknown) {
+        await Promise.allSettled([
+          writable.abort(error),
+          readable.cancel(error),
+        ]);
       }
-      void pipeFetchToStream();
+      async function pipeFetchToStream() {
+        const response = await fetch(fileURL.toString());
+        const body = response.body;
+        if (!body) {
+          throw new Error('Did not receive a body from the response');
+        }
+        await body.pipeTo(writable);
+      }
+      void pipeFetchToStream().catch(propagateErrorToStream);
 
-      return stream.readable;
+      return readable;
     },
   };
   return source;

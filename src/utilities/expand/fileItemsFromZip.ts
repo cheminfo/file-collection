@@ -1,9 +1,4 @@
-import {
-  BlobReader,
-  TextWriter,
-  ZipReader,
-  Uint8ArrayWriter,
-} from '@zip.js/zip.js';
+import { TextWriter, Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
 
 import type { FileItem } from '../../FileItem.ts';
 import type { Options } from '../../Options.ts';
@@ -21,7 +16,7 @@ export async function fileItemsFromZip(
   sourceUUID: string,
   options: Options = {},
 ) {
-  const zipReader = new ZipReader(new BlobReader(new Blob([buffer])));
+  const zipReader = new ZipReader(new Uint8ArrayReader(new Uint8Array(buffer)));
 
   const fileItems: FileItem[] = [];
   for await (const entry of zipReader.getEntriesGenerator()) {
@@ -48,14 +43,20 @@ export async function fileItemsFromZip(
         return await buffer;
       },
       stream: () => {
-        return new ReadableStream({
-          start(controller) {
-            void getData(new Uint8ArrayWriter()).then((buffer) => {
-              controller.enqueue(buffer);
-              controller.close();
-            });
-          },
-        });
+        const { writable, readable } = new TransformStream<
+          Uint8Array,
+          Uint8Array
+        >();
+
+        async function propagateErrorToStream(error: unknown) {
+          await Promise.allSettled([
+            writable.abort(error),
+            readable.cancel(error),
+          ]);
+        }
+        void getData(writable).catch(propagateErrorToStream);
+
+        return readable;
       },
     });
   }
