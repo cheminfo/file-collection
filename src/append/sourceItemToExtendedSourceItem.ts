@@ -1,6 +1,7 @@
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { SourceItem } from '../SourceItem.ts';
 
+// eslint-disable-next-line jsdoc/require-jsdoc
 export function sourceItemToExtendedSourceItem(
   entry: SourceItem,
   alternativeBaseURL: string | undefined,
@@ -36,21 +37,16 @@ export function sourceItemToExtendedSourceItem(
         Uint8Array
       >();
 
-      /* v8 ignore start */
       async function propagateErrorToStream(error: unknown) {
         await Promise.allSettled([
           writable.abort(error),
           readable.cancel(error),
         ]);
       }
-      /* v8 ignore end */
       async function pipeFetchToStream() {
         const response = await fetch(fileURL.toString());
-        const body = response.body;
-        /* v8 ignore next 3 */
-        if (!body) {
-          throw new Error('Did not receive a body from the response');
-        }
+        // Should not be null
+        const body = response.body as ReadableStream<Uint8Array>;
         await body.pipeTo(writable);
       }
       void pipeFetchToStream().catch(propagateErrorToStream);
