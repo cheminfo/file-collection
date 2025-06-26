@@ -48,12 +48,15 @@ export async function fileItemsFromZip(
           Uint8Array
         >();
 
+        /* v8 ignore start */
+        // getData and writable are local, there is no easy way to force an error
         async function propagateErrorToStream(error: unknown) {
           await Promise.allSettled([
             writable.abort(error),
             readable.cancel(error),
           ]);
         }
+        /* v8 ignore end */
         void getData(writable).catch(propagateErrorToStream);
 
         return readable;

@@ -36,15 +36,18 @@ export function sourceItemToExtendedSourceItem(
         Uint8Array
       >();
 
+      /* v8 ignore start */
       async function propagateErrorToStream(error: unknown) {
         await Promise.allSettled([
           writable.abort(error),
           readable.cancel(error),
         ]);
       }
+      /* v8 ignore end */
       async function pipeFetchToStream() {
         const response = await fetch(fileURL.toString());
         const body = response.body;
+        /* v8 ignore next 3 */
         if (!body) {
           throw new Error('Did not receive a body from the response');
         }
