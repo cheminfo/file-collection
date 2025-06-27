@@ -23,14 +23,14 @@ describe('invalid ium file', () => {
 
   test('missing data file', async () => {
     const fileCollection = new FileCollection();
-    await fileCollection.appendText('hello.txt', 'Hello Word!');
+    await fileCollection.appendText('/hello.txt', 'Hello Word!');
     const ium = await fileCollection.toIum();
 
     const zipReader = new ZipReader(new Uint8ArrayReader(ium));
     const zipWriter = new ZipWriter(new Uint8ArrayWriter());
 
     for await (const entry of zipReader.getEntriesGenerator()) {
-      if (entry.filename.endsWith('hello.txt')) continue;
+      if (entry.filename === '/data/hello.txt') continue;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const buffer = await entry.getData!(new Uint8ArrayWriter());
       await zipWriter.add(entry.filename, new Uint8ArrayReader(buffer));

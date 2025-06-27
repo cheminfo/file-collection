@@ -19,18 +19,18 @@ import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSou
 export async function fromIum(
   zipContent: ZipFileContent,
 ): Promise<FileCollection> {
-  const zipReader = new ZipReader(await getZipContentReader(zipContent));
+  const contentReader = getZipContentReader(zipContent);
+  const zipReader = new ZipReader(contentReader);
   const zipFiles = new Map<string, Entry>();
   for await (const entry of zipReader.getEntriesGenerator()) {
-    zipFiles.set(entry.filename, entry);
+    zipFiles.set(entry.filename.replaceAll(/\/\/+/g, '/'), entry);
   }
   const indexFile = zipFiles.get('/index.json');
   if (!indexFile) {
     throw new Error('Invalid IUM file: missing index.json');
   }
-  const index = await JSON.parse(
-    (await indexFile.getData?.(new TextWriter())) ?? '',
-  );
+  const rawData = await indexFile.getData?.(new TextWriter());
+  const index = await JSON.parse(rawData ?? '');
 
   const fileCollection = new FileCollection(index.options);
 
@@ -38,7 +38,8 @@ export async function fromIum(
   for (const source of index.sources) {
     const url = new URL(source.relativePath, source.baseURL);
     if (url.protocol === 'ium:') {
-      const zipEntry = zipFiles.get(`/data${url.pathname}`);
+      const key = `/data/${url.pathname}`.replaceAll(/\/\/+/g, '/');
+      const zipEntry = zipFiles.get(key);
       if (!zipEntry) {
         throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
@@ -74,9 +75,9 @@ async function appendEntry(
 export const UNSUPPORTED_ZIP_CONTENT_ERROR = `Unsupported zip content type.
 If you passed a Node.js Stream convert it to Web Stream.
 If you passed a (binary) string, decode it to Uint8Array.`;
-async function getZipContentReader(
+function getZipContentReader(
   zipContent: ZipFileContent,
-): Promise<ConstructorParameters<typeof ZipReader>[0]> {
+): ConstructorParameters<typeof ZipReader>[0] {
   if (zipContent instanceof Uint8Array) {
     return new Uint8ArrayReader(zipContent);
   } else if (zipContent instanceof ArrayBuffer) {
