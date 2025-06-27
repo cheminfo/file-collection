@@ -36,11 +36,13 @@ export async function fileItemsFromZip(
       },
       arrayBuffer: async () => {
         const stream = new TransformStream();
-        const buffer = new Response(stream.readable).arrayBuffer();
 
-        await getData(stream.writable);
+        const [buffer] = await Promise.all([
+          new Response(stream.readable).arrayBuffer(),
+          getData(stream.writable),
+        ]);
 
-        return await buffer;
+        return buffer;
       },
       stream: () => {
         const { writable, readable } = new TransformStream<
