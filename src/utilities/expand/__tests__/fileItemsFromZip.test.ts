@@ -14,13 +14,18 @@ describe('generated FileItem equal to original', async () => {
   const expectedText = 'Hello, World!';
   await zipWriter.add('test.txt', new TextReader(expectedText));
 
-  const expectedBinary = new Uint8Array(100);
+  // 32 Kb of easy compressible data (large repetitive pattern)
+  const expectedBinary = new Uint8Array(2 ** 15);
   for (let i = 0; i < expectedBinary.length; i++) {
-    expectedBinary[i] = Math.floor(i / 10);
+    expectedBinary[i] = Math.floor(i / 128);
   }
   await zipWriter.add('test.bin', new Uint8ArrayReader(expectedBinary));
 
   const zipBuffer = await zipWriter.close();
+
+  test('zip file should have size inferior to expectedBinary', () => {
+    expect(zipBuffer.byteLength).toBeLessThan(expectedBinary.byteLength);
+  });
 
   test('.text() should return the original text', async () => {
     const collection = await fileItemsFromZip(zipBuffer, crypto.randomUUID());
