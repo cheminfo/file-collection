@@ -10,7 +10,9 @@
 
 ### Bug Fixes
 
-* `.stream()` method on `sources` added by `FileCollection.appendSource` ([156cab8](https://github.com/cheminfo/file-collection/commit/156cab8b8ba32ba33e7b0ad8af2d14060cd08f35))
+* `.stream()` method on `sources` added by `FileCollection.appendSource` ([156cab8](https://github.com/cheminfo/file-collection/commit/156cab8b8ba32ba33e7b0ad8af2d14060cd08f35))  
+  It returned a promise rejecting an error because it used `.stream()` on a response (this method does not exist).  
+  Now it instantiates a stream, the body response is piped to the stream, and it returns the stream synchronously.
 * file paths from `toIum` zip should not include `//` anymore ([156cab8](https://github.com/cheminfo/file-collection/commit/156cab8b8ba32ba33e7b0ad8af2d14060cd08f35))
 
 
