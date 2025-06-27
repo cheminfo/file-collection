@@ -17,7 +17,7 @@
 ### Code Refactoring
 
 * migrate to ESM-only ([#15](https://github.com/cheminfo/file-collection/issues/15)) ([cc8e2c7](https://github.com/cheminfo/file-collection/commit/cc8e2c7dadf131cc85017707514a053cdd00e8cf))
-* wip: switching to `[@zip](https://github.com/zip).js/zip.js` ([#18](https://github.com/cheminfo/file-collection/issues/18)) ([156cab8](https://github.com/cheminfo/file-collection/commit/156cab8b8ba32ba33e7b0ad8af2d14060cd08f35))
+* switching to `@zip.js/zip.js` ([#18](https://github.com/cheminfo/file-collection/issues/18)) ([156cab8](https://github.com/cheminfo/file-collection/commit/156cab8b8ba32ba33e7b0ad8af2d14060cd08f35))
 
 ## [3.0.0](https://github.com/cheminfo/file-collection/compare/v2.0.0...v3.0.0) (2025-03-07)
 
