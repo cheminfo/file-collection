@@ -1,47 +1,69 @@
-import JSZip from 'jszip';
+import { TextWriter, Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
 
 import type { FileItem } from '../../FileItem.ts';
 import type { Options } from '../../Options.ts';
 import { shouldAddItem } from '../shouldAddItem.ts';
 
-export type ZipFileContent = Parameters<typeof JSZip.loadAsync>[0];
-
+/**
+ * Extracts file items from a zip file buffer.
+ * @param buffer - The zip file as ArrayBuffer.
+ * @param sourceUUID - The UUID of the source from which the zip file was created.
+ * @param options - Options to filter the files.
+ * @returns A promise that resolves to an array of file items.
+ */
 export async function fileItemsFromZip(
-  zipContent: ZipFileContent,
+  buffer: ArrayBuffer,
   sourceUUID: string,
   options: Options = {},
 ) {
-  const jsZip = new JSZip();
-  const zip = await jsZip.loadAsync(zipContent);
+  const zipReader = new ZipReader(new Uint8ArrayReader(new Uint8Array(buffer)));
+
   const fileItems: FileItem[] = [];
-  for (const entry of Object.values(zip.files)) {
-    if (entry.dir) continue;
-    if (!shouldAddItem(entry.name, options.filter)) continue;
-    const item = {
-      name: entry.name.replace(/^.*\//, ''),
+  for await (const entry of zipReader.getEntriesGenerator()) {
+    if (entry.directory) continue;
+    if (!shouldAddItem(entry.filename, options.filter)) continue;
+    const getData = entry.getData?.bind(entry);
+    if (!getData) continue;
+
+    fileItems.push({
+      name: entry.filename.replace(/^.*\//, ''),
       sourceUUID,
-      relativePath: entry.name,
-      lastModified: entry.date.getTime(),
-      // @ts-expect-error _data is not exposed because missing for folder   but it is really there
-      size: entry._data.uncompressedSize,
+      relativePath: entry.filename,
+      lastModified: entry.lastModDate.getTime(),
+      size: entry.uncompressedSize,
       text: () => {
-        return entry.async('text');
+        return getData(new TextWriter());
       },
-      arrayBuffer: () => {
-        return entry.async('arraybuffer');
+      arrayBuffer: async () => {
+        const stream = new TransformStream();
+
+        const [buffer] = await Promise.all([
+          new Response(stream.readable).arrayBuffer(),
+          getData(stream.writable),
+        ]);
+
+        return buffer;
       },
       stream: () => {
-        return new ReadableStream({
-          start(controller) {
-            void entry.async('arraybuffer').then((arrayBuffer) => {
-              controller.enqueue(arrayBuffer);
-              controller.close();
-            });
-          },
-        });
+        const { writable, readable } = new TransformStream<
+          Uint8Array,
+          Uint8Array
+        >();
+
+        /* v8 ignore start */
+        // getData and writable are local, there is no easy way to force an error
+        async function propagateErrorToStream(error: unknown) {
+          await Promise.allSettled([
+            writable.abort(error),
+            readable.cancel(error),
+          ]);
+        }
+        /* v8 ignore end */
+        void getData(writable).catch(propagateErrorToStream);
+
+        return readable;
       },
-    };
-    fileItems.push(item);
+    });
   }
   return fileItems;
 }

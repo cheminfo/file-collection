@@ -45,7 +45,6 @@ for (const file of fileCollection) {
   console.log(file.name);
   console.log(await file.text());
 }
-
 ```
 
 ### Reload a 'ium' file

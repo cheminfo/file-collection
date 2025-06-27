@@ -1,20 +1,36 @@
-import JSZip from 'jszip';
+import {
+  ZipReader,
+  Uint8ArrayReader,
+  TextWriter,
+  Uint8ArrayWriter,
+  BlobReader,
+} from '@zip.js/zip.js';
+import type { Entry } from '@zip.js/zip.js';
 
 import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
 
+/**
+ * Creates a FileCollection from an IUM zip file.
+ * @param zipContent - The content of the IUM zip file, which can be a Uint8Array, ArrayBuffer, Blob, or ReadableStream.
+ * @returns A Promise that resolves to a FileCollection containing the data from the IUM file.
+ */
 export async function fromIum(
   zipContent: ZipFileContent,
 ): Promise<FileCollection> {
-  const jsZip = new JSZip();
-  const zip = await jsZip.loadAsync(zipContent);
-
-  if (!zip.files['/index.json']) {
+  const contentReader = getZipContentReader(zipContent);
+  const zipReader = new ZipReader(contentReader);
+  const zipFiles = new Map<string, Entry>();
+  for await (const entry of zipReader.getEntriesGenerator()) {
+    zipFiles.set(entry.filename.replaceAll(/\/\/+/g, '/'), entry);
+  }
+  const indexFile = zipFiles.get('/index.json');
+  if (!indexFile) {
     throw new Error('Invalid IUM file: missing index.json');
   }
-
-  const index = JSON.parse(await zip.files['/index.json'].async('text'));
+  const rawData = await indexFile.getData?.(new TextWriter());
+  const index = await JSON.parse(rawData ?? '');
 
   const fileCollection = new FileCollection(index.options);
 
@@ -22,16 +38,13 @@ export async function fromIum(
   for (const source of index.sources) {
     const url = new URL(source.relativePath, source.baseURL);
     if (url.protocol === 'ium:') {
-      const zipEntry = zip.files[`/data${url.pathname}`];
+      const key = `/data/${url.pathname}`.replaceAll(/\/\/+/g, '/');
+      const zipEntry = zipFiles.get(key);
       if (!zipEntry) {
         throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
-      promises.push(
-        fileCollection.appendArrayBuffer(
-          url.pathname,
-          zipEntry.async('arraybuffer'),
-        ),
-      );
+
+      promises.push(appendEntry(zipEntry, url, fileCollection));
     } else {
       promises.push(
         fileCollection.appendExtendedSource(
@@ -43,4 +56,37 @@ export async function fromIum(
   }
   await Promise.all(promises);
   return fileCollection;
+}
+
+async function appendEntry(
+  entry: Entry,
+  url: URL,
+  fileCollection: FileCollection,
+): Promise<void> {
+  const getData = entry.getData?.bind(entry);
+  if (!getData) return;
+
+  const buffer = await getData(new Uint8ArrayWriter());
+  await fileCollection.appendArrayBuffer(url.pathname, buffer, {
+    dateModified: entry.lastModDate.getTime(),
+  });
+}
+
+export const UNSUPPORTED_ZIP_CONTENT_ERROR = `Unsupported zip content type.
+If you passed a Node.js Stream convert it to Web Stream.
+If you passed a (binary) string, decode it to Uint8Array.`;
+function getZipContentReader(
+  zipContent: ZipFileContent,
+): ConstructorParameters<typeof ZipReader>[0] {
+  if (zipContent instanceof Uint8Array) {
+    return new Uint8ArrayReader(zipContent);
+  } else if (zipContent instanceof ArrayBuffer) {
+    return new Uint8ArrayReader(new Uint8Array(zipContent));
+  } else if (zipContent instanceof Blob) {
+    return new BlobReader(zipContent);
+  } else if (zipContent instanceof ReadableStream) {
+    return zipContent;
+  }
+
+  throw new Error(UNSUPPORTED_ZIP_CONTENT_ERROR);
 }

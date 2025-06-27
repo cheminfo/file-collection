@@ -1,6 +1,7 @@
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { SourceItem } from '../SourceItem.ts';
 
+// eslint-disable-next-line jsdoc/require-jsdoc
 export function sourceItemToExtendedSourceItem(
   entry: SourceItem,
   alternativeBaseURL: string | undefined,
@@ -30,11 +31,27 @@ export function sourceItemToExtendedSourceItem(
       const response = await fetch(fileURL.toString());
       return response.arrayBuffer();
     },
-    // @ts-expect-error Should contain stream
-    stream: async (): Promise<ArrayBuffer> => {
-      const response = await fetch(fileURL.toString());
-      //@ts-expect-error Should contain stream
-      return response.stream();
+    stream: () => {
+      const { writable, readable } = new TransformStream<
+        Uint8Array,
+        Uint8Array
+      >();
+
+      async function propagateErrorToStream(error: unknown) {
+        await Promise.allSettled([
+          writable.abort(error),
+          readable.cancel(error),
+        ]);
+      }
+      async function pipeFetchToStream() {
+        const response = await fetch(fileURL.toString());
+        // Should not be null
+        const body = response.body as ReadableStream<Uint8Array>;
+        await body.pipeTo(writable);
+      }
+      void pipeFetchToStream().catch(propagateErrorToStream);
+
+      return readable;
     },
   };
   return source;

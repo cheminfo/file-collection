@@ -1,6 +1,9 @@
 export interface FileItem {
   relativePath: string;
-  parent?: FileItem; // if zip of gz file
+  /**
+   * If zip of gz file
+   */
+  parent?: FileItem;
   name: string;
   lastModified?: number;
   size?: number;

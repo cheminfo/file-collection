@@ -47,13 +47,13 @@
     "eslint-config-cheminfo-typescript": "^17.0.0",
     "fifo-logger": "^1.0.0",
     "msw": "^2.7.3",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "vitest": "^3.0.8"
   },
   "dependencies": {
-    "cheminfo-types": "^1.8.1",
-    "jszip": "^3.10.1"
+    "@zip.js/zip.js": "^2.7.62",
+    "cheminfo-types": "^1.8.1"
   }
 }

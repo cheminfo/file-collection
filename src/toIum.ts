@@ -1,28 +1,27 @@
-import JSZip from 'jszip';
+import { ZipWriter, Uint8ArrayWriter, TextReader } from '@zip.js/zip.js';
 
 import type { FileCollection } from './FileCollection.ts';
 import type { SourceItem } from './SourceItem.ts';
 
 export interface ToIumOptions {
   /**
-   * If true, the data of the files will be always included in the zip.
+   * If true, the data of the files will always be included in the zip.
    * @default true
    */
   includeData?: boolean;
 }
 /**
  * This method will zip a file collection and return the zip as an ArrayBuffer
- * @param fileCollecrtion
- * @param fileCollection
- * @param options
- * @returns
+ * @param fileCollection - The file collection to zip
+ * @param options - Options for the zip process
+ * @returns Zip as an Uint8Array
  */
 export async function toIum(
   fileCollection: FileCollection,
   options: ToIumOptions = {},
 ): Promise<Uint8Array> {
-  const jsZip = new JSZip();
   const { includeData = true } = options;
+  const zipWriter = new ZipWriter(new Uint8ArrayWriter());
 
   const sources: SourceItem[] = [];
   const promises: Array<Promise<void>> = [];
@@ -37,14 +36,17 @@ export async function toIum(
     sources.push(newSource);
     if (includeData || source.baseURL === 'ium:/') {
       newSource.baseURL = 'ium:/';
-      const url = new URL(`data/${source.relativePath}`, newSource.baseURL);
+      const url = new URL(
+        // ensure the path is relative and does not start with a slash
+        `data/${source.relativePath.replace(/^\/+/, '')}`,
+        newSource.baseURL,
+      );
       promises.push(
-        (async () => {
-          jsZip.file(url.pathname, await source.arrayBuffer());
-        })(),
+        zipWriter.add(url.pathname, source.stream()).then(() => void 0),
       );
     }
   }
+
   await Promise.all(promises);
 
   const index = {
@@ -54,6 +56,9 @@ export async function toIum(
 
   const url = new URL('index.json', 'ium:/');
 
-  jsZip.file(url.pathname, JSON.stringify(index, null, 2));
-  return jsZip.generateAsync({ type: 'uint8array' });
+  await zipWriter.add(
+    url.pathname,
+    new TextReader(JSON.stringify(index, null, 2)),
+  );
+  return await zipWriter.close();
 }

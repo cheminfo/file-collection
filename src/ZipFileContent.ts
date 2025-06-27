@@ -1,3 +1,13 @@
-import type JSZip from 'jszip';
+export interface ZipFileContentInput {
+  /**
+   * Primitives from file reading libraries
+   */
+  buffer: Uint8Array | ArrayBuffer | Blob;
 
-export type ZipFileContent = Parameters<typeof JSZip.loadAsync>[0];
+  /**
+   * From file reading stream api
+   */
+  stream: ReadableStream;
+}
+
+export type ZipFileContent = ZipFileContentInput[keyof ZipFileContentInput];
