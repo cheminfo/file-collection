@@ -1,9 +1,7 @@
+import type { ItemData } from './ItemData.js';
 import type { SourceItem } from './SourceItem.ts';
 
-export interface ExtendedSourceItem extends SourceItem {
+export interface ExtendedSourceItem extends SourceItem, ItemData {
   uuid: string;
   name: string;
-  arrayBuffer: () => Promise<ArrayBuffer>;
-  text: () => Promise<string>;
-  stream: () => ReadableStream<Uint8Array>;
 }

@@ -8,7 +8,7 @@ import {
 import { expect, test, describe } from 'vitest';
 
 import { FileCollection } from '../FileCollection.js';
-import { UNSUPPORTED_ZIP_CONTENT_ERROR } from '../fromIum.js';
+import { UNSUPPORTED_ZIP_CONTENT_ERROR } from '../zip/get_zip_reader.js';
 
 describe('invalid ium file', () => {
   test('missing index.json', async () => {
