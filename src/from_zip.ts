@@ -35,7 +35,8 @@ export async function fromZip(
 /**
  * Converts a zip entry to an ExtendedSourceItem.
  * @param entry - The zip entry to convert.
- * @returns An ExtendedSourceItem or undefined if the entry does not have getData.
+ * @returns An ExtendedSourceItem or undefined if the entry does not have getData (should not happen).
+ * @see https://github.com/gildas-lormeau/zip.js/issues/574
  */
 function entryToSource(entry: Entry): ExtendedSourceItem | undefined {
   const getData = entry.getData?.bind(entry);
