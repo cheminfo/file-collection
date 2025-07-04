@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/cheminfo/file-collection/compare/v4.0.0...v4.1.0) (2025-07-04)
+
+
+### Features
+
+* port fromZip from `filelist-utils` ([#23](https://github.com/cheminfo/file-collection/issues/23)) ([77498b9](https://github.com/cheminfo/file-collection/commit/77498b90f4d864e2a76f623023bf32113eb12c8f))
+
 ## [4.0.0](https://github.com/cheminfo/file-collection/compare/v3.0.0...v4.0.0) (2025-06-27)
 
 
