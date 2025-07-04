@@ -1,4 +1,6 @@
-export interface FileItem {
+import type { ItemData } from './ItemData.js';
+
+export interface FileItem extends ItemData {
   relativePath: string;
   /**
    * If zip of gz file
@@ -8,8 +10,5 @@ export interface FileItem {
   lastModified?: number;
   size?: number;
   baseURL?: string;
-  arrayBuffer: () => Promise<ArrayBuffer>;
-  stream: () => ReadableStream<Uint8Array>;
-  text: () => Promise<string>;
   sourceUUID: string;
 }

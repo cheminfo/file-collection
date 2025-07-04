@@ -11,6 +11,7 @@ import { appendSource } from './append/appendSource.ts';
 import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
 import { fromIum } from './fromIum.ts';
+import { fromZip } from './from_zip.js';
 import type { ToIumOptions } from './toIum.ts';
 import { toIum } from './toIum.ts';
 import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile.ts';
@@ -157,6 +158,16 @@ export class FileCollection {
     const fileCollection = await fromIum(ium);
     fileCollection.alphabetical();
     return fileCollection;
+  }
+
+  static async fromZip(
+    zipContent: ZipFileContent,
+    options: Options = {},
+  ): Promise<FileCollection> {
+    const collection = new FileCollection(options);
+    await fromZip(collection, zipContent, options);
+    collection.alphabetical();
+    return collection;
   }
 
   alphabetical() {

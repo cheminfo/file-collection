@@ -1,15 +1,10 @@
-import {
-  ZipReader,
-  Uint8ArrayReader,
-  TextWriter,
-  Uint8ArrayWriter,
-  BlobReader,
-} from '@zip.js/zip.js';
+import { TextWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 import type { Entry } from '@zip.js/zip.js';
 
 import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
+import { getZipReader } from './zip/get_zip_reader.js';
 
 /**
  * Creates a FileCollection from an IUM zip file.
@@ -19,8 +14,7 @@ import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSou
 export async function fromIum(
   zipContent: ZipFileContent,
 ): Promise<FileCollection> {
-  const contentReader = getZipContentReader(zipContent);
-  const zipReader = new ZipReader(contentReader);
+  const zipReader = getZipReader(zipContent);
   const zipFiles = new Map<string, Entry>();
   for await (const entry of zipReader.getEntriesGenerator()) {
     zipFiles.set(entry.filename.replaceAll(/\/\/+/g, '/'), entry);
@@ -70,23 +64,4 @@ async function appendEntry(
   await fileCollection.appendArrayBuffer(url.pathname, buffer, {
     dateModified: entry.lastModDate.getTime(),
   });
-}
-
-export const UNSUPPORTED_ZIP_CONTENT_ERROR = `Unsupported zip content type.
-If you passed a Node.js Stream convert it to Web Stream.
-If you passed a (binary) string, decode it to Uint8Array.`;
-function getZipContentReader(
-  zipContent: ZipFileContent,
-): ConstructorParameters<typeof ZipReader>[0] {
-  if (zipContent instanceof Uint8Array) {
-    return new Uint8ArrayReader(zipContent);
-  } else if (zipContent instanceof ArrayBuffer) {
-    return new Uint8ArrayReader(new Uint8Array(zipContent));
-  } else if (zipContent instanceof Blob) {
-    return new BlobReader(zipContent);
-  } else if (zipContent instanceof ReadableStream) {
-    return zipContent;
-  }
-
-  throw new Error(UNSUPPORTED_ZIP_CONTENT_ERROR);
 }
