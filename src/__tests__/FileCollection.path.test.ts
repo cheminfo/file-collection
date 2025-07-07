@@ -20,11 +20,10 @@ test('appendPath data folder', async () => {
 });
 
 test('appendPath data folder and keepBasename', async () => {
-  const fileCollection = new FileCollection();
-
-  await fileCollection.appendPath(join(__dirname, 'data/'), {
-    keepBasename: true,
-  });
+  const fileCollection = await FileCollection.fromPath(
+    join(__dirname, 'data/'),
+    { keepBasename: true },
+  );
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
   expect(relativePaths).toStrictEqual([
     'data/dir1/a.txt',
@@ -40,11 +39,11 @@ test('appendPath data folder and keepBasename', async () => {
 });
 
 test('appendPath data folder and do not keepBasename', async () => {
-  const fileCollection = new FileCollection();
+  const fileCollection = await FileCollection.fromPath(
+    join(__dirname, 'data/'),
+    { keepBasename: false },
+  );
 
-  await fileCollection.appendPath(join(__dirname, 'data/'), {
-    keepBasename: false,
-  });
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
   expect(relativePaths).toStrictEqual([
     'dir1/a.txt',
