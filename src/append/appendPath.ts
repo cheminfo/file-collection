@@ -7,6 +7,13 @@ import { Readable } from 'node:stream';
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { FileCollection } from '../FileCollection.ts';
 
+/**
+ * Append files from a directory to a FileCollection.
+ * @param fileCollection - FileCollection to append files to
+ * @param path - Path to the directory to append
+ * @param options - Options for appending files
+ * @param options.keepBasename - If true, the basename of the path will be kept in the relative paths of the files.
+ */
 export async function appendPath(
   fileCollection: FileCollection,
   path: string,
@@ -43,23 +50,10 @@ async function appendFiles(
         size: info.size,
         relativePath,
         lastModified: Math.round(info.mtimeMs),
-        text: (): Promise<string> => {
-          return readFile(current, {
-            encoding: 'utf8',
-          });
-        },
-        arrayBuffer: (): Promise<ArrayBuffer> => {
-          return readFile(current);
-        },
-        stream: (): ReadableStream => {
-          if (Readable.toWeb) {
-            //@ts-expect-error todo should be fixed
-            return Readable.toWeb(createReadStream(current));
-          }
-          throw new Error(
-            'The stream() method is only supported in Node.js >= 18.0.0',
-          );
-        },
+        text: () => readFile(current, { encoding: 'utf8' }),
+        arrayBuffer: () => readFile(current),
+        stream: () =>
+          Readable.toWeb(createReadStream(current)) as ReadableStream,
       };
       await fileCollection.appendExtendedSource(source);
     }

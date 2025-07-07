@@ -170,6 +170,15 @@ export class FileCollection {
     return collection;
   }
 
+  static async fromPath(
+    path: string,
+    options: { keepBasename?: boolean } = {},
+  ): Promise<FileCollection> {
+    const collection = new FileCollection();
+    await collection.appendPath(path, options);
+    return collection;
+  }
+
   alphabetical() {
     this.sources.sort((a: ExtendedSourceItem, b: ExtendedSourceItem) =>
       a.relativePath < b.relativePath ? -1 : 1,
