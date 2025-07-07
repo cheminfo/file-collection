@@ -6,6 +6,7 @@ import {
 } from '@zip.js/zip.js';
 import { assert, describe, expect, test } from 'vitest';
 
+import type { FileItem } from '../../../FileItem.js';
 import { fileItemsFromZip } from '../fileItemsFromZip.js';
 
 describe('generated FileItem equal to original', async () => {
@@ -28,7 +29,11 @@ describe('generated FileItem equal to original', async () => {
   });
 
   test('.text() should return the original text', async () => {
-    const collection = await fileItemsFromZip(zipBuffer, crypto.randomUUID());
+    const _collection = fileItemsFromZip(zipBuffer, crypto.randomUUID());
+    const collection: FileItem[] = [];
+    for await (const file of _collection) {
+      collection.push(file);
+    }
 
     const file = collection.find((f) => f.name === 'test.txt');
     assert(file, 'File not found in collection');
@@ -38,7 +43,11 @@ describe('generated FileItem equal to original', async () => {
   });
 
   test('.arrayBuffer() should return the original binary', async () => {
-    const collection = await fileItemsFromZip(zipBuffer, crypto.randomUUID());
+    const _collection = fileItemsFromZip(zipBuffer, crypto.randomUUID());
+    const collection: FileItem[] = [];
+    for await (const file of _collection) {
+      collection.push(file);
+    }
 
     const file = collection.find((f) => f.name === 'test.bin');
     assert(file, 'File not found in collection');
@@ -48,7 +57,11 @@ describe('generated FileItem equal to original', async () => {
   });
 
   test('.stream() should stream the original binary', async () => {
-    const collection = await fileItemsFromZip(zipBuffer, crypto.randomUUID());
+    const _collection = fileItemsFromZip(zipBuffer, crypto.randomUUID());
+    const collection: FileItem[] = [];
+    for await (const file of _collection) {
+      collection.push(file);
+    }
 
     const file = collection.find((f) => f.name === 'test.bin');
     assert(file, 'File not found in collection');

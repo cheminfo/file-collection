@@ -22,6 +22,7 @@ test('appendPath data folder', async () => {
 test('appendPath data folder and keepBasename', async () => {
   const fileCollection = await FileCollection.fromPath(
     join(__dirname, 'data/'),
+    {},
     { keepBasename: true },
   );
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
@@ -41,6 +42,7 @@ test('appendPath data folder and keepBasename', async () => {
 test('appendPath data folder and do not keepBasename', async () => {
   const fileCollection = await FileCollection.fromPath(
     join(__dirname, 'data/'),
+    {},
     { keepBasename: false },
   );
 

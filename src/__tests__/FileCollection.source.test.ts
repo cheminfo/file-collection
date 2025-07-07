@@ -67,8 +67,7 @@ describe('fileCollectionFromWebSource', () => {
       baseURL: 'http://localhost/',
     };
 
-    const fileCollection = new FileCollection();
-    await fileCollection.appendSource(source);
+    const fileCollection = await FileCollection.fromSource(source);
     expect(fileCollection.files).toHaveLength(2);
 
     const firstFile = fileCollection.files[0];
@@ -272,7 +271,7 @@ describe('fileCollectionFromWebSource', () => {
 });
 
 async function getJSON(path: string) {
-  const entries: any = [];
+  const entries: FsFile[] = [];
   await appendFiles(entries, path);
   for (const entry of entries) {
     entry.relativePath = entry.relativePath.replace(/.*__tests__\//, '');
@@ -280,7 +279,7 @@ async function getJSON(path: string) {
   return { entries };
 }
 
-async function appendFiles(files: any, currentDir: string) {
+async function appendFiles(files: FsFile[], currentDir: string) {
   const entries = await readdir(currentDir);
   for (const entry of entries) {
     const current = join(currentDir, entry);
@@ -297,4 +296,11 @@ async function appendFiles(files: any, currentDir: string) {
       });
     }
   }
+}
+
+interface FsFile {
+  name: string;
+  size: number;
+  relativePath: string;
+  lastModified: number;
 }

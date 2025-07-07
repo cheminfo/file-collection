@@ -11,16 +11,16 @@ import { shouldAddItem } from '../shouldAddItem.ts';
  * @param buffer - The zip file as ArrayBuffer.
  * @param sourceUUID - The UUID of the source from which the zip file was created.
  * @param options - Options to filter the files.
- * @returns A promise that resolves to an array of file items.
+ * @returns An async generator that yields file item.
+ * @yields FileItem - The file item extracted from the zip.
  */
-export async function fileItemsFromZip(
+export async function* fileItemsFromZip(
   buffer: ArrayBuffer,
   sourceUUID: string,
   options: Options = {},
 ) {
   const zipReader = new ZipReader(new Uint8ArrayReader(new Uint8Array(buffer)));
 
-  const fileItems: FileItem[] = [];
   for await (const entry of zipReader.getEntriesGenerator()) {
     if (entry.directory) continue;
     if (!shouldAddItem(entry.filename, options.filter)) continue;
@@ -28,9 +28,8 @@ export async function fileItemsFromZip(
     const file = entryToFileItem(entry, sourceUUID);
     if (!file) continue;
 
-    fileItems.push(file);
+    yield file;
   }
-  return fileItems;
 }
 
 function entryToFileItem(
