@@ -53,7 +53,7 @@
     "vitest": "^3.0.8"
   },
   "dependencies": {
-    "@zip.js/zip.js": "^2.7.62",
+    "@zip.js/zip.js": "^2.7.63",
     "cheminfo-types": "^1.8.1"
   }
 }

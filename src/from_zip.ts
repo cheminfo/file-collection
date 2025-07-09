@@ -1,11 +1,11 @@
-import type { Entry } from '@zip.js/zip.js';
+import type { FileEntry } from '@zip.js/zip.js';
 
 import type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
 import type { FileCollection } from './FileCollection.ts';
 import type { Options } from './Options.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
-import { getDataEntryToData } from './zip/get_data_entry_to_data.js';
+import { fileEntryToData } from './zip/file_entry_to_data.js';
 import { getZipReader } from './zip/get_zip_reader.ts';
 
 /**
@@ -26,8 +26,6 @@ export async function fromZip(
     if (!shouldAddItem(entry.filename, options?.filter)) continue;
 
     const source = entryToSource(entry);
-    if (!source) continue;
-
     await collection.appendExtendedSource(source);
   }
 }
@@ -38,10 +36,7 @@ export async function fromZip(
  * @returns An ExtendedSourceItem or undefined if the entry does not have getData (should not happen).
  * @see https://github.com/gildas-lormeau/zip.js/issues/574
  */
-function entryToSource(entry: Entry): ExtendedSourceItem | undefined {
-  const getData = entry.getData?.bind(entry);
-  if (!getData) return;
-
+function entryToSource(entry: FileEntry): ExtendedSourceItem {
   return {
     uuid: crypto.randomUUID(),
     size: entry.uncompressedSize,
@@ -49,6 +44,6 @@ function entryToSource(entry: Entry): ExtendedSourceItem | undefined {
     relativePath: entry.filename,
     name: entry.filename.replace(/^.*\//, ''),
     lastModified: entry.lastModDate.getTime(),
-    ...getDataEntryToData(getData),
+    ...fileEntryToData(entry),
   };
 }

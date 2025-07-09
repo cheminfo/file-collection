@@ -1,9 +1,9 @@
 import { Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
-import type { Entry } from '@zip.js/zip.js';
+import type { FileEntry } from '@zip.js/zip.js';
 
 import type { FileItem } from '../../FileItem.ts';
 import type { Options } from '../../Options.ts';
-import { getDataEntryToData } from '../../zip/get_data_entry_to_data.js';
+import { fileEntryToData } from '../../zip/file_entry_to_data.js';
 import { shouldAddItem } from '../shouldAddItem.ts';
 
 /**
@@ -25,26 +25,17 @@ export async function* fileItemsFromZip(
     if (entry.directory) continue;
     if (!shouldAddItem(entry.filename, options.filter)) continue;
 
-    const file = entryToFileItem(entry, sourceUUID);
-    if (!file) continue;
-
-    yield file;
+    yield entryToFileItem(entry, sourceUUID);
   }
 }
 
-function entryToFileItem(
-  entry: Entry,
-  sourceUUID: string,
-): FileItem | undefined {
-  const getData = entry.getData?.bind(entry);
-  if (!getData) return;
-
+function entryToFileItem(entry: FileEntry, sourceUUID: string): FileItem {
   return {
     name: entry.filename.replace(/^.*\//, ''),
     sourceUUID,
     relativePath: entry.filename,
     lastModified: entry.lastModDate.getTime(),
     size: entry.uncompressedSize,
-    ...getDataEntryToData(getData),
+    ...fileEntryToData(entry),
   };
 }
