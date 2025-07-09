@@ -36,7 +36,7 @@ export class FileCollection {
 
   /**
    * This is unexpected to be used directly
-   * @param source
+   * @param source - The source to append, which should be an ExtendedSourceItem.
    * @private
    */
   async appendExtendedSource(source: ExtendedSourceItem): Promise<void> {
@@ -44,12 +44,9 @@ export class FileCollection {
     this.sources.push(source);
     const sourceFile = convertExtendedSourceToFile(source);
     const files = await expandAndFilter(sourceFile, this.options);
+    const existingFiles = new Set(this.files.map((f) => f.relativePath));
     for (const file of files) {
-      if (
-        this.files.some(
-          (existing) => existing.relativePath === file.relativePath,
-        )
-      ) {
+      if (existingFiles.has(file.relativePath)) {
         throw new Error(`Duplicate relativePath: ${file.relativePath}`);
       }
       if (this.cache) {
@@ -61,11 +58,13 @@ export class FileCollection {
   }
 
   /**
-   * Save an object to the collection. This method will convert typed array to normal array and will
-   * replace potentially existing file with the same name.
-   * @param key
-   * @param value
-   * @returns
+   * Save an object to the collection.
+   * This method will convert typed arrays to normal arrays and will
+   * replace a potentially existing file with the same name.
+   * @param key - The key is the relative path of the file in the collection.
+   * @param value - The value is the object to save.
+   *   It will be serialized using JSON.stringify.
+   * @returns A promise that resolves when the file is saved.
    */
   set(key: string, value: any): Promise<void> {
     this.removeFile(key);
@@ -113,18 +112,25 @@ export class FileCollection {
     return appendWebSource(this, webSourceURL, options);
   }
 
-  appendFileList(fileList: FileList): Promise<void> {
+  /**
+   * This method will append a list of files to the collection.
+   * @param fileList - pass a FileList (from dom input file element or similar) or an iterable of File objects.
+   * @returns - A promise that resolves when the files are appended.
+   */
+  appendFileList(fileList: Iterable<File>): Promise<void> {
     return appendFileList(this, fileList);
   }
 
   appendSource(webSource: Source, options: { baseURL?: string } = {}) {
     return appendSource(this, webSource, options);
   }
+
   /**
    * This method can only be used from nodejs and will throw an error in the browser
-   * @param path
-   * @param options
-   * @param options.keepBasename
+   * @param path - The path to the file or directory to append.
+   * @param options - Options for appending the path.
+   * @param [options.keepBasename=true] - If true, the basename of the path will be kept as the relative path.
+   * @returns A promise that resolves when the path is appended.
    */
   appendPath(
     path: string,
@@ -172,20 +178,28 @@ export class FileCollection {
 
   static async fromPath(
     path: string,
+    collectionOptions: Options = {},
     options: { keepBasename?: boolean } = {},
   ): Promise<FileCollection> {
-    const collection = new FileCollection();
+    const collection = new FileCollection(collectionOptions);
     await collection.appendPath(path, options);
     return collection;
   }
 
+  static async fromSource(
+    source: Source,
+    collectionOptions: Options = {},
+    options: { baseURL?: string } = {},
+  ) {
+    const collection = new FileCollection(collectionOptions);
+    await collection.appendSource(source, options);
+    collection.alphabetical();
+    return collection;
+  }
+
   alphabetical() {
-    this.sources.sort((a: ExtendedSourceItem, b: ExtendedSourceItem) =>
-      a.relativePath < b.relativePath ? -1 : 1,
-    );
-    this.files.sort((a: FileItem, b: FileItem) =>
-      a.relativePath < b.relativePath ? -1 : 1,
-    );
+    this.sources.sort((a, b) => (a.relativePath < b.relativePath ? -1 : 1));
+    this.files.sort((a, b) => (a.relativePath < b.relativePath ? -1 : 1));
   }
 
   [Symbol.iterator]() {

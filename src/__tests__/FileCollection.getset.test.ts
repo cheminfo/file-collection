@@ -30,3 +30,11 @@ test('FileCollection get set', async () => {
     array: [1, 2, 3],
   });
 });
+
+test('FileCollection get on non-existing key should throw an error', async () => {
+  const fileCollection = new FileCollection();
+
+  await expect(fileCollection.get('non-existing')).rejects.toThrow(
+    `Key not found: non-existing`,
+  );
+});

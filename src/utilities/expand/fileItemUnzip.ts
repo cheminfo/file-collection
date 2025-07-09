@@ -9,12 +9,10 @@ import { fileItemsFromZip } from './fileItemsFromZip.ts';
  * Some files in the fileItems may actually be zip. This method will unzip those files.
  * The method will actually not really unzip the files but only add them in the fileItems.
  * Unzipping will only take place when you want to actually retrieve the data.
- * @param fileItems
- * @param fileItem
- * @param options
- * @returns
+ * @param fileItem - The file item to check and potentially unzip. if not zip file, return an array with the fileItem.
+ * @param options - Options to filter the files and control the unzipping behavior.
+ * @returns An array of file items, which may include unzipped files if the input was a zip file.
  */
-
 export async function fileItemUnzip(
   fileItem: FileItem,
   options: Options = {},
@@ -43,21 +41,16 @@ export async function fileItemUnzip(
     }
     return [fileItem];
   }
-  const zipFileItems = await fileItemsFromZip(
-    buffer,
-    fileItem.sourceUUID,
-    options,
-  );
 
+  const zipFileItems = fileItemsFromZip(buffer, fileItem.sourceUUID, options);
   const fileItems: FileItem[] = [];
-  for (const zipEntry of zipFileItems) {
+  for await (const zipEntry of zipFileItems) {
     zipEntry.parent = fileItem;
     zipEntry.relativePath = `${fileItem.relativePath}/${zipEntry.relativePath}`;
     zipEntry.sourceUUID = fileItem.sourceUUID;
     if (recursive) {
-      // todo could improve this by using a promise.all
-      // eslint-disable-next-line no-await-in-loop
-      fileItems.push(...(await expandAndFilter(zipEntry, options)));
+      const recursiveFiles = await expandAndFilter(zipEntry, options);
+      fileItems.push(...recursiveFiles);
     } else if (shouldAddItem(zipEntry.relativePath, filter)) {
       fileItems.push(zipEntry);
     }
