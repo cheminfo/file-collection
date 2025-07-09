@@ -7,7 +7,13 @@
 
 * add `FileCollection.fromPath` static method ([#25](https://github.com/cheminfo/file-collection/issues/25)) ([0b1c783](https://github.com/cheminfo/file-collection/commit/0b1c783b75074410661ec872c3d37b134c1631d0))
 * add `FileCollection.fromSource` static method ([#26](https://github.com/cheminfo/file-collection/issues/26)) ([588002f](https://github.com/cheminfo/file-collection/commit/588002f9084dbd6f3ee35f4c57cb238b6564f7e8))
-* port fromZip from `filelist-utils` ([#23](https://github.com/cheminfo/file-collection/issues/23)) ([77498b9](https://github.com/cheminfo/file-collection/commit/77498b90f4d864e2a76f623023bf32113eb12c8f))
+* add `FileCollection.fromZip` static method ([#23](https://github.com/cheminfo/file-collection/issues/23)) ([77498b9](https://github.com/cheminfo/file-collection/commit/77498b90f4d864e2a76f623023bf32113eb12c8f))
+
+Theses are ports of methods from `filelist-utils`:
+
+* `fileCollectionFromPath`
+* `fileCollectionFromWebSource`
+* `fileCollectionFromZip`
 
 ## [4.0.0](https://github.com/cheminfo/file-collection/compare/v3.0.0...v4.0.0) (2025-06-27)
 
