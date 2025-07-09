@@ -1,26 +1,24 @@
 import { TextWriter } from '@zip.js/zip.js';
-import type { Entry } from '@zip.js/zip.js';
+import type { FileEntry } from '@zip.js/zip.js';
 
 import type { ItemData } from '../ItemData.js';
 
-type GetData = Exclude<Entry['getData'], undefined>;
-
 /**
- * Converts a zip entry's getData method to an ItemData object.
- * @param getData - The getData method of the zip entry.
+ * Converts a zip entry's to an ItemData object.
+ * @param entry - The zip file entry.
  * @returns An ItemData object with methods to retrieve the data in different formats.
  */
-export function getDataEntryToData(getData: GetData): ItemData {
+export function fileEntryToData(entry: FileEntry): ItemData {
   return {
     text: () => {
-      return getData(new TextWriter());
+      return entry.getData(new TextWriter());
     },
     arrayBuffer: async () => {
       const stream = new TransformStream();
 
       const [buffer] = await Promise.all([
         new Response(stream.readable).arrayBuffer(),
-        getData(stream.writable),
+        entry.getData(stream.writable),
       ]);
 
       return buffer;
@@ -40,7 +38,7 @@ export function getDataEntryToData(getData: GetData): ItemData {
         ]);
       }
       /* v8 ignore end */
-      void getData(writable).catch(propagateErrorToStream);
+      void entry.getData(writable).catch(propagateErrorToStream);
 
       return readable;
     },

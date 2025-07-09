@@ -6,7 +6,6 @@ import {
 } from '@zip.js/zip.js';
 import { assert, describe, expect, test } from 'vitest';
 
-import type { FileItem } from '../../../FileItem.js';
 import { fileItemsFromZip } from '../fileItemsFromZip.js';
 
 describe('generated FileItem equal to original', async () => {
@@ -29,11 +28,9 @@ describe('generated FileItem equal to original', async () => {
   });
 
   test('.text() should return the original text', async () => {
-    const _collection = fileItemsFromZip(zipBuffer, crypto.randomUUID());
-    const collection: FileItem[] = [];
-    for await (const file of _collection) {
-      collection.push(file);
-    }
+    const collection = await arrayFromAsync(
+      fileItemsFromZip(zipBuffer, crypto.randomUUID()),
+    );
 
     const file = collection.find((f) => f.name === 'test.txt');
     assert(file, 'File not found in collection');
@@ -43,11 +40,9 @@ describe('generated FileItem equal to original', async () => {
   });
 
   test('.arrayBuffer() should return the original binary', async () => {
-    const _collection = fileItemsFromZip(zipBuffer, crypto.randomUUID());
-    const collection: FileItem[] = [];
-    for await (const file of _collection) {
-      collection.push(file);
-    }
+    const collection = await arrayFromAsync(
+      fileItemsFromZip(zipBuffer, crypto.randomUUID()),
+    );
 
     const file = collection.find((f) => f.name === 'test.bin');
     assert(file, 'File not found in collection');
@@ -57,11 +52,9 @@ describe('generated FileItem equal to original', async () => {
   });
 
   test('.stream() should stream the original binary', async () => {
-    const _collection = fileItemsFromZip(zipBuffer, crypto.randomUUID());
-    const collection: FileItem[] = [];
-    for await (const file of _collection) {
-      collection.push(file);
-    }
+    const collection = await arrayFromAsync(
+      fileItemsFromZip(zipBuffer, crypto.randomUUID()),
+    );
 
     const file = collection.find((f) => f.name === 'test.bin');
     assert(file, 'File not found in collection');
@@ -74,3 +67,19 @@ describe('generated FileItem equal to original', async () => {
     expect(result).toStrictEqual(Array.from(expectedBinary));
   });
 });
+
+// Need Array.fromAsync only for this test file,
+// This package will run in browsers and is available only in recent browsers.
+// See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fromAsync
+// Middle 2026, we can use the right lib from ts to use it anywhere.
+async function arrayFromAsync<T>(
+  asyncIterable: AsyncIterable<T>,
+): Promise<T[]> {
+  const result: T[] = [];
+
+  for await (const chunk of asyncIterable) {
+    result.push(chunk);
+  }
+
+  return result;
+}
