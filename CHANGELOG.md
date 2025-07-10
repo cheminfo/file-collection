@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/cheminfo/file-collection/compare/v4.1.0...v4.1.1) (2025-07-10)
+
+
+### Bug Fixes
+
+* properly support Node.js Buffer ([#28](https://github.com/cheminfo/file-collection/issues/28)) ([ef12814](https://github.com/cheminfo/file-collection/commit/ef12814dbbd9423fd60e2d84215294e2dbdfb5a6))
+
 ## [4.1.0](https://github.com/cheminfo/file-collection/compare/v4.0.0...v4.1.0) (2025-07-09)
 
 
