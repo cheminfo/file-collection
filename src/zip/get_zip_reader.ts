@@ -19,7 +19,16 @@ function getZipContentReader(
   zipContent: ZipFileContent,
 ): ConstructorParameters<typeof ZipReader>[0] {
   if (zipContent instanceof Uint8Array) {
-    return new Uint8ArrayReader(zipContent);
+    // support Node.js Buffer they extend Uint8Array,
+    // but when it is read by Uint8ArrayReader it produces `Error: Split zip file`
+    // wrap Node.js Buffer into a new Uint8Array fix the issue
+    return new Uint8ArrayReader(
+      new Uint8Array(
+        zipContent.buffer,
+        zipContent.byteOffset,
+        zipContent.length,
+      ),
+    );
   } else if (zipContent instanceof ArrayBuffer) {
     return new Uint8ArrayReader(new Uint8Array(zipContent));
   } else if (zipContent instanceof Blob) {

@@ -1,5 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { createReadStream, readFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { Readable } from 'node:stream';
 
 import { TextReader, Uint8ArrayWriter, ZipWriter } from '@zip.js/zip.js';
 import { assert, describe, expect, test } from 'vitest';
@@ -49,5 +51,29 @@ describe('FileCollection.fromZip', async () => {
     const last = fileCollection.files.at(-1);
     assert(last);
     await expect(last.text()).resolves.toBe('d');
+  });
+
+  test('should support Node.js Buffer', async () => {
+    const buffer = await readFile(join(import.meta.dirname, 'data.zip'));
+
+    await expect(FileCollection.fromZip(buffer)).resolves.toBeInstanceOf(
+      FileCollection,
+    );
+  });
+
+  test('should support Node.js Buffer ArrayBuffer', async () => {
+    const buffer = await readFile(join(import.meta.dirname, 'data.zip'));
+
+    await expect(FileCollection.fromZip(buffer.buffer)).resolves.toBeInstanceOf(
+      FileCollection,
+    );
+  });
+
+  test('should support Readable.toWeb', async () => {
+    const stream = createReadStream(join(import.meta.dirname, 'data.zip'));
+
+    await expect(
+      FileCollection.fromZip(Readable.toWeb(stream)),
+    ).resolves.toBeInstanceOf(FileCollection);
   });
 });
