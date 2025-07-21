@@ -1,7 +1,10 @@
 import { CachedFileItem } from './CachedFileItem.ts';
+import { cloneExtendedSourceItem } from './ExtendedSourceItem.ts';
 import type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
+import { cloneFileItem } from './FileItem.ts';
 import type { FileItem } from './FileItem.ts';
-import type { FilterOptions, Options } from './Options.ts';
+import { mergeOptions } from './Options.ts';
+import type { Options } from './Options.ts';
 import type { Source } from './Source.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { appendArrayBuffer } from './append/appendArrayBuffer.ts';
@@ -23,24 +26,30 @@ export class FileCollection {
   readonly files: FileItem[];
   readonly sources: ExtendedSourceItem[];
   readonly options: Options;
-  readonly filter: FilterOptions;
-  readonly cache: boolean;
 
-  constructor(options: Options = {}) {
-    this.options = options;
-    this.filter = options.filter || {};
-    this.files = [];
-    this.sources = [];
-    this.cache = options.cache ?? false;
+  constructor(options: Options = {}, toClone?: FileCollection) {
+    this.options = toClone ? mergeOptions(toClone.options, options) : options;
+    if (toClone) {
+      this.files = toClone.files.map((file) => {
+        file = cloneFileItem(file);
+
+        return this.options.cache ? new CachedFileItem(file) : file;
+      });
+      this.sources = toClone.sources.map(cloneExtendedSourceItem);
+    } else {
+      this.files = [];
+      this.sources = [];
+    }
   }
 
   /**
    * This is unexpected to be used directly
    * @param source - The source to append, which should be an ExtendedSourceItem.
    * @private
+   * @returns - A promise that resolves to the FileCollection instance.
    */
-  async appendExtendedSource(source: ExtendedSourceItem): Promise<void> {
-    if (!shouldAddItem(source.relativePath, this.filter)) return;
+  async appendExtendedSource(source: ExtendedSourceItem): Promise<this> {
+    if (!shouldAddItem(source.relativePath, this.options.filter)) return this;
     this.sources.push(source);
     const sourceFile = convertExtendedSourceToFile(source);
     const files = await expandAndFilter(sourceFile, this.options);
@@ -49,12 +58,14 @@ export class FileCollection {
       if (existingFiles.has(file.relativePath)) {
         throw new Error(`Duplicate relativePath: ${file.relativePath}`);
       }
-      if (this.cache) {
+      if (this.options.cache) {
         this.files.push(new CachedFileItem(file));
       } else {
         this.files.push(file);
       }
     }
+
+    return this;
   }
 
   /**
@@ -66,13 +77,15 @@ export class FileCollection {
    *   It will be serialized using JSON.stringify.
    * @returns A promise that resolves when the file is saved.
    */
-  set(key: string, value: any): Promise<void> {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  set(key: string, value: any): Promise<this> {
     this.removeFile(key);
     const string = JSON.stringify(value, (key, value) =>
       ArrayBuffer.isView(value) ? Array.from(value as any) : value,
     );
     return this.appendText(key, string);
   }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   removeFile(originalRelativePath: string): void | FileItem {
     const { relativePath } = getNameInfo(originalRelativePath);
@@ -95,6 +108,7 @@ export class FileCollection {
     return removedFile;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async get(key: string): Promise<any> {
     const { relativePath } = getNameInfo(key);
     const file = this.files.find((f) => f.relativePath === relativePath);
@@ -105,11 +119,13 @@ export class FileCollection {
     return JSON.parse(string);
   }
 
-  appendWebSource(
+  async appendWebSource(
     webSourceURL: string,
     options: { baseURL?: string } = {},
-  ): Promise<void> {
-    return appendWebSource(this, webSourceURL, options);
+  ): Promise<this> {
+    await appendWebSource(this, webSourceURL, options);
+
+    return this;
   }
 
   /**
@@ -117,12 +133,19 @@ export class FileCollection {
    * @param fileList - pass a FileList (from dom input file element or similar) or an iterable of File objects.
    * @returns - A promise that resolves when the files are appended.
    */
-  appendFileList(fileList: Iterable<File>): Promise<void> {
-    return appendFileList(this, fileList);
+  async appendFileList(fileList: Iterable<File>): Promise<this> {
+    await appendFileList(this, fileList);
+
+    return this;
   }
 
-  appendSource(webSource: Source, options: { baseURL?: string } = {}) {
-    return appendSource(this, webSource, options);
+  async appendSource(
+    webSource: Source,
+    options: { baseURL?: string } = {},
+  ): Promise<this> {
+    await appendSource(this, webSource, options);
+
+    return this;
   }
 
   /**
@@ -132,38 +155,42 @@ export class FileCollection {
    * @param [options.keepBasename=true] - If true, the basename of the path will be kept as the relative path.
    * @returns A promise that resolves when the path is appended.
    */
-  appendPath(
+  async appendPath(
     path: string,
     options: { keepBasename?: boolean } = {},
-  ): Promise<void> {
-    return appendPath(this, path, options);
+  ): Promise<this> {
+    await appendPath(this, path, options);
+
+    return this;
   }
 
-  appendText(
+  async appendText(
     relativePath: string,
     text: string | Promise<string>,
     options: { dateModified?: number } = {},
-  ): Promise<void> {
-    return appendText(this, relativePath, text, options);
+  ): Promise<this> {
+    await appendText(this, relativePath, text, options);
+
+    return this;
   }
 
-  appendArrayBuffer(
+  async appendArrayBuffer(
     relativePath: string,
     arrayBuffer: ArrayBuffer | Promise<ArrayBuffer>,
     options: { dateModified?: number } = {},
-  ): Promise<void> {
-    return appendArrayBuffer(this, relativePath, arrayBuffer, options);
+  ): Promise<this> {
+    await appendArrayBuffer(this, relativePath, arrayBuffer, options);
+
+    return this;
   }
 
   toIum(options: ToIumOptions = {}) {
-    this.alphabetical();
-    return toIum(this, options);
+    return toIum(this.alphabetical(), options);
   }
 
   static async fromIum(ium: ZipFileContent) {
     const fileCollection = await fromIum(ium);
-    fileCollection.alphabetical();
-    return fileCollection;
+    return fileCollection.alphabetical();
   }
 
   static async fromZip(
@@ -190,19 +217,65 @@ export class FileCollection {
     source: Source,
     collectionOptions: Options = {},
     options: { baseURL?: string } = {},
-  ) {
+  ): Promise<FileCollection> {
     const collection = new FileCollection(collectionOptions);
     await collection.appendSource(source, options);
     collection.alphabetical();
     return collection;
   }
 
-  alphabetical() {
+  static fromCollection(
+    collection: FileCollection,
+    options?: Options,
+  ): FileCollection {
+    return new FileCollection(options, collection);
+  }
+
+  alphabetical(): this {
     this.sources.sort((a, b) => (a.relativePath < b.relativePath ? -1 : 1));
     this.files.sort((a, b) => (a.relativePath < b.relativePath ? -1 : 1));
+
+    return this;
   }
 
   [Symbol.iterator]() {
     return this.files.values();
+  }
+
+  filter(
+    predicate: (
+      this: FileItem[],
+      file: FileItem,
+      index: number,
+      array: FileItem[],
+    ) => boolean,
+  ): FileCollection {
+    const sourcesMap = new Map<string, ExtendedSourceItem>(
+      this.sources.map((s) => [s.uuid, s]),
+    );
+    const filteredFiles: FileItem[] = [];
+    const filteredSources = new Map<string, ExtendedSourceItem>();
+
+    for (const [index, file] of this.files.entries()) {
+      if (!predicate.call(this.files, file, index, this.files)) {
+        continue;
+      }
+
+      filteredFiles.push(cloneFileItem(file));
+
+      const source = sourcesMap.get(file.sourceUUID);
+      if (!source) continue;
+      if (filteredSources.has(file.sourceUUID)) continue;
+
+      filteredSources.set(file.sourceUUID, cloneExtendedSourceItem(source));
+    }
+
+    const collection = new FileCollection(this.options);
+    Object.assign(collection, {
+      files: filteredFiles,
+      sources: filteredSources,
+    });
+
+    return collection;
   }
 }

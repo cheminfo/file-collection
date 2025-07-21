@@ -54,3 +54,18 @@ export interface Options {
    */
   cache?: boolean;
 }
+
+// eslint-disable-next-line jsdoc/require-jsdoc
+export function mergeOptions(base: Options, override: Options) {
+  return {
+    filter: override.filter
+      ? { ...base.filter, ...override.filter }
+      : base.filter,
+    unzip: override.unzip ? { ...base.unzip, ...override.unzip } : base.unzip,
+    ungzip: override.ungzip
+      ? { ...base.ungzip, ...override.ungzip }
+      : base.ungzip,
+    logger: override.logger ?? base.logger,
+    cache: override.cache ?? base.cache,
+  };
+}
