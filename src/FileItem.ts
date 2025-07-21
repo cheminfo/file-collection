@@ -12,3 +12,12 @@ export interface FileItem extends ItemData {
   baseURL?: string;
   sourceUUID: string;
 }
+
+/**
+ * Clones a FileItem object.
+ * @param fileItem - The FileItem to clone.
+ * @returns A new FileItem object with the same properties as the original.
+ */
+export function cloneFileItem(fileItem: FileItem): FileItem {
+  return { ...fileItem };
+}

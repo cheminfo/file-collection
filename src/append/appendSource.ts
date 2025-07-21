@@ -9,9 +9,11 @@ export async function appendSource(
   source: Source,
   options: { baseURL?: string } = {},
 ): Promise<void> {
-  const { filter } = fileCollection;
+  const {
+    options: { filter },
+  } = fileCollection;
   const { entries, baseURL } = source;
-  const promises: Array<Promise<void>> = [];
+  const promises: Array<Promise<unknown>> = [];
   for (const entry of entries) {
     const { relativePath } = entry;
     if (!shouldAddItem(relativePath, filter)) continue;

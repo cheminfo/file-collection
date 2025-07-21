@@ -29,7 +29,7 @@ export async function fromIum(
 
   const fileCollection = new FileCollection(index.options);
 
-  const promises: Array<Promise<void>> = [];
+  const promises: Array<Promise<unknown>> = [];
   for (const source of index.sources) {
     const url = new URL(source.relativePath, source.baseURL);
     if (url.protocol === 'ium:') {

@@ -5,7 +5,7 @@ configure({
   useWebWorkers: false,
 });
 
-export * from './FileCollection.ts';
+export * from './FileCollection.js';
 
 export type { ZipFileContent, ZipFileContentInput } from './ZipFileContent.ts';
 export type { FileItem } from './FileItem.js';
@@ -17,6 +17,8 @@ export type {
   UnzipExpandOptions,
 } from './Options.js';
 export type { ToIumOptions } from './toIum.js';
+export type { Source } from './Source.js';
+export type { SourceItem } from './SourceItem.js';
 
 /**
  * Tools using this package can configure zip.js with the following `zipJsConfigure` method
