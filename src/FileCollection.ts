@@ -19,6 +19,7 @@ import type { ToIumOptions } from './toIum.ts';
 import { toIum } from './toIum.ts';
 import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile.ts';
 import { expandAndFilter } from './utilities/expand/expandAndFilter.ts';
+import { filterFileCollection } from './utilities/filter_file_collection.js';
 import { getNameInfo } from './utilities/getNameInfo.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
 
@@ -242,6 +243,12 @@ export class FileCollection {
     return this.files.values();
   }
 
+  /**
+   * Filter files of the collection based on a predicate function.
+   * @param predicate - Function which takes a FileItem, its index, and the array of FileItems, must return a boolean.
+   *  True to keep the file, false to remove it.
+   * @returns A new FileCollection containing only the files that match the predicate (and sources attached to these files).
+   */
   filter(
     predicate: (
       this: FileItem[],
@@ -250,32 +257,10 @@ export class FileCollection {
       array: FileItem[],
     ) => boolean,
   ): FileCollection {
-    const sourcesMap = new Map<string, ExtendedSourceItem>(
-      this.sources.map((s) => [s.uuid, s]),
+    return filterFileCollection(
+      this,
+      predicate,
+      new FileCollection(this.options),
     );
-    const filteredFiles: FileItem[] = [];
-    const filteredSources = new Map<string, ExtendedSourceItem>();
-
-    for (const [index, file] of this.files.entries()) {
-      if (!predicate.call(this.files, file, index, this.files)) {
-        continue;
-      }
-
-      filteredFiles.push(cloneFileItem(file));
-
-      const source = sourcesMap.get(file.sourceUUID);
-      if (!source) continue;
-      if (filteredSources.has(file.sourceUUID)) continue;
-
-      filteredSources.set(file.sourceUUID, cloneExtendedSourceItem(source));
-    }
-
-    const collection = new FileCollection(this.options);
-    Object.assign(collection, {
-      files: filteredFiles,
-      sources: filteredSources,
-    });
-
-    return collection;
   }
 }
