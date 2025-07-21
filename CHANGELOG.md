@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.0.0](https://github.com/cheminfo/file-collection/compare/v4.1.1...v5.0.0) (2025-07-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* Remove `filter` and `cache` props shortcut. Access `filter` and `cache` directly from `options` props.
+
+### Features
+
+* add `.filter` method to `FileCollection` prototype ([8757cc0](https://github.com/cheminfo/file-collection/commit/8757cc0d56f71a9020a2bac56f2b01ec3bdf4257))
+* expose chainable API ([#30](https://github.com/cheminfo/file-collection/issues/30)) ([8757cc0](https://github.com/cheminfo/file-collection/commit/8757cc0d56f71a9020a2bac56f2b01ec3bdf4257))
+
+
+### Bug Fixes
+
+* export missing `Source` and `SourceItem` interfaces ([8757cc0](https://github.com/cheminfo/file-collection/commit/8757cc0d56f71a9020a2bac56f2b01ec3bdf4257))
+
+
+### Code Refactoring
+
+* remove `filter` and `cache` props shortcut ([8757cc0](https://github.com/cheminfo/file-collection/commit/8757cc0d56f71a9020a2bac56f2b01ec3bdf4257))
+
 ## [4.1.1](https://github.com/cheminfo/file-collection/compare/v4.1.0...v4.1.1) (2025-07-10)
 
 
