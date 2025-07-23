@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.0.1](https://github.com/cheminfo/file-collection/compare/v5.0.0...v5.0.1) (2025-07-23)
+
+
+### Bug Fixes
+
+* complete buffer types supported by `appendArrayBuffer` ([#32](https://github.com/cheminfo/file-collection/issues/32)) ([03c1ac5](https://github.com/cheminfo/file-collection/commit/03c1ac5f505afb6c474514be7dcb89db3d9149d6))
+* normalize relativePath ([#34](https://github.com/cheminfo/file-collection/issues/34)) ([c8a4621](https://github.com/cheminfo/file-collection/commit/c8a4621a474d70a8574a5daa9f5cc2bac05720e7))
+
 ## [5.0.0](https://github.com/cheminfo/file-collection/compare/v4.1.1...v5.0.0) (2025-07-21)
 
 
