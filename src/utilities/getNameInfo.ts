@@ -3,6 +3,6 @@ export function getNameInfo(name: string) {
   return {
     url,
     name: url.pathname.split('/').pop() as string,
-    relativePath: url.pathname,
+    relativePath: url.pathname.slice(1),
   };
 }

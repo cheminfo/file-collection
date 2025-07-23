@@ -12,7 +12,7 @@ test('FileCollection.appendFileList', async () => {
       type: 'plain/text',
     },
   );
-  Object.assign(file, { webkitRelativePath: 'path/hello.txt' });
+  Object.assign(file, { webkitRelativePath: './path/hello.txt' });
 
   await collection.appendFileList([file]);
 

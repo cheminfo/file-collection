@@ -1,5 +1,6 @@
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { FileCollection } from '../FileCollection.ts';
+import { normalizeRelativePath } from '../utilities/normalize_relative_path.ts';
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 export async function appendFileList(
@@ -19,8 +20,10 @@ function* toSourceAppend(
       name: file.name,
       size: file.size,
       baseURL: 'ium:/',
-      // @ts-expect-error We allow file.path as alternative to webkitRelativePath
-      relativePath: file.webkitRelativePath || file.path || file.name,
+      relativePath: normalizeRelativePath(
+        // @ts-expect-error We allow file.path as alternative to webkitRelativePath
+        file.webkitRelativePath || file.path || file.name,
+      ),
       lastModified: file.lastModified,
       text: () => file.text(),
       arrayBuffer: () => file.arrayBuffer(),
