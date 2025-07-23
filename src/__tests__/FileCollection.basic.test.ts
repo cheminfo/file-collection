@@ -1,4 +1,4 @@
-import { test, expect, assert } from 'vitest';
+import { assert, expect, test } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
 
@@ -13,7 +13,7 @@ test('FileCollection basic ium tests', async () => {
   expect(newCollection).toHaveLength(1);
   expect(newCollection).toMatchObject([
     {
-      relativePath: '/hello.txt',
+      relativePath: 'hello.txt',
       name: 'hello.txt',
       baseURL: 'ium:/',
     },

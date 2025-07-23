@@ -19,8 +19,10 @@ function* toSourceAppend(
       name: file.name,
       size: file.size,
       baseURL: 'ium:/',
-      // @ts-expect-error We allow file.path as alternative to webkitRelativePath
-      relativePath: file.webkitRelativePath || file.path || file.name,
+      relativePath: normalizePath(
+        // @ts-expect-error We allow file.path as alternative to webkitRelativePath
+        file.webkitRelativePath || file.path || file.name,
+      ),
       lastModified: file.lastModified,
       text: () => file.text(),
       arrayBuffer: () => file.arrayBuffer(),
@@ -29,4 +31,12 @@ function* toSourceAppend(
 
     yield fileCollection.appendExtendedSource(source);
   }
+}
+
+/**
+ * Normalizes a relative path so it doesn't start with '/' or './'.
+ * @param path
+ */
+function normalizePath(path: string): string {
+  return path.replace(/^\.?\//, '');
 }

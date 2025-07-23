@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 
-import { test, expect, assert } from 'vitest';
+import { assert, expect, test } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
 
@@ -152,20 +152,20 @@ test('appendPath dataUngzip', async () => {
   expect(
     newCollection.sources.map((source) => source.relativePath),
   ).toStrictEqual([
-    '/dataUngzip/dir1/a.txt',
-    '/dataUngzip/dir1/b.txt.gz',
-    '/dataUngzip/dir1/dir3/e.txt',
-    '/dataUngzip/dir1/dir3/f.txt.gz',
-    '/dataUngzip/dir2/c.txt',
-    '/dataUngzip/dir2/d.txt',
+    'dataUngzip/dir1/a.txt',
+    'dataUngzip/dir1/b.txt.gz',
+    'dataUngzip/dir1/dir3/e.txt',
+    'dataUngzip/dir1/dir3/f.txt.gz',
+    'dataUngzip/dir2/c.txt',
+    'dataUngzip/dir2/d.txt',
   ]);
   expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
-    '/dataUngzip/dir1/a.txt',
-    '/dataUngzip/dir1/b.txt.gz/b.txt',
-    '/dataUngzip/dir1/dir3/e.txt',
-    '/dataUngzip/dir1/dir3/f.txt.gz/f.txt',
-    '/dataUngzip/dir2/c.txt',
-    '/dataUngzip/dir2/d.txt',
+    'dataUngzip/dir1/a.txt',
+    'dataUngzip/dir1/b.txt.gz/b.txt',
+    'dataUngzip/dir1/dir3/e.txt',
+    'dataUngzip/dir1/dir3/f.txt.gz/f.txt',
+    'dataUngzip/dir2/c.txt',
+    'dataUngzip/dir2/d.txt',
   ]);
 });
 
@@ -226,15 +226,15 @@ test('appendPath dataUnzip with custom extension', async () => {
   expect(newCollection.files).toHaveLength(9);
 
   expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
-    '/dataUnzip/data.zip',
-    '/dataUnzip/dir1/a.txt',
-    '/dataUnzip/dir1/b.txt',
-    '/dataUnzip/dir1/dir3/e.txt',
-    '/dataUnzip/dir1/dir3/f.txt',
-    '/dataUnzip/dir2/c.txt',
-    '/dataUnzip/dir2/d.txt',
-    '/dataUnzip/dir2/data.zipped/data/subDir1/c.txt',
-    '/dataUnzip/dir2/data.zipped/data/subDir1/d.txt',
+    'dataUnzip/data.zip',
+    'dataUnzip/dir1/a.txt',
+    'dataUnzip/dir1/b.txt',
+    'dataUnzip/dir1/dir3/e.txt',
+    'dataUnzip/dir1/dir3/f.txt',
+    'dataUnzip/dir2/c.txt',
+    'dataUnzip/dir2/d.txt',
+    'dataUnzip/dir2/data.zipped/data/subDir1/c.txt',
+    'dataUnzip/dir2/data.zipped/data/subDir1/d.txt',
   ]);
 });
 
@@ -254,17 +254,17 @@ test('appendPath data with keep dotfiles', async () => {
   expect(newCollection.files).toHaveLength(11);
 
   expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
-    '/data/.dotFile',
-    '/data/.dotFolder/a.txt',
-    '/data/dir1/a.txt',
-    '/data/dir1/b.txt',
-    '/data/dir1/dir3/e.txt',
-    '/data/dir1/dir3/f.txt',
-    '/data/dir2/c.txt',
-    '/data/dir2/d.txt',
-    '/data/dir3/a.MpT',
-    '/data/dir3/a.mpr',
-    '/data/dir3/a.mps',
+    'data/.dotFile',
+    'data/.dotFolder/a.txt',
+    'data/dir1/a.txt',
+    'data/dir1/b.txt',
+    'data/dir1/dir3/e.txt',
+    'data/dir1/dir3/f.txt',
+    'data/dir2/c.txt',
+    'data/dir2/d.txt',
+    'data/dir3/a.MpT',
+    'data/dir3/a.mpr',
+    'data/dir3/a.mps',
   ]);
 });
 
@@ -288,8 +288,8 @@ test('appendPath data with keep duplicates', async () => {
   expect(newCollection.files).toHaveLength(3);
 
   expect(newCollection.files.map((file) => file.relativePath)).toStrictEqual([
-    '/duplicates/a.txt',
-    '/duplicates/a.txt.gz/a.txt',
-    '/duplicates/a.txt.zip/a.txt',
+    'duplicates/a.txt',
+    'duplicates/a.txt.gz/a.txt',
+    'duplicates/a.txt.zip/a.txt',
   ]);
 });

@@ -19,8 +19,8 @@ describe('FileCollection.fromZip', async () => {
 
     expect(collection.files.length).toBe(2);
 
-    const hello = collection.files.find((f) => f.relativePath === '/hello.txt');
-    const foo = collection.files.find((f) => f.relativePath === '/foo.txt');
+    const hello = collection.files.find((f) => f.relativePath === 'hello.txt');
+    const foo = collection.files.find((f) => f.relativePath === 'foo.txt');
     assert(hello);
     assert(foo);
 

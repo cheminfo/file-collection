@@ -1,5 +1,5 @@
-import { TextWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 import type { FileEntry } from '@zip.js/zip.js';
+import { TextWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 
 import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
@@ -25,20 +25,18 @@ export async function fromIum(
     throw new Error('Invalid IUM file: missing index.json');
   }
   const rawData = await indexFile.getData(new TextWriter());
-  const index = await JSON.parse(rawData ?? '');
-
+  const index = await JSON.parse(rawData);
   const fileCollection = new FileCollection(index.options);
 
   const promises: Array<Promise<unknown>> = [];
   for (const source of index.sources) {
     const url = new URL(source.relativePath, source.baseURL);
     if (url.protocol === 'ium:') {
-      const key = `/data/${url.pathname}`.replaceAll(/\/\/+/g, '/');
+      const key = `/data/${url.pathname.slice(1)}`;
       const zipEntry = zipFiles.get(key);
       if (!zipEntry) {
         throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
-
       promises.push(appendEntry(zipEntry, url, fileCollection));
     } else {
       promises.push(
@@ -59,7 +57,7 @@ async function appendEntry(
   fileCollection: FileCollection,
 ): Promise<void> {
   const buffer = await entry.getData(new Uint8ArrayWriter());
-  await fileCollection.appendArrayBuffer(url.pathname, buffer, {
+  await fileCollection.appendArrayBuffer(url.pathname.slice(1), buffer, {
     dateModified: entry.lastModDate.getTime(),
   });
 }
