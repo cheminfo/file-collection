@@ -4,6 +4,7 @@ import type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
 import type { FileCollection } from './FileCollection.ts';
 import type { Options } from './Options.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
+import { normalizeRelativePath } from './utilities/normalize_relative_path.js';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
 import { fileEntryToData } from './zip/file_entry_to_data.js';
 import { getZipReader } from './zip/get_zip_reader.ts';
@@ -41,7 +42,7 @@ function entryToSource(entry: FileEntry): ExtendedSourceItem {
     uuid: crypto.randomUUID(),
     size: entry.uncompressedSize,
     baseURL: 'ium:/',
-    relativePath: entry.filename,
+    relativePath: normalizeRelativePath(entry.filename),
     name: entry.filename.replace(/^.*\//, ''),
     lastModified: entry.lastModDate.getTime(),
     ...fileEntryToData(entry),
