@@ -8,6 +8,7 @@ import type { Options } from './Options.ts';
 import type { Source } from './Source.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { appendArrayBuffer } from './append/appendArrayBuffer.ts';
+import type { SupportedBufferInput } from './append/appendArrayBuffer.ts';
 import { appendFileList } from './append/appendFileList.ts';
 import { appendPath } from './append/appendPath.ts';
 import { appendSource } from './append/appendSource.ts';
@@ -177,7 +178,7 @@ export class FileCollection {
 
   async appendArrayBuffer(
     relativePath: string,
-    arrayBuffer: ArrayBuffer | Promise<ArrayBuffer>,
+    arrayBuffer: SupportedBufferInput,
     options: { dateModified?: number } = {},
   ): Promise<this> {
     await appendArrayBuffer(this, relativePath, arrayBuffer, options);
