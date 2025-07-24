@@ -1,6 +1,6 @@
 {
   "name": "file-collection",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "Library to manage large amount of files coming from different sources",
   "type": "module",
   "exports": "./lib/index.js",
