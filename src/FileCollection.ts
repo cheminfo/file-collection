@@ -47,20 +47,31 @@ export class FileCollection {
   /**
    * This is unexpected to be used directly
    * @param source - The source to append, which should be an ExtendedSourceItem.
+   * @param itemOptions - Options for the item, which will be merged with the collection's options.
    * @private
    * @returns - A promise that resolves to the FileCollection instance.
    */
-  async appendExtendedSource(source: ExtendedSourceItem): Promise<this> {
-    if (!shouldAddItem(source.relativePath, this.options.filter)) return this;
+  async appendExtendedSource(
+    source: ExtendedSourceItem,
+    itemOptions?: Options,
+  ): Promise<this> {
+    const options = itemOptions
+      ? mergeOptions(this.options, itemOptions)
+      : this.options;
+    const shouldAdd = shouldAddItem(source.relativePath, options.filter);
+    if (!shouldAdd) return this;
+
     this.sources.push(source);
+
     const sourceFile = convertExtendedSourceToFile(source);
-    const files = await expandAndFilter(sourceFile, this.options);
+    const files = await expandAndFilter(sourceFile, options);
+
     const existingFiles = new Set(this.files.map((f) => f.relativePath));
     for (const file of files) {
       if (existingFiles.has(file.relativePath)) {
         throw new Error(`Duplicate relativePath: ${file.relativePath}`);
       }
-      if (this.options.cache) {
+      if (options.cache) {
         this.files.push(new CachedFileItem(file));
       } else {
         this.files.push(file);

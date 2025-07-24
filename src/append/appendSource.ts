@@ -16,10 +16,10 @@ export async function appendSource(
   const promises: Array<Promise<unknown>> = [];
   for (const entry of entries) {
     const { relativePath } = entry;
-    if (!shouldAddItem(relativePath, filter)) continue;
+    if (!shouldAddItem(relativePath, entry.options?.filter ?? filter)) continue;
     const alternativeBaseURL = baseURL || options.baseURL;
     const source = sourceItemToExtendedSourceItem(entry, alternativeBaseURL);
-    promises.push(fileCollection.appendExtendedSource(source));
+    promises.push(fileCollection.appendExtendedSource(source, entry.options));
   }
   await Promise.all(promises);
 }
