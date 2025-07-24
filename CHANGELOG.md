@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.0](https://github.com/cheminfo/file-collection/compare/v5.0.1...v5.1.0) (2025-07-24)
+
+
+### Features
+
+* add options support on SourceItem ([#35](https://github.com/cheminfo/file-collection/issues/35)) ([e09fab1](https://github.com/cheminfo/file-collection/commit/e09fab10efd45a29695c4ec90e94075e4c8935b1))
+
 ## [5.0.1](https://github.com/cheminfo/file-collection/compare/v5.0.0...v5.0.1) (2025-07-23)
 
 
