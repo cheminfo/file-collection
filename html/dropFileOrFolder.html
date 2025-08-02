@@ -1,0 +1,123 @@
+<html>
+
+<head>
+  <style>
+    #drop_zone {
+      width: 300px;
+      height: 150px;
+      border: 3px dashed #ccc;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #999;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #drop_zone:hover {
+      border-color: #aaa;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+    <p>Drop your files or folder here</p>
+  </div>
+
+  <script>
+    function dragOverHandler(ev) {
+      console.log("File(s) and/or directory(ies) in drop zone");
+      ev.preventDefault();
+    }
+    async function dropHandler(ev) {
+      console.log("File(s) and/or directory(ies) dropped");
+      ev.preventDefault();
+
+
+
+      if (ev.dataTransfer.items) {
+        console.log(`Processing ${ev.dataTransfer.items.length} dropped items...`);
+        
+        const promises = [];
+        for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+          const item = ev.dataTransfer.items[i];
+          console.log(`Item ${i}: kind=${item.kind}, type=${item.type}`);
+          
+          if (item.kind === "file") {
+            const entry = item.webkitGetAsEntry();
+            if (entry) {
+              console.log(`Processing entry: ${entry.name} (isFile: ${entry.isFile}, isDirectory: ${entry.isDirectory})`);
+              promises.push(processEntry(entry, ''));
+            }
+          }
+        }
+        
+        // Wait for all entries to be processed
+        await Promise.all(promises);
+        console.log("All dropped items processed.");
+      } else {
+        // Fallback: Use DataTransfer interface to access files only
+        // Note: This fallback cannot handle directories, only individual files
+        [...ev.dataTransfer.files].forEach((file, i) => {
+          console.log(`… file[${i}].name = ${file.name} (size: ${file.size} bytes)`);
+        });
+      }
+    }
+
+    async function processEntry(entry, path) {
+      console.log(`Processing entry: ${entry.name} at path: "${path}"`);
+      
+      if (entry.isFile) {
+        // Handle file
+        return new Promise((resolve) => {
+          entry.file((file) => {
+            const fullPath = path + file.name;
+            console.log(`… file: ${fullPath} (size: ${file.size} bytes)`);
+            resolve();
+          });
+        });
+      } else if (entry.isDirectory) {
+        // Handle directory
+        console.log(`… directory: ${path + entry.name}/`);
+        
+        const dirReader = entry.createReader();
+        const entries = await readAllDirectoryEntries(dirReader);
+        
+        console.log(`Found ${entries.length} entries in directory: ${entry.name}`);
+        
+        const promises = [];
+        for (const childEntry of entries) {
+          promises.push(processEntry(childEntry, path + entry.name + '/'));
+        }
+        
+        await Promise.all(promises);
+      }
+    }
+
+    async function readAllDirectoryEntries(dirReader) {
+      const entries = [];
+      let readEntries = await readEntriesPromise(dirReader);
+      
+      while (readEntries.length > 0) {
+        entries.push(...readEntries);
+        readEntries = await readEntriesPromise(dirReader);
+      }
+      
+      return entries;
+    }
+
+    function readEntriesPromise(dirReader) {
+      return new Promise((resolve, reject) => {
+        dirReader.readEntries(resolve, reject);
+      });
+    }
+
+
+  </script>
+</body>
+
+</html>
