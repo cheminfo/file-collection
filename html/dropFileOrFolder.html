@@ -24,20 +24,28 @@
 
 <body>
 
-  <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-    <p>Drop your files or folder here</p>
+  <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" ondragenter="dragEnterHandler(event);" ondragleave="dragLeaveHandler(event);">
+    <p id="drop_text">Drop your files or folder here</p>
   </div>
 
   <script>
     function dragOverHandler(ev) {
-      console.log("File(s) and/or directory(ies) in drop zone");
       ev.preventDefault();
     }
+
+    function dragEnterHandler(ev) {
+      ev.preventDefault();
+    }
+
+    function dragLeaveHandler(ev) {
+      ev.preventDefault();
+    }
+
     async function dropHandler(ev) {
       console.log("File(s) and/or directory(ies) dropped");
       ev.preventDefault();
 
-
+      const allFiles = [];
 
       if (ev.dataTransfer.items) {
         console.log(`Processing ${ev.dataTransfer.items.length} dropped items...`);
@@ -51,7 +59,7 @@
             const entry = item.webkitGetAsEntry();
             if (entry) {
               console.log(`Processing entry: ${entry.name} (isFile: ${entry.isFile}, isDirectory: ${entry.isDirectory})`);
-              promises.push(processEntry(entry, ''));
+              promises.push(processEntry(entry, '', allFiles));
             }
           }
         }
@@ -64,11 +72,16 @@
         // Note: This fallback cannot handle directories, only individual files
         [...ev.dataTransfer.files].forEach((file, i) => {
           console.log(`… file[${i}].name = ${file.name} (size: ${file.size} bytes)`);
+          allFiles.push(file);
         });
       }
+
+      console.log(`Total files collected: ${allFiles.length}`);
+      console.table(allFiles);
+      return allFiles;
     }
 
-    async function processEntry(entry, path) {
+    async function processEntry(entry, path, filesArray) {
       console.log(`Processing entry: ${entry.name} at path: "${path}"`);
       
       if (entry.isFile) {
@@ -77,6 +90,14 @@
           entry.file((file) => {
             const fullPath = path + file.name;
             console.log(`… file: ${fullPath} (size: ${file.size} bytes)`);
+            
+            // Add the file to the array with additional path information
+            const fileWithPath = new File([file], fullPath, {
+              type: file.type,
+              lastModified: file.lastModified
+            });
+            filesArray.push(fileWithPath);
+            
             resolve();
           });
         });
@@ -91,7 +112,7 @@
         
         const promises = [];
         for (const childEntry of entries) {
-          promises.push(processEntry(childEntry, path + entry.name + '/'));
+          promises.push(processEntry(childEntry, path + entry.name + '/', filesArray));
         }
         
         await Promise.all(promises);
