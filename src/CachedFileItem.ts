@@ -11,7 +11,7 @@ export interface CacheOptions {
 export class CachedFileItem {
   readonly fileItem: FileItem;
   private textCache?: string;
-  private arrayBufferCache?: ArrayBuffer;
+  private arrayBufferCache?: ArrayBufferLike;
 
   constructor(fileItem: FileItem) {
     this.fileItem = fileItem;

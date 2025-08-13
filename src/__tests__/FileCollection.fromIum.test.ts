@@ -5,13 +5,13 @@ import {
   ZipReader,
   ZipWriter,
 } from '@zip.js/zip.js';
-import { expect, test, describe } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { FileCollection } from '../FileCollection.js';
 import { UNSUPPORTED_ZIP_CONTENT_ERROR } from '../zip/get_zip_reader.js';
 
 describe('invalid ium file', () => {
-  test('missing index.json', async () => {
+  it('missing index.json', async () => {
     const zipWriter = new ZipWriter(new Uint8ArrayWriter());
     await zipWriter.add('not-index.json', new TextReader('{}'));
     const zipBuffer = await zipWriter.close();
@@ -21,7 +21,7 @@ describe('invalid ium file', () => {
     );
   });
 
-  test('missing data file', async () => {
+  it('missing data file', async () => {
     const fileCollection = new FileCollection();
     await fileCollection.appendText('/hello.txt', 'Hello Word!');
     const ium = await fileCollection.toIum();
@@ -49,21 +49,21 @@ describe('check input types', async () => {
   await fileCollection.appendText('hello.txt', 'Hello Word!');
   const ium = await fileCollection.toIum();
 
-  test('Uint8Array', async () => {
+  it('Uint8Array', async () => {
     await expect(FileCollection.fromIum(ium)).resolves.not.toThrow();
   });
 
-  test('ArrayBuffer', async () => {
+  it('ArrayBuffer', async () => {
     await expect(FileCollection.fromIum(ium.buffer)).resolves.not.toThrow();
   });
 
-  test('Blob', async () => {
+  it('Blob', async () => {
     const blob = new Blob([ium], { type: 'application/zip' });
 
     await expect(FileCollection.fromIum(blob)).resolves.not.toThrow();
   });
 
-  test('ReadableStream', async () => {
+  it('ReadableStream', async () => {
     const stream = new ReadableStream({
       start(controller) {
         controller.enqueue(ium);
@@ -74,7 +74,7 @@ describe('check input types', async () => {
     await expect(FileCollection.fromIum(stream)).resolves.not.toThrow();
   });
 
-  test('unknown', async () => {
+  it('unknown', async () => {
     await expect(FileCollection.fromIum(null as never)).rejects.toThrow(
       UNSUPPORTED_ZIP_CONTENT_ERROR,
     );

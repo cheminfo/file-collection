@@ -33,8 +33,8 @@ export function sourceItemToExtendedSourceItem(
     },
     stream: () => {
       const { writable, readable } = new TransformStream<
-        Uint8Array,
-        Uint8Array
+        Uint8Array<ArrayBuffer>,
+        Uint8Array<ArrayBuffer>
       >();
 
       async function propagateErrorToStream(error: unknown) {

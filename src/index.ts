@@ -5,14 +5,14 @@ configure({
   useWebWorkers: false,
 });
 
-export * from './FileCollection.js';
+export * from './FileCollection.ts';
 
 export type { ZipFileContent, ZipFileContentInput } from './ZipFileContent.ts';
-export type { FileItem } from './FileItem.js';
-export type { ExtendedSourceItem } from './ExtendedSourceItem.js';
+export type { FileItem } from './FileItem.ts';
+export type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
 export type {
-  Options,
   FilterOptions,
+  Options,
   UngzipExpandOptions,
   UnzipExpandOptions,
 } from './Options.js';

@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { Readable } from 'node:stream';
 
 import { TextReader, Uint8ArrayWriter, ZipWriter } from '@zip.js/zip.js';
-import { assert, describe, expect, test } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 
 import { FileCollection } from '../FileCollection.js';
 
@@ -14,10 +14,10 @@ describe('FileCollection.fromZip', async () => {
   await zipWriter.add('/foo.txt', new TextReader('bar'));
   const zipBuffer = await zipWriter.close();
 
-  test('should create FileCollection from zip', async () => {
+  it('should create FileCollection from zip', async () => {
     const collection = await FileCollection.fromZip(zipBuffer);
 
-    expect(collection.files.length).toBe(2);
+    expect(collection.files).toHaveLength(2);
 
     const hello = collection.files.find((f) => f.relativePath === 'hello.txt');
     const foo = collection.files.find((f) => f.relativePath === 'foo.txt');
@@ -28,7 +28,7 @@ describe('FileCollection.fromZip', async () => {
     await expect(foo.text()).resolves.toBe('bar');
   });
 
-  test('simple data.zip', async () => {
+  it('simple data.zip', async () => {
     const fileCollection = await FileCollection.fromZip(
       new Uint8Array(readFileSync(join(import.meta.dirname, 'data.zip'))),
     );
@@ -46,14 +46,16 @@ describe('FileCollection.fromZip', async () => {
 
     const first = fileCollection.files.at(0);
     assert(first);
+
     await expect(first.text()).resolves.toBe('a');
 
     const last = fileCollection.files.at(-1);
     assert(last);
+
     await expect(last.text()).resolves.toBe('d');
   });
 
-  test('should support Node.js Buffer', async () => {
+  it('should support Node.js Buffer', async () => {
     const buffer = await readFile(join(import.meta.dirname, 'data.zip'));
 
     await expect(FileCollection.fromZip(buffer)).resolves.toBeInstanceOf(
@@ -61,7 +63,7 @@ describe('FileCollection.fromZip', async () => {
     );
   });
 
-  test('should support Node.js Buffer ArrayBuffer', async () => {
+  it('should support Node.js Buffer ArrayBuffer', async () => {
     const buffer = await readFile(join(import.meta.dirname, 'data.zip'));
 
     await expect(FileCollection.fromZip(buffer.buffer)).resolves.toBeInstanceOf(
@@ -69,7 +71,7 @@ describe('FileCollection.fromZip', async () => {
     );
   });
 
-  test('should support Readable.toWeb', async () => {
+  it('should support Readable.toWeb', async () => {
     const stream = createReadStream(join(import.meta.dirname, 'data.zip'));
 
     await expect(

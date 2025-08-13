@@ -7,7 +7,7 @@ export interface ZipFileContentInput {
   /**
    * Primitives from file reading libraries
    */
-  buffer: Uint8Array | ArrayBuffer | Blob;
+  buffer: Uint8Array | ArrayBufferLike | Blob;
 
   /**
    * From file reading stream api

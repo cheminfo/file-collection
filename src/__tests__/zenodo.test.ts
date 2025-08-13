@@ -27,6 +27,6 @@ describe('Zenodo 13307304', () => {
       { unzip: { zipExtensions: ['zip', 'nmredata'] } },
     );
 
-    expect(collection.files.length).toBe(18);
+    expect(collection.files).toHaveLength(18);
   });
 });

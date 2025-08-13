@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
-import { createReadStream } from 'node:fs';
-import { readdir, stat, readFile } from 'node:fs/promises';
+import { createReadStream, openAsBlob } from 'node:fs';
+import { readdir, stat } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { Readable } from 'node:stream';
 
@@ -50,10 +50,13 @@ async function appendFiles(
         size: info.size,
         relativePath,
         lastModified: Math.round(info.mtimeMs),
-        text: () => readFile(current, { encoding: 'utf8' }),
-        arrayBuffer: () => readFile(current),
+        text: () => openAsBlob(current).then((blob) => blob.text()),
+        arrayBuffer: () =>
+          openAsBlob(current).then((blob) => blob.arrayBuffer()),
         stream: () =>
-          Readable.toWeb(createReadStream(current)) as ReadableStream,
+          Readable.toWeb(createReadStream(current)) as ReadableStream<
+            Uint8Array<ArrayBuffer>
+          >,
       };
       await fileCollection.appendExtendedSource(source);
     }

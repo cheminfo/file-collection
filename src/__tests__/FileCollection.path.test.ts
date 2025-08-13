@@ -12,11 +12,14 @@ test('appendPath data folder', async () => {
   const ium = await fileCollection.toIum();
 
   const newCollection = [...(await FileCollection.fromIum(ium))];
+
   expect(newCollection).toHaveLength(9);
+
   const firstFile = newCollection[0];
   assert(firstFile);
   const text = await firstFile.text();
-  expect(text).toStrictEqual('a');
+
+  expect(text).toBe('a');
 });
 
 test('appendPath data folder and keepBasename', async () => {
@@ -26,6 +29,7 @@ test('appendPath data folder and keepBasename', async () => {
     { keepBasename: true },
   );
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
+
   expect(relativePaths).toStrictEqual([
     'data/dir1/a.txt',
     'data/dir1/b.txt',
@@ -47,6 +51,7 @@ test('appendPath data folder and do not keepBasename', async () => {
   );
 
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
+
   expect(relativePaths).toStrictEqual([
     'dir1/a.txt',
     'dir1/b.txt',
@@ -64,21 +69,26 @@ test('appendPath dataUnzip', async () => {
   const fileCollection = new FileCollection();
 
   await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
+
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(15);
 
   const ium = await fileCollection.toIum();
   const newCollection = await FileCollection.fromIum(ium);
+
   expect(newCollection.sources).toHaveLength(8);
   expect(newCollection.files).toHaveLength(15);
+
   const firstFile = newCollection.files[0];
   assert(firstFile);
   const text = await firstFile.text();
-  expect(text).toStrictEqual('c');
+
+  expect(text).toBe('c');
 
   const sourceUUIDs = fileCollection.files
     .map((file) => file.sourceUUID)
     .filter(Boolean);
+
   expect(sourceUUIDs).toHaveLength(15);
 });
 
@@ -86,14 +96,17 @@ test('appendPath dataUnzip no unzip', async () => {
   const fileCollection = new FileCollection({ unzip: { zipExtensions: [] } });
 
   await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
+
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(8);
 
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
+
   expect(newCollection.sources).toHaveLength(8);
   expect(newCollection.files).toHaveLength(8);
+
   const firstFile = newCollection.files[0];
   assert(firstFile);
   const array = new Uint8Array(await firstFile.arrayBuffer()).slice(0, 2);
@@ -105,6 +118,7 @@ test('appendPath dataUngzip', async () => {
   const fileCollection = new FileCollection();
 
   await fileCollection.appendPath(join(__dirname, 'dataUngzip/'));
+
   expect(fileCollection.sources).toHaveLength(6);
   expect(fileCollection.files).toHaveLength(6);
 
@@ -139,15 +153,19 @@ test('appendPath dataUngzip', async () => {
       parentRelativePath: undefined,
     },
   ]);
+
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
+
   expect(newCollection.sources).toHaveLength(6);
   expect(newCollection.files).toHaveLength(6);
+
   const firstFile = newCollection.files[0];
   assert(firstFile);
   const text = await firstFile.text();
-  expect(text).toStrictEqual('a');
+
+  expect(text).toBe('a');
 
   expect(
     newCollection.sources.map((source) => source.relativePath),
@@ -175,6 +193,7 @@ test('appendPath dataUnzip with custom extension', async () => {
   });
 
   await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
+
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(9);
 
@@ -222,6 +241,7 @@ test('appendPath dataUnzip with custom extension', async () => {
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
+
   expect(newCollection.sources).toHaveLength(8);
   expect(newCollection.files).toHaveLength(9);
 
@@ -244,12 +264,14 @@ test('appendPath data with keep dotfiles', async () => {
   });
 
   await fileCollection.appendPath(join(__dirname, 'data/'));
+
   expect(fileCollection.sources).toHaveLength(11);
   expect(fileCollection.files).toHaveLength(11);
 
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
+
   expect(newCollection.sources).toHaveLength(11);
   expect(newCollection.files).toHaveLength(11);
 
@@ -272,6 +294,7 @@ test('appendPath data with keep duplicates', async () => {
   const fileCollection = new FileCollection({});
 
   await fileCollection.appendPath(join(__dirname, 'duplicates/'));
+
   expect(fileCollection.sources).toHaveLength(3);
   expect(fileCollection.files).toHaveLength(3);
 
@@ -284,6 +307,7 @@ test('appendPath data with keep duplicates', async () => {
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
+
   expect(newCollection.sources).toHaveLength(3);
   expect(newCollection.files).toHaveLength(3);
 
