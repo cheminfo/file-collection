@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.1](https://github.com/cheminfo/file-collection/compare/v5.1.0...v5.1.1) (2025-08-13)
+
+
+### Bug Fixes
+
+* exports and ArrayBuffer handling with TS 4.9 ([#39](https://github.com/cheminfo/file-collection/issues/39)) ([d56ac7b](https://github.com/cheminfo/file-collection/commit/d56ac7beb1f3e69ed8f744019895fb641949c8e8))
+
 ## [5.1.0](https://github.com/cheminfo/file-collection/compare/v5.0.1...v5.1.0) (2025-07-24)
 
 
