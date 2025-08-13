@@ -1,15 +1,17 @@
 {
   "name": "file-collection",
   "version": "5.1.0",
+  "license": "MIT",
   "description": "Library to manage large amount of files coming from different sources",
+  "keywords": [],
+  "author": "Luc Patiny",
   "type": "module",
-  "exports": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js"
+  },
   "browser": {
     "./lib/append/appendPath.js": "./lib/append/appendPath.browser.js"
   },
-  "keywords": [],
-  "author": "Luc Patiny",
-  "license": "MIT",
   "files": [
     "src",
     "lib"
@@ -18,8 +20,8 @@
     "build": "npm run tsc && cheminfo-build --entry lib/index.js --root FileCollection",
     "check-types": "tsc --noEmit",
     "clean": "rimraf lib",
-    "eslint": "eslint --cache .",
-    "eslint-fix": "eslint --cache --fix .",
+    "eslint": "eslint .",
+    "eslint-fix": "eslint . --fix",
     "prepack": "npm run tsc",
     "prettier": "prettier --check .",
     "prettier-write": "prettier --write .",
@@ -28,6 +30,26 @@
     "tsc": "npm run clean && npm run tsc-build",
     "tsc-build": "tsc --project tsconfig.build.json"
   },
+  "dependencies": {
+    "@zip.js/zip.js": "^2.7.72",
+    "cheminfo-types": "^1.8.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@types/node": "^24.2.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@zakodium/tsconfig": "^1.0.2",
+    "cheminfo-build": "^1.2.1",
+    "eslint": "^9.33.0",
+    "eslint-config-cheminfo-typescript": "^19.0.0",
+    "fifo-logger": "^2.0.0",
+    "msw": "^2.10.4",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cheminfo/file-collection.git"
@@ -35,25 +57,5 @@
   "bugs": {
     "url": "https://github.com/cheminfo/file-collection/issues"
   },
-  "homepage": "https://github.com/cheminfo/file-collection#readme",
-  "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.26.3",
-    "@babel/preset-typescript": "^7.26.0",
-    "@types/node": "^22.13.9",
-    "@vitest/coverage-v8": "^3.0.8",
-    "@zakodium/tsconfig": "^1.0.2",
-    "cheminfo-build": "^1.2.1",
-    "eslint": "^9.21.0",
-    "eslint-config-cheminfo-typescript": "^17.0.0",
-    "fifo-logger": "^1.0.0",
-    "msw": "^2.7.3",
-    "prettier": "^3.6.1",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.8.3",
-    "vitest": "^3.0.8"
-  },
-  "dependencies": {
-    "@zip.js/zip.js": "^2.7.63",
-    "cheminfo-types": "^1.8.1"
-  }
+  "homepage": "https://github.com/cheminfo/file-collection#readme"
 }

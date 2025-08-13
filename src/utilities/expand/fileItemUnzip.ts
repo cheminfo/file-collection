@@ -59,7 +59,7 @@ export async function fileItemUnzip(
   return fileItems;
 }
 
-function isZip(buffer: ArrayBuffer) {
+function isZip(buffer: ArrayBufferLike): boolean {
   if (buffer.byteLength < 5) return false;
   const bytes = new Uint8Array(buffer);
   return (

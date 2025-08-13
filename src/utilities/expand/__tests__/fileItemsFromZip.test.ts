@@ -4,12 +4,15 @@ import {
   Uint8ArrayWriter,
   ZipWriter,
 } from '@zip.js/zip.js';
-import { assert, describe, expect, test } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 
 import { fileItemsFromZip } from '../fileItemsFromZip.js';
 
 describe('generated FileItem equal to original', async () => {
-  const zipWriter = new ZipWriter(new Uint8ArrayWriter());
+  // TODO: remove explicit type when https://github.com/gildas-lormeau/zip.js/pull/594 is released.
+  const zipWriter = new ZipWriter<Uint8Array<ArrayBuffer>>(
+    new Uint8ArrayWriter(),
+  );
 
   const expectedText = 'Hello, World!';
   await zipWriter.add('test.txt', new TextReader(expectedText));
@@ -23,11 +26,11 @@ describe('generated FileItem equal to original', async () => {
 
   const zipBuffer = await zipWriter.close();
 
-  test('zip file should have size inferior to expectedBinary', () => {
+  it('zip file should have size inferior to expectedBinary', () => {
     expect(zipBuffer.byteLength).toBeLessThan(expectedBinary.byteLength);
   });
 
-  test('.text() should return the original text', async () => {
+  it('.text() should return the original text', async () => {
     const collection = await arrayFromAsync(
       fileItemsFromZip(zipBuffer, crypto.randomUUID()),
     );
@@ -36,10 +39,11 @@ describe('generated FileItem equal to original', async () => {
     assert(file, 'File not found in collection');
 
     const result = await file.text();
+
     expect(result).toBe(expectedText);
   });
 
-  test('.arrayBuffer() should return the original binary', async () => {
+  it('.arrayBuffer() should return the original binary', async () => {
     const collection = await arrayFromAsync(
       fileItemsFromZip(zipBuffer, crypto.randomUUID()),
     );
@@ -48,10 +52,11 @@ describe('generated FileItem equal to original', async () => {
     assert(file, 'File not found in collection');
 
     const result = new Uint8Array(await file.arrayBuffer());
+
     expect(result).toStrictEqual(expectedBinary);
   });
 
-  test('.stream() should stream the original binary', async () => {
+  it('.stream() should stream the original binary', async () => {
     const collection = await arrayFromAsync(
       fileItemsFromZip(zipBuffer, crypto.randomUUID()),
     );
@@ -64,6 +69,7 @@ describe('generated FileItem equal to original', async () => {
       chunks.push(chunk);
     }
     const result = chunks.flatMap((chunk) => Array.from(chunk));
+
     expect(result).toStrictEqual(Array.from(expectedBinary));
   });
 });

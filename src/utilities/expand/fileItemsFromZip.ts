@@ -1,9 +1,9 @@
-import { Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
 import type { FileEntry } from '@zip.js/zip.js';
+import { Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
 
 import type { FileItem } from '../../FileItem.ts';
 import type { Options } from '../../Options.ts';
-import { fileEntryToData } from '../../zip/file_entry_to_data.js';
+import { fileEntryToData } from '../../zip/file_entry_to_data.ts';
 import { shouldAddItem } from '../shouldAddItem.ts';
 
 /**
@@ -15,11 +15,14 @@ import { shouldAddItem } from '../shouldAddItem.ts';
  * @yields FileItem - The file item extracted from the zip.
  */
 export async function* fileItemsFromZip(
-  buffer: ArrayBuffer,
+  buffer: ArrayBufferLike | ArrayBufferView,
   sourceUUID: string,
   options: Options = {},
 ) {
-  const zipReader = new ZipReader(new Uint8ArrayReader(new Uint8Array(buffer)));
+  const uint8Array = ArrayBuffer.isView(buffer)
+    ? new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength)
+    : new Uint8Array(buffer);
+  const zipReader = new ZipReader(new Uint8ArrayReader(uint8Array));
 
   for await (const entry of zipReader.getEntriesGenerator()) {
     if (entry.directory) continue;

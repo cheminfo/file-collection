@@ -1,10 +1,10 @@
-import { TextWriter } from '@zip.js/zip.js';
 import type { FileEntry } from '@zip.js/zip.js';
+import { TextWriter } from '@zip.js/zip.js';
 
 import type { ItemData } from '../ItemData.js';
 
 /**
- * Converts a zip entry's to an ItemData object.
+ * Converts a zip entry to an ItemData object.
  * @param entry - The zip file entry.
  * @returns An ItemData object with methods to retrieve the data in different formats.
  */
@@ -25,8 +25,8 @@ export function fileEntryToData(entry: FileEntry): ItemData {
     },
     stream: () => {
       const { writable, readable } = new TransformStream<
-        Uint8Array,
-        Uint8Array
+        Uint8Array<ArrayBuffer>,
+        Uint8Array<ArrayBuffer>
       >();
 
       /* v8 ignore start */

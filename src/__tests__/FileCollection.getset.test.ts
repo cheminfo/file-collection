@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
 
@@ -21,10 +21,12 @@ test('FileCollection get set', async () => {
   const ium = await fileCollection.toIum();
 
   const newCollection = await FileCollection.fromIum(ium);
+
   expect(newCollection.files).toHaveLength(1);
   expect(newCollection.sources).toHaveLength(1);
 
   const newValue = await newCollection.get('hello');
+
   expect(newValue).toStrictEqual({
     hello: 'world2',
     array: [1, 2, 3],

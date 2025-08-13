@@ -1,8 +1,8 @@
-import { cloneExtendedSourceItem } from '../ExtendedSourceItem.js';
-import type { ExtendedSourceItem } from '../ExtendedSourceItem.js';
-import type { FileCollection } from '../FileCollection.js';
-import { cloneFileItem } from '../FileItem.js';
-import type { FileItem } from '../FileItem.js';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import { cloneExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import type { FileCollection } from '../FileCollection.ts';
+import type { FileItem } from '../FileItem.ts';
+import { cloneFileItem } from '../FileItem.ts';
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 export function filterFileCollection(

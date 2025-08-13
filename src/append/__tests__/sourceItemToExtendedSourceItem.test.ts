@@ -16,5 +16,5 @@ test('error on invalid server URL', async () => {
     }
   }
 
-  await expect(consumeStream()).rejects.toThrow();
+  await expect(consumeStream()).rejects.toThrow('fetch failed');
 });

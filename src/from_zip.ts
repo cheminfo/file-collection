@@ -4,9 +4,9 @@ import type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
 import type { FileCollection } from './FileCollection.ts';
 import type { Options } from './Options.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
-import { normalizeRelativePath } from './utilities/normalize_relative_path.js';
+import { normalizeRelativePath } from './utilities/normalize_relative_path.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
-import { fileEntryToData } from './zip/file_entry_to_data.js';
+import { fileEntryToData } from './zip/file_entry_to_data.ts';
 import { getZipReader } from './zip/get_zip_reader.ts';
 
 /**

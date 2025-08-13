@@ -1,23 +1,24 @@
 /* eslint-disable no-await-in-loop */
-import { readdir, stat, readFile } from 'node:fs/promises';
+import { openAsBlob } from 'node:fs';
+import { readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import {
+  afterAll,
+  afterEach,
+  assert,
   beforeAll,
   beforeEach,
-  afterEach,
-  afterAll,
   describe,
   expect,
-  test,
-  assert,
+  it,
 } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
 
-let fileRequestedCounter = 0;
+let fileRequestedCounter: number;
 const server = setupServer(
   http.get('http://localhost/data*', async ({ request }) => {
     const pathname = join(__dirname, new URL(request.url).pathname);
@@ -27,7 +28,9 @@ const server = setupServer(
       return HttpResponse.json(source);
     } else if (pathnameStat.isFile()) {
       fileRequestedCounter++;
-      const data = await readFile(pathname);
+      const data = await openAsBlob(pathname).then((blob) =>
+        blob.arrayBuffer(),
+      );
       return HttpResponse.arrayBuffer(data);
     } else {
       throw new Error(`unknown path: ${pathname}`);
@@ -54,7 +57,7 @@ afterAll(() => {
 });
 
 describe('fileCollectionFromWebSource', () => {
-  test('with baseURL in options', async () => {
+  it('with baseURL in options', async () => {
     const source = {
       entries: [
         {
@@ -68,6 +71,7 @@ describe('fileCollectionFromWebSource', () => {
     };
 
     const fileCollection = await FileCollection.fromSource(source);
+
     expect(fileCollection.files).toHaveLength(2);
 
     const firstFile = fileCollection.files[0];
@@ -76,16 +80,20 @@ describe('fileCollectionFromWebSource', () => {
     assert(secondFile);
 
     const first = await firstFile.text();
+
     expect(first).toBe('a');
+
     await firstFile.text();
 
     // no cache it is reloaded a second time
     expect(fileRequestedCounter).toBe(2);
+
     const second = await secondFile.arrayBuffer();
+
     expect(Array.from(Buffer.from(second))).toStrictEqual([98]);
   });
 
-  test('without any baseURL', async () => {
+  it('without any baseURL', async () => {
     const source = {
       entries: [
         {
@@ -103,7 +111,7 @@ describe('fileCollectionFromWebSource', () => {
     }).rejects.toThrow('We could not find a baseURL for data/dir1/a.txt');
   });
 
-  test('without baseURL but with a global location href', async () => {
+  it('without baseURL but with a global location href', async () => {
     // @ts-expect-error we want to test the behavior when location is set like in the browser
     globalThis.location = { href: 'http://localhost/' };
     const source = {
@@ -126,15 +134,18 @@ describe('fileCollectionFromWebSource', () => {
     assert(secondFile);
 
     const first = await firstFile.text();
+
     expect(first).toBe('a');
+
     const second = await secondFile.text();
+
     expect(second).toBe('b');
 
     // @ts-expect-error need to remove it for the next test
     delete globalThis.location;
   });
 
-  test('with cache', async () => {
+  it('with cache', async () => {
     const source = {
       entries: [
         {
@@ -156,13 +167,16 @@ describe('fileCollectionFromWebSource', () => {
     assert(file);
 
     const first = await file.text();
+
     expect(first).toBe('a');
+
     await file.text();
+
     // cached it is loaded only once
     expect(fileRequestedCounter).toBe(1);
   });
 
-  test('with cache and arrayBuffer conversion', async () => {
+  it('with cache and arrayBuffer conversion', async () => {
     const source = {
       entries: [
         {
@@ -174,19 +188,24 @@ describe('fileCollectionFromWebSource', () => {
 
     const fileCollection = new FileCollection({ cache: true });
     await fileCollection.appendSource(source);
+
     expect(fileCollection.files).toHaveLength(1);
+
     const file = fileCollection.files[0];
     assert(file);
     const first = await file.arrayBuffer();
     const array = Array.from(Buffer.from(first));
+
     expect(array[0]).toBe(97);
+
     // cached it is loaded only once and we convert the arrayBuffer to text
     const text = await file.text();
+
     expect(text).toBe('a');
     expect(fileRequestedCounter).toBe(1);
   });
 
-  test('with duplicate', async () => {
+  it('with duplicate', async () => {
     const source = {
       entries: [
         {
@@ -205,7 +224,7 @@ describe('fileCollectionFromWebSource', () => {
     }).rejects.toThrow('Duplicate relativePath: data/dir1/a.txt');
   });
 
-  test('with defaultBaseURL', async () => {
+  it('with defaultBaseURL', async () => {
     const url = 'http://localhost/data';
     const response = await fetch(url);
     const source = await response.json();
@@ -221,6 +240,7 @@ describe('fileCollectionFromWebSource', () => {
     );
 
     expect(fileCollection.files).toHaveLength(15);
+
     const firstFile = fileCollection.files[0];
     const secondFile = fileCollection.files[1];
     const lastFile = fileCollection.files[14];
@@ -229,14 +249,19 @@ describe('fileCollectionFromWebSource', () => {
     assert(lastFile);
 
     const first = await firstFile.text();
+
     expect(first).toBe('c');
+
     const second = await secondFile.arrayBuffer();
+
     expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
+
     const third = await lastFile.arrayBuffer();
+
     expect(Array.from(Buffer.from(third))).toHaveLength(580);
   });
 
-  test('with baseURL in the file', async () => {
+  it('with baseURL in the file', async () => {
     const url = 'http://localhost/data';
     const response = await fetch(url);
     const source = await response.json();
@@ -254,6 +279,7 @@ describe('fileCollectionFromWebSource', () => {
     );
 
     expect(fileCollection.files).toHaveLength(15);
+
     const firstFile = fileCollection.files[0];
     const secondFile = fileCollection.files[1];
     const lastFile = fileCollection.files[14];
@@ -262,10 +288,15 @@ describe('fileCollectionFromWebSource', () => {
     assert(lastFile);
 
     const first = await firstFile.text();
+
     expect(first).toBe('c');
+
     const second = await secondFile.arrayBuffer();
+
     expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
+
     const third = await lastFile.arrayBuffer();
+
     expect(Array.from(Buffer.from(third))).toHaveLength(580);
   });
 });

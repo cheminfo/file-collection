@@ -10,6 +10,7 @@ test('FileCollection basic ium tests', async () => {
   const ium = await fileCollection.toIum();
 
   const newCollection = [...(await FileCollection.fromIum(ium))];
+
   expect(newCollection).toHaveLength(1);
   expect(newCollection).toMatchObject([
     {
@@ -18,8 +19,10 @@ test('FileCollection basic ium tests', async () => {
       baseURL: 'ium:/',
     },
   ]);
+
   const firstFile = newCollection[0];
   assert(firstFile);
   const text = await firstFile.text();
-  expect(text).toStrictEqual('Hello word');
+
+  expect(text).toBe('Hello word');
 });

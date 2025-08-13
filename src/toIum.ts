@@ -1,4 +1,4 @@
-import { ZipWriter, Uint8ArrayWriter, TextReader } from '@zip.js/zip.js';
+import { TextReader, Uint8ArrayWriter, ZipWriter } from '@zip.js/zip.js';
 
 import type { FileCollection } from './FileCollection.ts';
 import type { SourceItem } from './SourceItem.ts';
@@ -19,9 +19,11 @@ export interface ToIumOptions {
 export async function toIum(
   fileCollection: FileCollection,
   options: ToIumOptions = {},
-): Promise<Uint8Array> {
+): Promise<Uint8Array<ArrayBuffer>> {
   const { includeData = true } = options;
-  const zipWriter = new ZipWriter(new Uint8ArrayWriter());
+  const zipWriter = new ZipWriter<Uint8Array<ArrayBuffer>>(
+    new Uint8ArrayWriter(),
+  );
 
   const sources: SourceItem[] = [];
   const promises: Array<Promise<void>> = [];

@@ -1,7 +1,7 @@
 import { ReadableStream } from 'node:stream/web';
 import { gzipSync } from 'node:zlib';
 
-import { test, expect, describe } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import type { FileItem } from '../../../FileItem.js';
 import { fileItemUngzip } from '../fileItemUngzip.js';
@@ -42,12 +42,13 @@ describe('fileItemUngzip.ts', () => {
     },
   };
 
-  test('should return the same file item if it is not gzip', async () => {
+  it('should return the same file item if it is not gzip', async () => {
     const result = await fileItemUngzip(file);
+
     expect(result).toBe(file);
   });
 
-  test('ungzip gzip stream should be equal to original payload', async () => {
+  it('ungzip gzip stream should be equal to original payload', async () => {
     const ungziped = await fileItemUngzip(gzipFile);
 
     const fileChunks: Uint8Array[] = [];
@@ -66,7 +67,7 @@ describe('fileItemUngzip.ts', () => {
     expect(flatUngzippedChunks).toStrictEqual(flatFileChunks);
   });
 
-  test('ungzip gzip arrayBuffer should be equal to original payload', async () => {
+  it('ungzip gzip arrayBuffer should be equal to original payload', async () => {
     const ungziped = await fileItemUngzip(gzipFile);
 
     const fileBuffer = await file.arrayBuffer();
@@ -78,7 +79,7 @@ describe('fileItemUngzip.ts', () => {
     expect(ungzipedArray).toStrictEqual(fileArray);
   });
 
-  test('ungzip gzip text should be equal to original payload', async () => {
+  it('ungzip gzip text should be equal to original payload', async () => {
     const ungziped = await fileItemUngzip(gzipFile);
 
     const fileText = await file.text();

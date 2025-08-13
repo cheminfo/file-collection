@@ -7,7 +7,7 @@ export type SupportedBufferInput = SyncOrAsync<
   // most generic binary data manipulation
   | Uint8Array
   // generic binary data transfer
-  | ArrayBuffer
+  | ArrayBufferLike
   | ArrayBufferView
 >;
 
@@ -32,7 +32,9 @@ async function getExtendedSourceFromArrayBuffer(
   options: { dateModified?: number } = {},
 ): Promise<ExtendedSourceItem> {
   const { name, relativePath } = getNameInfo(originalRelativePath);
-  const blob = new Blob([await arrayBuffer], {
+  const blobInput = await arrayBuffer;
+  // @ts-expect-error Blob doesn't explicitly accept ArrayBufferLike but that should work.
+  const blob = new Blob([blobInput], {
     type: 'application/octet-stream',
   });
 

@@ -4,7 +4,7 @@ import { TextWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
-import { getZipReader } from './zip/get_zip_reader.js';
+import { getZipReader } from './zip/get_zip_reader.ts';
 
 /**
  * Creates a FileCollection from an IUM zip file.
@@ -56,7 +56,8 @@ async function appendEntry(
   url: URL,
   fileCollection: FileCollection,
 ): Promise<void> {
-  const buffer = await entry.getData(new Uint8ArrayWriter());
+  // TODO: remove explicit type when https://github.com/gildas-lormeau/zip.js/pull/594 is released.
+  const buffer = await entry.getData<ArrayBuffer>(new Uint8ArrayWriter());
   await fileCollection.appendArrayBuffer(url.pathname.slice(1), buffer, {
     dateModified: entry.lastModDate.getTime(),
   });
