@@ -47,6 +47,11 @@ export async function toZip(
     const source = sources.get(sourceUUID);
     if (!source) continue;
 
+    if (files.length === 1) {
+      promises.push(zipWriter.add(source.relativePath, source.stream()));
+      continue;
+    }
+
     promises.push(
       sourceFilesToZip({ files }).then((blob) =>
         zipWriter.add(`${source.relativePath}.zip`, new Uint8ArrayReader(blob)),

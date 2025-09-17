@@ -33,6 +33,9 @@ async function getExtendedSourceFromArrayBuffer(
 ): Promise<ExtendedSourceItem> {
   const { name, relativePath } = getNameInfo(originalRelativePath);
   const blobInput = await arrayBuffer;
+
+  // Types of property [Symbol.toStringTag] are incompatible.
+  // @ts-expect-error Type SharedArrayBuffer is not assignable to type ArrayBuffer
   const blob = new Blob([blobInput], {
     type: 'application/octet-stream',
   });
