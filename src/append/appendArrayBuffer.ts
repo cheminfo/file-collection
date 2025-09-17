@@ -33,7 +33,6 @@ async function getExtendedSourceFromArrayBuffer(
 ): Promise<ExtendedSourceItem> {
   const { name, relativePath } = getNameInfo(originalRelativePath);
   const blobInput = await arrayBuffer;
-  // @ts-expect-error Blob doesn't explicitly accept ArrayBufferLike but that should work.
   const blob = new Blob([blobInput], {
     type: 'application/octet-stream',
   });
