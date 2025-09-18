@@ -136,6 +136,7 @@ export async function toIum(
 
 export const UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR = `Unsupported file content type.
 If you passed a Node.js Stream convert it to Web Stream.`;
+
 function getExtraFileContentReader(
   fileContent: ExtraFileContent,
 ): ConstructorParameters<typeof ZipReader>[0] {
