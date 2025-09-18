@@ -191,7 +191,7 @@ export class FileCollection {
   async appendArrayBuffer(
     relativePath: string,
     arrayBuffer: SupportedBufferInput,
-    options: { dateModified?: number } = {},
+    options: { dateModified?: number; extra?: boolean } = {},
   ): Promise<this> {
     await appendArrayBuffer(this, relativePath, arrayBuffer, options);
 

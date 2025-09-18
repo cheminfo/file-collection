@@ -16,7 +16,7 @@ export async function appendArrayBuffer(
   fileCollection: FileCollection,
   relativePath: string,
   arrayBuffer: SupportedBufferInput,
-  options: { dateModified?: number } = {},
+  options: { dateModified?: number; extra?: boolean } = {},
 ) {
   const source = await getExtendedSourceFromArrayBuffer(
     relativePath,
@@ -29,7 +29,7 @@ export async function appendArrayBuffer(
 async function getExtendedSourceFromArrayBuffer(
   originalRelativePath: string,
   arrayBuffer: SupportedBufferInput,
-  options: { dateModified?: number } = {},
+  options: { dateModified?: number; extra?: boolean } = {},
 ): Promise<ExtendedSourceItem> {
   const { name, relativePath } = getNameInfo(originalRelativePath);
   const blobInput = await arrayBuffer;
@@ -46,6 +46,7 @@ async function getExtendedSourceFromArrayBuffer(
     name,
     lastModified: options.dateModified || Date.now(),
     baseURL: 'ium:/',
+    extra: options.extra,
     text: () => blob.text(),
     stream: () => blob.stream(),
     arrayBuffer: () => blob.arrayBuffer(),
