@@ -55,7 +55,7 @@ export interface ToIumOptions {
   getExtraFiles?: (
     index: ToIumIndex,
     fileCollection: FileCollection,
-  ) => IteratorObject<ToIumOptionsExtraFile> | ToIumOptionsExtraFile[];
+  ) => Iterable<ToIumOptionsExtraFile>;
 }
 /**
  * This method will zip a file collection and return the zip as an ArrayBuffer
