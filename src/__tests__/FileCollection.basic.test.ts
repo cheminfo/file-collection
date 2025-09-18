@@ -2,6 +2,7 @@ import { assert, describe, expect, it } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
 import type { ToIumOptionsExtraFile } from '../toIum.js';
+import { UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR } from '../toIum.js';
 
 describe('FileCollection basic ium', async () => {
   it('pack unpack single file', async () => {
@@ -106,5 +107,21 @@ describe('FileCollection basic ium', async () => {
       'Extra file content',
       'Extra file content',
     ]);
+  });
+
+  it('throw on invalid extra file type', async () => {
+    const fileCollection = new FileCollection();
+    const promise = fileCollection.toIum({
+      getExtraFiles: () => {
+        return [
+          {
+            relativePath: 'extra-invalid.txt',
+            data: 0 as never,
+          },
+        ];
+      },
+    });
+
+    await expect(promise).rejects.toThrow(UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR);
   });
 });
