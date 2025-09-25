@@ -103,6 +103,15 @@ const files = [...fileCollection]; // fileCollection is iterable on its files pr
 
 Referencing files in the fileCollection
 
+## Internals - sources versus files
+
+In an instance of FileCollection we have 2 properties:
+
+- sources: an array containing the different data sources
+- files: an array containing all the files contained in the different sources
+
+Some `source` may contain many files. This is the case of the `.ium`files as well as for the `.zip` file.
+
 ## License
 
 [MIT](./LICENSE)
