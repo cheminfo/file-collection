@@ -93,6 +93,80 @@ describe('fileCollectionFromWebSource', () => {
     expect(Array.from(Buffer.from(second))).toStrictEqual([98]);
   });
 
+  it('with 2 sources', async () => {
+    const source1 = {
+      entries: [
+        {
+          relativePath: 'a.txt',
+        },
+        {
+          relativePath: 'b.txt',
+        },
+      ],
+      baseURL: 'http://localhost/data/dir1/',
+    };
+
+    const source2 = {
+      entries: [
+        {
+          relativePath: 'c.txt',
+        },
+        {
+          relativePath: 'd.txt',
+        },
+      ],
+      baseURL: 'http://localhost/data/dir2/',
+    };
+
+    const fileCollection = await FileCollection.fromSource(source1);
+    await fileCollection.appendSource(source2);
+
+    expect(fileCollection.files).toHaveLength(4);
+
+    const firstFile = fileCollection.files[0];
+    const thirdFile = fileCollection.files[2];
+    assert(firstFile);
+    assert(thirdFile);
+
+    const first = await firstFile.text();
+
+    expect(first).toBe('a');
+
+    await firstFile.text();
+
+    const third = await thirdFile.text();
+
+    expect(third).toBe('c');
+
+    await thirdFile.text();
+  });
+
+  it('with 2 zip sources', async () => {
+    const source1 = {
+      entries: [
+        {
+          relativePath: 'data.zip',
+        },
+      ],
+      baseURL: 'http://localhost/dataRecursiveZip/',
+    };
+
+    const source2 = {
+      entries: [
+        {
+          relativePath: 'data.zip',
+        },
+      ],
+      baseURL: 'http://localhost/',
+    };
+
+    const fileCollection = await FileCollection.fromSource(source1);
+    await fileCollection.appendSource(source2);
+
+    expect(fileCollection.files).toHaveLength(12);
+    expect(fileCollection.sources).toHaveLength(2);
+  });
+
   it('without any baseURL', async () => {
     const source = {
       entries: [
