@@ -16,7 +16,12 @@ export type {
   UngzipExpandOptions,
   UnzipExpandOptions,
 } from './Options.js';
-export type { ToIumOptions } from './toIum.js';
+export type {
+  ExtraFileContent,
+  ToIumIndex,
+  ToIumOptions,
+  ToIumOptionsExtraFile,
+} from './toIum.js';
 export type { Source } from './Source.js';
 export type { SourceItem } from './SourceItem.js';
 

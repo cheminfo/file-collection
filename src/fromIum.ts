@@ -32,12 +32,14 @@ export async function fromIum(
   for (const source of index.sources) {
     const url = new URL(source.relativePath, source.baseURL);
     if (url.protocol === 'ium:') {
-      const key = `/data/${url.pathname.slice(1)}`;
+      const key = source.extra
+        ? url.pathname
+        : `/data/${url.pathname.slice(1)}`;
       const zipEntry = zipFiles.get(key);
       if (!zipEntry) {
         throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
-      promises.push(appendEntry(zipEntry, url, fileCollection));
+      promises.push(appendEntry(zipEntry, url, fileCollection, source.extra));
     } else {
       promises.push(
         fileCollection.appendExtendedSource(
@@ -55,10 +57,12 @@ async function appendEntry(
   entry: FileEntry,
   url: URL,
   fileCollection: FileCollection,
+  extra: boolean,
 ): Promise<void> {
   // TODO: remove explicit type when https://github.com/gildas-lormeau/zip.js/pull/594 is released.
   const buffer = await entry.getData<ArrayBuffer>(new Uint8ArrayWriter());
   await fileCollection.appendArrayBuffer(url.pathname.slice(1), buffer, {
     dateModified: entry.lastModDate.getTime(),
+    extra,
   });
 }

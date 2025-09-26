@@ -16,11 +16,12 @@ export function sourceItemToExtendedSourceItem(
   }
 
   const fileURL = new URL(entry.relativePath, baseURL);
-  const source: ExtendedSourceItem = {
+  return {
     uuid: crypto.randomUUID(),
     name: entry.relativePath.split('/').pop() || '',
     size: entry.size,
     baseURL,
+    extra: entry.extra,
     relativePath: entry.relativePath,
     lastModified: entry.lastModified,
     text: async (): Promise<string> => {
@@ -43,16 +44,17 @@ export function sourceItemToExtendedSourceItem(
           readable.cancel(error),
         ]);
       }
+
       async function pipeFetchToStream() {
         const response = await fetch(fileURL.toString());
         // Should not be null
         const body = response.body as ReadableStream<Uint8Array>;
         await body.pipeTo(writable);
       }
+
       void pipeFetchToStream().catch(propagateErrorToStream);
 
       return readable;
     },
   };
-  return source;
 }
