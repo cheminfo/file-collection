@@ -15,7 +15,6 @@ import { appendSource } from './append/appendSource.ts';
 import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
 import { fromIum } from './fromIum.ts';
-import { fromZip } from './from_zip.ts';
 import type { ToIumOptions } from './toIum.ts';
 import { toIum } from './toIum.ts';
 import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile.ts';
@@ -23,6 +22,8 @@ import { expandAndFilter } from './utilities/expand/expandAndFilter.ts';
 import { filterFileCollection } from './utilities/filter_file_collection.ts';
 import { getNameInfo } from './utilities/getNameInfo.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
+import { fromZip } from './zip/from_zip.ts';
+import { toZip } from './zip/to_zip.js';
 
 export class FileCollection {
   readonly files: FileItem[];
@@ -190,7 +191,7 @@ export class FileCollection {
   async appendArrayBuffer(
     relativePath: string,
     arrayBuffer: SupportedBufferInput,
-    options: { dateModified?: number } = {},
+    options: { dateModified?: number; extra?: boolean } = {},
   ): Promise<this> {
     await appendArrayBuffer(this, relativePath, arrayBuffer, options);
 
@@ -199,6 +200,10 @@ export class FileCollection {
 
   toIum(options: ToIumOptions = {}) {
     return toIum(this.alphabetical(), options);
+  }
+
+  toZip() {
+    return toZip(this);
   }
 
   static async fromIum(ium: ZipFileContent) {

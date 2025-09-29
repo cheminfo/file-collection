@@ -1,13 +1,14 @@
 import type { FileEntry } from '@zip.js/zip.js';
 
-import type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
-import type { FileCollection } from './FileCollection.ts';
-import type { Options } from './Options.ts';
-import type { ZipFileContent } from './ZipFileContent.ts';
-import { normalizeRelativePath } from './utilities/normalize_relative_path.ts';
-import { shouldAddItem } from './utilities/shouldAddItem.ts';
-import { fileEntryToData } from './zip/file_entry_to_data.ts';
-import { getZipReader } from './zip/get_zip_reader.ts';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import type { FileCollection } from '../FileCollection.ts';
+import type { Options } from '../Options.ts';
+import type { ZipFileContent } from '../ZipFileContent.ts';
+import { normalizeRelativePath } from '../utilities/normalize_relative_path.ts';
+import { shouldAddItem } from '../utilities/shouldAddItem.ts';
+
+import { fileEntryToData } from './file_entry_to_data.ts';
+import { getZipReader } from './get_zip_reader.ts';
 
 /**
  * Create a FileCollection from a zip
