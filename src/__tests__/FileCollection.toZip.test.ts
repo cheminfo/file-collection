@@ -6,7 +6,7 @@ import { Readable } from 'node:stream';
 import { Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
-import { expect, test } from 'vitest';
+import { expect, onTestFinished, test } from 'vitest';
 
 import { FileCollection } from '../FileCollection.js';
 
@@ -91,8 +91,7 @@ const server = setupServer(
 );
 
 test('properly repack with zip from external datasources', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  using _ = { [Symbol.dispose]: () => server.close() };
+  onTestFinished(() => server.close());
   server.listen();
 
   const source1 = {
