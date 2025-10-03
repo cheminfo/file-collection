@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.0](https://github.com/cheminfo/file-collection/compare/v5.1.1...v5.2.0) (2025-09-29)
+
+
+### Features
+
+* add toZip helper and getExtraFiles option on toIum ([#41](https://github.com/cheminfo/file-collection/issues/41)) ([3619a6b](https://github.com/cheminfo/file-collection/commit/3619a6bd555a892970dac8b5000ee2647dfb4035))
+
 ## [5.1.1](https://github.com/cheminfo/file-collection/compare/v5.1.0...v5.1.1) (2025-08-13)
 
 
