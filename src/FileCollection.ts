@@ -25,6 +25,14 @@ import { shouldAddItem } from './utilities/shouldAddItem.ts';
 import { fromZip } from './zip/from_zip.ts';
 import { toZip } from './zip/to_zip.js';
 
+export interface AppendPathOptions {
+  /**
+   * If true, the basename of the path will be kept as the relative path.
+   * @default true
+   */
+  keepBasename?: boolean;
+}
+
 export class FileCollection {
   readonly files: FileItem[];
   readonly sources: ExtendedSourceItem[];
@@ -166,12 +174,11 @@ export class FileCollection {
    * This method can only be used from nodejs and will throw an error in the browser
    * @param path - The path to the file or directory to append.
    * @param options - Options for appending the path.
-   * @param [options.keepBasename=true] - If true, the basename of the path will be kept as the relative path.
    * @returns A promise that resolves when the path is appended.
    */
   async appendPath(
     path: string,
-    options: { keepBasename?: boolean } = {},
+    options: AppendPathOptions = {},
   ): Promise<this> {
     await appendPath(this, path, options);
 

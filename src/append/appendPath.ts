@@ -5,19 +5,18 @@ import { basename, join, resolve } from 'node:path';
 import { Readable } from 'node:stream';
 
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
-import type { FileCollection } from '../FileCollection.ts';
+import type { AppendPathOptions, FileCollection } from '../FileCollection.ts';
 
 /**
  * Append files from a directory to a FileCollection.
  * @param fileCollection - FileCollection to append files to
  * @param path - Path to the directory to append
  * @param options - Options for appending files
- * @param options.keepBasename - If true, the basename of the path will be kept in the relative paths of the files.
  */
 export async function appendPath(
   fileCollection: FileCollection,
   path: string,
-  options: { keepBasename?: boolean } = {},
+  options: AppendPathOptions = {},
 ) {
   const { keepBasename = true } = options;
   path = resolve(path);
@@ -42,7 +41,7 @@ async function appendFiles(
         await appendFiles(fileCollection, current, entry);
       }
     } else {
-      const relativePath = `${base}/${entry}`;
+      const relativePath = base ? `${base}/${entry}` : entry;
       const source: ExtendedSourceItem = {
         uuid: crypto.randomUUID(),
         name: entry,
