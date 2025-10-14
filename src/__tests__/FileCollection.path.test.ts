@@ -317,3 +317,16 @@ test('appendPath data with keep duplicates', async () => {
     'duplicates/a.txt.zip/a.txt',
   ]);
 });
+
+test('appendPath data with real duplicates', async () => {
+  const fileCollection = new FileCollection({});
+
+  await expect(async () => {
+    await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir1/'), {
+      keepBasename: false,
+    });
+    await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir2/'), {
+      keepBasename: false,
+    });
+  }).rejects.toThrow('Duplicate relativePath: /a.txt');
+});
