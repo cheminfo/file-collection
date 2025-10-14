@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.1](https://github.com/cheminfo/file-collection/compare/v5.2.0...v5.2.1) (2025-10-14)
+
+
+### Bug Fixes
+
+* appendPath with keepBasename had a leading '/' for first level files ([76979c3](https://github.com/cheminfo/file-collection/commit/76979c37712eceaeafc8ca9aa9d0791e6a82d8c0))
+
 ## [5.2.0](https://github.com/cheminfo/file-collection/compare/v5.1.1...v5.2.0) (2025-09-29)
 
 
