@@ -328,5 +328,19 @@ test('appendPath data with real duplicates', async () => {
     await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir2/'), {
       keepBasename: false,
     });
-  }).rejects.toThrow('Duplicate relativePath: /a.txt');
+  }).rejects.toThrow('Duplicate relativePath: a.txt');
+});
+
+test('appendPath data with subdir', async () => {
+  const fileCollection = new FileCollection({});
+
+  await fileCollection.appendPath(join(__dirname, 'dir_subdir/dir1/'), {
+    keepBasename: false,
+  });
+  await fileCollection.appendPath(join(__dirname, 'dir_subdir/dir2/'), {
+    keepBasename: false,
+  });
+  const relativePaths = fileCollection.files.map((file) => file.relativePath);
+
+  expect(relativePaths).toStrictEqual(['a.txt', 'subdir/a.txt']);
 });
