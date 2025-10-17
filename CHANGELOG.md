@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.2](https://github.com/cheminfo/file-collection/compare/v5.2.1...v5.2.2) (2025-10-17)
+
+
+### Bug Fixes
+
+* **perf:** update zip.js ([6ef3aad](https://github.com/cheminfo/file-collection/commit/6ef3aadbf8daf0dd8e3cee8660ddacf50929448e))
+
 ## [5.2.1](https://github.com/cheminfo/file-collection/compare/v5.2.0...v5.2.1) (2025-10-14)
 
 
