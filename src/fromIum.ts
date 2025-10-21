@@ -5,10 +5,7 @@ import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
 import type { ToIumIndex } from './transformation/ium.js';
-import {
-  sourceToIumPath,
-  sourceToIumPathLegacy,
-} from './transformation/source_zip.js';
+import { fromIumSourceToPath } from './transformation/source_zip.js';
 import { getZipReader } from './zip/get_zip_reader.ts';
 
 /**
@@ -35,14 +32,13 @@ export async function fromIum(
 
   const promises: Array<Promise<unknown>> = [];
   for (const source of index.sources) {
-    if (source.baseURL?.startsWith('ium:')) {
-      const key = sourceToIumPath(source);
-      const zipEntry =
-        zipFiles.get(key) ?? zipFiles.get(sourceToIumPathLegacy(source));
+    const [url, key, legacyKey] = fromIumSourceToPath(source);
+    if (url.protocol === 'ium:') {
+      const zipEntry = zipFiles.get(key) ?? zipFiles.get(legacyKey);
       if (!zipEntry) {
-        throw new Error(`Invalid IUM file: missing ${key}`);
+        throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
-      promises.push(appendEntry(zipEntry, key, fileCollection, source.extra));
+      promises.push(appendEntry(zipEntry, url, fileCollection, source.extra));
     } else {
       promises.push(
         fileCollection.appendExtendedSource(
@@ -58,13 +54,13 @@ export async function fromIum(
 
 async function appendEntry(
   entry: FileEntry,
-  pathname: string,
+  url: URL,
   fileCollection: FileCollection,
   extra: boolean | undefined,
 ): Promise<void> {
   // TODO: remove explicit type when https://github.com/gildas-lormeau/zip.js/pull/594 is released.
   const buffer = await entry.getData<ArrayBuffer>(new Uint8ArrayWriter());
-  await fileCollection.appendArrayBuffer(pathname.slice(1), buffer, {
+  await fileCollection.appendArrayBuffer(url.pathname.slice(1), buffer, {
     dateModified: entry.lastModDate.getTime(),
     extra,
   });

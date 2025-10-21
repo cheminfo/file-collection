@@ -15,7 +15,7 @@ import {
 import type { FileCollection } from './FileCollection.ts';
 import type { SourceItem } from './SourceItem.ts';
 import type { ToIumIndex } from './transformation/ium.js';
-import { sourceToIumPath } from './transformation/source_zip.js';
+import { toIumSourceToPath } from './transformation/source_zip.js';
 
 export interface ExtraFileContentInput {
   /**
@@ -84,11 +84,8 @@ export async function toIum(
     if (!shouldIncludeFile) continue;
 
     newSource.baseURL = 'ium:/';
-    promises.push(
-      zipWriter
-        .add(sourceToIumPath(source), source.stream())
-        .then(() => void 0),
-    );
+    const pathname = toIumSourceToPath(newSource);
+    promises.push(zipWriter.add(pathname, source.stream()).then(() => void 0));
   }
 
   await Promise.all(promises);

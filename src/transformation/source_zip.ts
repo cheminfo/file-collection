@@ -1,12 +1,17 @@
 import type { SourceItem } from '../SourceItem.js';
 
-export function sourceToIumPath(source: SourceItem) {
-  const pathname = sourceToIumPathLegacy(source);
+/**
+ * This method will transform a source item to a path that can be used by filesystems
+ * @param source - The source item to transform
+ * @returns A tuple containing the transformed path and the URL
+ */
+export function toIumSourceToPath(source: SourceItem) {
+  const pathname = toIumSourceToLegacyPath(source);
 
   return pathnameToSafePath(pathname);
 }
 
-export function sourceToIumPathLegacy(source: SourceItem) {
+function toIumSourceToLegacyPath(source: SourceItem) {
   const url = new URL(
     source.extra
       ? source.relativePath
@@ -16,6 +21,31 @@ export function sourceToIumPathLegacy(source: SourceItem) {
   );
 
   return url.pathname;
+}
+
+/**
+ * This method will transform a source item to a path that had been serialised for filesystems
+ * @param source - The source item to transform
+ * @returns A tuple containing the transformed path, the URL, and the legacy path
+ */
+export function fromIumSourceToPath(
+  source: SourceItem,
+): [url: URL, zipPath: string, legacyZipPath: string] {
+  const [url, legacyZipPath] = fromIumSourceToLegacyPath(source);
+
+  return [url, pathnameToSafePath(legacyZipPath), legacyZipPath];
+}
+
+function fromIumSourceToLegacyPath(
+  source: SourceItem,
+): [url: URL, zipPath: string] {
+  const url = new URL(source.relativePath, source.baseURL);
+
+  const zipPath = source.extra
+    ? url.pathname
+    : `/data/${url.pathname.slice(1)}`;
+
+  return [url, zipPath];
 }
 
 export function sourceToZipPath(source: SourceItem, pathUsed: Set<string>) {
