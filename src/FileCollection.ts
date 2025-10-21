@@ -209,8 +209,13 @@ export class FileCollection {
     return toIum(this.alphabetical(), options);
   }
 
-  toZip() {
-    return toZip(this);
+  /**
+   * This method will zip the file collection and return the zip as an ArrayBuffer
+   * @param finalPaths - toZip will fulfill this map with the final paths of the sources
+   * @returns Zip as an Uint8Array
+   */
+  toZip(finalPaths?: Map<ExtendedSourceItem, string>) {
+    return toZip(this, finalPaths);
   }
 
   static async fromIum(ium: ZipFileContent) {

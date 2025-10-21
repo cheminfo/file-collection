@@ -4,6 +4,11 @@ import { TextWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 import { FileCollection } from './FileCollection.ts';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
+import type { ToIumIndex } from './transformation/ium.js';
+import {
+  sourceToIumPath,
+  sourceToIumPathLegacy,
+} from './transformation/source_zip.js';
 import { getZipReader } from './zip/get_zip_reader.ts';
 
 /**
@@ -25,21 +30,19 @@ export async function fromIum(
     throw new Error('Invalid IUM file: missing index.json');
   }
   const rawData = await indexFile.getData(new TextWriter());
-  const index = await JSON.parse(rawData);
+  const index: ToIumIndex = await JSON.parse(rawData);
   const fileCollection = new FileCollection(index.options);
 
   const promises: Array<Promise<unknown>> = [];
   for (const source of index.sources) {
-    const url = new URL(source.relativePath, source.baseURL);
-    if (url.protocol === 'ium:') {
-      const key = source.extra
-        ? url.pathname
-        : `/data/${url.pathname.slice(1)}`;
-      const zipEntry = zipFiles.get(key);
+    if (source.baseURL?.startsWith('ium:')) {
+      const key = sourceToIumPath(source);
+      const zipEntry =
+        zipFiles.get(key) ?? zipFiles.get(sourceToIumPathLegacy(source));
       if (!zipEntry) {
-        throw new Error(`Invalid IUM file: missing ${url.pathname}`);
+        throw new Error(`Invalid IUM file: missing ${key}`);
       }
-      promises.push(appendEntry(zipEntry, url, fileCollection, source.extra));
+      promises.push(appendEntry(zipEntry, key, fileCollection, source.extra));
     } else {
       promises.push(
         fileCollection.appendExtendedSource(
@@ -55,13 +58,13 @@ export async function fromIum(
 
 async function appendEntry(
   entry: FileEntry,
-  url: URL,
+  pathname: string,
   fileCollection: FileCollection,
-  extra: boolean,
+  extra: boolean | undefined,
 ): Promise<void> {
   // TODO: remove explicit type when https://github.com/gildas-lormeau/zip.js/pull/594 is released.
   const buffer = await entry.getData<ArrayBuffer>(new Uint8ArrayWriter());
-  await fileCollection.appendArrayBuffer(url.pathname.slice(1), buffer, {
+  await fileCollection.appendArrayBuffer(pathname.slice(1), buffer, {
     dateModified: entry.lastModDate.getTime(),
     extra,
   });

@@ -18,10 +18,10 @@ export type {
 } from './Options.js';
 export type {
   ExtraFileContent,
-  ToIumIndex,
   ToIumOptions,
   ToIumOptionsExtraFile,
 } from './toIum.js';
+export type { ToIumIndex } from './transformation/ium.js';
 export type { Source } from './Source.js';
 export type { SourceItem } from './SourceItem.js';
 
