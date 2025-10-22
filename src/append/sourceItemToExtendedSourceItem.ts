@@ -17,7 +17,7 @@ export function sourceItemToExtendedSourceItem(
 
   const fileURL = new URL(entry.relativePath, baseURL);
   return {
-    uuid: crypto.randomUUID(),
+    uuid: entry.uuid ?? crypto.randomUUID(),
     name: entry.relativePath.split('/').pop() || '',
     size: entry.size,
     baseURL,

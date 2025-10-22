@@ -6,9 +6,11 @@ import { Readable } from 'node:stream';
 import { Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
-import { expect, onTestFinished, test } from 'vitest';
+import { assert, expect, onTestFinished, test } from 'vitest';
 
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.js';
 import { FileCollection } from '../FileCollection.js';
+import { getZipReader } from '../zip/get_zip_reader.js';
 
 interface FsFile {
   name: string;
@@ -123,4 +125,36 @@ test('properly repack with zip from external datasources', async () => {
   const entries = await zipReader.getEntries();
 
   expect(entries).toHaveLength(2);
+});
+
+test('properly encode exotic path for filesystems', async () => {
+  const relativePath = `deep/path/with special characters/foo/\\bar/08:50:12/[baz]/*/5 < 10 > 5/1=1/file.txt#anchor removed`;
+
+  const fileCollection = new FileCollection();
+  await fileCollection.appendText(relativePath, 'Hello World!');
+
+  expect(fileCollection.sources[0]?.relativePath).toBe(
+    `deep/path/with%20special%20characters/foo/\\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
+  );
+
+  const sourcesTable = new Map<ExtendedSourceItem, string>();
+  const zipBuffer = await fileCollection.toZip(sourcesTable);
+  const zipReader = getZipReader(zipBuffer);
+  const entries = await zipReader.getEntries();
+  const entry = entries.find((entry) => entry.filename !== '/index.json');
+  const fc2 = await FileCollection.fromZip(zipBuffer);
+
+  const expectedFilename =
+    '/deep/path/with special characters/foo/-bar/08-50-12/-baz-/-/5 - 10 - 5/1-1/file.txt';
+  const expectedRelativePath = expectedFilename.slice(1);
+
+  expect(entry?.filename).toBe(expectedFilename);
+  expect(fc2.sources[0]?.relativePath).toBe(expectedRelativePath);
+
+  const itResult = sourcesTable.entries().next();
+  assert(!itResult.done);
+  const [source, zipPath] = itResult.value;
+
+  expect(source).toBe(fileCollection.sources[0]);
+  expect(fc2.sources[0]?.relativePath).toBe(zipPath);
 });

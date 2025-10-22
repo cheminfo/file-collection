@@ -1,17 +1,31 @@
-import { describe, expect, it } from 'vitest';
+import { createReadStream } from 'node:fs';
+import { join } from 'node:path';
+
+import { HttpResponse, http } from 'msw';
+import { setupServer } from 'msw/node';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { FileCollection } from '../FileCollection.js';
 
-/**
- * This is a network test, it may be flaky.
- * If we face issues with these tests,
- * simulate a server with `file.zip/content` zenodo behavior if needed
- */
+const server = setupServer(
+  http.get('http://localhost/zenodo/*', async ({ request }) => {
+    const pathname = join(import.meta.dirname, new URL(request.url).pathname);
+    const stream = createReadStream(pathname);
+    return new HttpResponse(stream, { status: 200 });
+  }),
+);
+
+beforeAll(() => server.listen());
+
+afterEach(() => server.resetHandlers());
+
+afterAll(() => server.close());
+
 describe('Zenodo 13307304', () => {
   it('should expand 1d.zip/content', async () => {
     const collection = await FileCollection.fromSource(
       {
-        baseURL: 'https://zenodo.org/api/records/13307304/files/',
+        baseURL: 'http://localhost/zenodo/api/records/13307304/files/',
         entries: [
           {
             relativePath: '1d.zip/content',

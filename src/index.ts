@@ -18,25 +18,24 @@ export type {
 } from './Options.js';
 export type {
   ExtraFileContent,
-  ToIumIndex,
   ToIumOptions,
   ToIumOptionsExtraFile,
 } from './toIum.js';
+export type { ToIumIndex } from './transformation/ium.js';
 export type { Source } from './Source.js';
 export type { SourceItem } from './SourceItem.js';
 
 /**
  * Tools using this package can configure zip.js with the following `zipJsConfigure` method
  *
- * default configuration from FileCollection is:
+ * The default configuration from FileCollection is:
  * ```ts
  * configure({
  *   useCompressionStream: true,
  *   useWebWorkers: false,
  * });
- *
- * @see https://github.com/gildas-lormeau/zip.js/tree/master/dist
  * ```
+ * @see https://github.com/gildas-lormeau/zip.js/tree/master/dist
  */
 export { configure as zipJsConfigure } from '@zip.js/zip.js';
 export type { Configuration as ZipJsConfiguration } from '@zip.js/zip.js';
