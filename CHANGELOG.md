@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.3.0](https://github.com/cheminfo/file-collection/compare/v5.2.2...v5.3.0) (2025-10-22)
+
+
+### Features
+
+* add `finalPaths` procedure option to `toZip` ([89d2b72](https://github.com/cheminfo/file-collection/commit/89d2b72c4e11975ae34373c76f567522dcfa2594))
+
+
+### Bug Fixes
+
+* ensure ium archive have stable `relativePath` source's across `toIum` / `fromIum` ([89d2b72](https://github.com/cheminfo/file-collection/commit/89d2b72c4e11975ae34373c76f567522dcfa2594))
+* use safe for filesystem path in zip and ium ([#51](https://github.com/cheminfo/file-collection/issues/51)) ([89d2b72](https://github.com/cheminfo/file-collection/commit/89d2b72c4e11975ae34373c76f567522dcfa2594))
+
 ## [5.2.2](https://github.com/cheminfo/file-collection/compare/v5.2.1...v5.2.2) (2025-10-17)
 
 
