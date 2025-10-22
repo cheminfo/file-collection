@@ -9,10 +9,10 @@ import { FileCollection } from '../FileCollection.js';
 import { getZipReader } from '../zip/get_zip_reader.js';
 
 /**
- * Run once on v5.2.2 to generate a legacy archive, pre-fix path encoding for filesystems.
+ * Run once on v5.2.2 to generate the legacy archive, pre-fix path encoding for filesystems.
  * This test must not be edited or removed.
  */
-test.fails('Generate a ium archive with problematic characters', async () => {
+test('Generate a ium archive with problematic characters', async () => {
   const fc = new FileCollection();
 
   const relativePath = `deep/path/with special characters/foo/\\bar/08:50:12/[baz]/*/5 < 10 > 5/1=1/file.txt#anchor removed`;
@@ -26,19 +26,21 @@ test.fails('Generate a ium archive with problematic characters', async () => {
 
   const url = new URL(relativePath, 'ium:/');
 
-  // fails after v5.2.2
+  // relativePath is stable across versions.
   expect(fc2.sources[0]?.relativePath).toBe(url.pathname.slice(1));
   expect(fc2.sources[0]?.relativePath).toBe(
-    // Note: legacy ium path encoding is url encoded
+    // Note: ium path encoding can be url encoded
     // it contains forbidden characters for filesystem paths like `:` or `*`
     // chars after `#` are removed
     `deep/path/with%20special%20characters/foo/\\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
   );
 
   // fails once the file is written into the repository
-  await writeFile(join(import.meta.dirname, 'v5.2.2.ium.zip'), iumBuffer, {
-    flag: 'wx',
-  });
+  await expect(
+    writeFile(join(import.meta.dirname, 'v5.2.2.ium.zip'), iumBuffer, {
+      flag: 'wx',
+    }),
+  ).rejects.toThrow(/EEXIST: file already exists.*/);
 });
 
 test('Is able to unpack a legacy ium archive', async () => {
@@ -48,12 +50,13 @@ test('Is able to unpack a legacy ium archive', async () => {
     ),
   );
 
-  // check fromIum had properly read the archive
+  // Check fromIum had properly read the archive,
+  // with relativePath is stable across versions.
   expect(ium.sources[0]?.relativePath).toBe(
     `deep/path/with%20special%20characters/foo/\\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
   );
 
-  // check we have the data
+  // Check we have the data.
   await expect(ium.files[0]?.text()).resolves.toBe('Hello World!');
 
   const zipReader = getZipReader(
