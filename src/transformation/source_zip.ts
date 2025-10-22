@@ -48,6 +48,12 @@ function fromIumSourceToLegacyPath(
   return [url, zipPath];
 }
 
+/**
+ * This method will transform a source item to a path that is safe for filesystems
+ * @param source - The source item to transform
+ * @param pathUsed - A set of paths already used to avoid collisions
+ * @returns the path safe for filesystems
+ */
 export function sourceToZipPath(source: SourceItem, pathUsed: Set<string>) {
   const path = sourceToZipPathLegacy(source, pathUsed);
 
