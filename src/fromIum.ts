@@ -1,7 +1,9 @@
 import type { FileEntry } from '@zip.js/zip.js';
 import { TextWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 
+import type { ExtendedSourceItem } from './ExtendedSourceItem.js';
 import { FileCollection } from './FileCollection.ts';
+import type { SourceItem } from './SourceItem.js';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
 import type { ToIumIndex } from './transformation/ium.js';
@@ -38,7 +40,7 @@ export async function fromIum(
       if (!zipEntry) {
         throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
-      promises.push(appendEntry(zipEntry, url, fileCollection, source.extra));
+      promises.push(appendEntry(zipEntry, source, fileCollection));
     } else {
       promises.push(
         fileCollection.appendExtendedSource(
@@ -54,14 +56,31 @@ export async function fromIum(
 
 async function appendEntry(
   entry: FileEntry,
-  url: URL,
+  source: SourceItem,
   fileCollection: FileCollection,
-  extra: boolean | undefined,
 ): Promise<void> {
-  // TODO: remove explicit type when https://github.com/gildas-lormeau/zip.js/pull/594 is released.
-  const buffer = await entry.getData<ArrayBuffer>(new Uint8ArrayWriter());
-  await fileCollection.appendArrayBuffer(url.pathname.slice(1), buffer, {
-    dateModified: entry.lastModDate.getTime(),
-    extra,
-  });
+  const buffer = await entry.getData(new Uint8ArrayWriter());
+  const blob = new Blob([buffer]);
+
+  const lastSlash = source.relativePath.lastIndexOf('/') + 1;
+  const name = source.relativePath.slice(lastSlash);
+
+  const extendedSource: ExtendedSourceItem = {
+    uuid: source.uuid ?? crypto.randomUUID(),
+    name,
+    relativePath: source.relativePath,
+    baseURL: source.baseURL ?? 'ium:/',
+    lastModified: source.lastModified ?? entry.lastModDate.getTime(),
+    size: source.size ?? entry.uncompressedSize,
+    options: source.options,
+    extra: source.extra,
+    arrayBuffer: () => blob.arrayBuffer(),
+    stream: () => blob.stream(),
+    text: () => blob.text(),
+  };
+
+  await fileCollection.appendExtendedSource(
+    extendedSource,
+    extendedSource.options,
+  );
 }
