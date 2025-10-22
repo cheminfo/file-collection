@@ -7,7 +7,7 @@ import { sourceToZipPath } from '../transformation/source_zip.js';
 /**
  * This method will zip a file collection and return the zip as an ArrayBuffer
  * @param collection - The file collection to zip
- * @param finalPaths - toZip will fulfill this map with the final paths of the sources
+ * @param finalPaths - toZip will fill this map with the final paths of the sources
  * @returns Zip as an Uint8Array
  */
 export async function toZip(

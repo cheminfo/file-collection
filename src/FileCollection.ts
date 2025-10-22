@@ -211,7 +211,7 @@ export class FileCollection {
 
   /**
    * This method will zip the file collection and return the zip as an ArrayBuffer
-   * @param finalPaths - toZip will fulfill this map with the final paths of the sources
+   * @param finalPaths - toZip will fill this map with the final paths of the sources
    * @returns Zip as an Uint8Array
    */
   toZip(finalPaths?: Map<ExtendedSourceItem, string>) {

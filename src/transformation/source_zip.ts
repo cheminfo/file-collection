@@ -3,7 +3,7 @@ import type { SourceItem } from '../SourceItem.js';
 /**
  * This method will transform a source item to a path that can be used by filesystems
  * @param source - The source item to transform
- * @returns A tuple containing the transformed path and the URL
+ * @returns The transformed path and the URL
  */
 export function toIumSourceToPath(source: SourceItem) {
   const pathname = toIumSourceToLegacyPath(source);
@@ -26,7 +26,7 @@ function toIumSourceToLegacyPath(source: SourceItem) {
 /**
  * This method will transform a source item to a path that had been serialised for filesystems
  * @param source - The source item to transform
- * @returns A tuple containing the transformed path, the URL, and the legacy path
+ * @returns A tuple containing the URL, transformed path, and the legacy path
  */
 export function fromIumSourceToPath(
   source: SourceItem,
