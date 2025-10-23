@@ -81,6 +81,11 @@ function pathnameToSafePath(pathname: string) {
     decodedPathname
       // eslint-disable-next-line no-control-regex
       .replaceAll(/[\u0000-\u001F\u007F\u00FF]/g, '')
+      // replace problematic fs characters
       .replaceAll(/[#*:<>?\\|+,;=[\]]+/g, '-')
+      // ensure the path is relative
+      .replace(/^\.?\/+/, '')
+      // trim multiple slashes
+      .replaceAll(/\/\/+/g, '/')
   );
 }

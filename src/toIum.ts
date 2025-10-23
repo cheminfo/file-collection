@@ -73,6 +73,7 @@ export async function toIum(
   const promises: Array<Promise<void>> = [];
   for (const source of fileCollection.sources) {
     const newSource: SourceItem = {
+      uuid: source.uuid,
       relativePath: source.relativePath,
       baseURL: source.baseURL,
       lastModified: source.lastModified,
@@ -101,23 +102,23 @@ export async function toIum(
         getExtraFiles(structuredClone(index), fileCollection),
         async (extraFile) => {
           const { relativePath, data } = extraFile;
-          const url = new URL(relativePath, 'ium:/');
 
-          sources.push({
+          const source: SourceItem = {
             extra: true,
             baseURL: 'ium:/',
             relativePath,
-          });
+          };
+          sources.push(source);
+          const pathname = toIumSourceToPath(source);
 
-          await zipWriter.add(url.pathname, getExtraFileContentReader(data));
+          await zipWriter.add(pathname, getExtraFileContentReader(data));
         },
       ),
     );
   }
 
-  const url = new URL('index.json', 'ium:/');
   await zipWriter.add(
-    url.pathname,
+    'index.json',
     new TextReader(JSON.stringify(index, null, 2)),
   );
 
