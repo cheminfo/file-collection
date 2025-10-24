@@ -22,9 +22,12 @@ export async function fromIum(
   const zipFiles = new Map<string, FileEntry>();
   for await (const entry of zipReader.getEntriesGenerator()) {
     if (entry.directory) continue;
-    zipFiles.set(entry.filename.replaceAll(/\/\/+/g, '/'), entry);
+    const legacyPath = entry.filename.replaceAll(/\/\/+/g, '/');
+    const relativePath = legacyPath.replace(/^\.?\/+/, '');
+    zipFiles.set(legacyPath, entry);
+    zipFiles.set(relativePath, entry);
   }
-  const indexFile = zipFiles.get('/index.json');
+  const indexFile = zipFiles.get('index.json');
   if (!indexFile) {
     throw new Error('Invalid IUM file: missing index.json');
   }

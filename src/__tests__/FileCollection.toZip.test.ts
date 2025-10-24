@@ -145,11 +145,10 @@ test('properly encode exotic path for filesystems', async () => {
   const fc2 = await FileCollection.fromZip(zipBuffer);
 
   const expectedFilename =
-    '/deep/path/with special characters/foo/-bar/08-50-12/-baz-/-/5 - 10 - 5/1-1/file.txt';
-  const expectedRelativePath = expectedFilename.slice(1);
+    'deep/path/with special characters/foo/-bar/08-50-12/-baz-/-/5 - 10 - 5/1-1/file.txt';
 
   expect(entry?.filename).toBe(expectedFilename);
-  expect(fc2.sources[0]?.relativePath).toBe(expectedRelativePath);
+  expect(fc2.sources[0]?.relativePath).toBe(expectedFilename);
 
   const itResult = sourcesTable.entries().next();
   assert(!itResult.done);

@@ -24,7 +24,7 @@ export async function toZip(
     collection.sources.map(async (source) => {
       const path = sourceToZipPath(source, pathUsed);
       pathUsed.add(path);
-      finalPaths?.set(source, path.slice(1));
+      finalPaths?.set(source, path);
       await zipWriter.add(path, source.stream());
     }),
   );

@@ -142,7 +142,7 @@ describe('FileCollection with exotic paths', () => {
 
     // safely encoded for fs
     expect(entry?.filename).toBe(
-      `/data/deep/path/with special characters/foo/-bar/08-50-12/-baz-/-/5 - 10 - 5/1-1/file.txt`,
+      `data/deep/path/with special characters/foo/-bar/08-50-12/-baz-/-/5 - 10 - 5/1-1/file.txt`,
     );
 
     const ium = await FileCollection.fromIum(iumBuffer);

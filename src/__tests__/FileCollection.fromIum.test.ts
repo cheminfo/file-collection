@@ -31,7 +31,7 @@ describe('invalid ium file', () => {
 
     for await (const entry of zipReader.getEntriesGenerator()) {
       if (entry.directory) continue;
-      if (entry.filename === '/data/hello.txt') continue;
+      if (entry.filename === 'data/hello.txt') continue;
       const buffer = await entry.getData(new Uint8ArrayWriter());
       await zipWriter.add(entry.filename, new Uint8ArrayReader(buffer));
     }
