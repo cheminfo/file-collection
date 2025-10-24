@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.4.0](https://github.com/cheminfo/file-collection/compare/v5.3.0...v5.4.0) (2025-10-24)
+
+
+### Features
+
+* ensure source uuid is stable ([#53](https://github.com/cheminfo/file-collection/issues/53)) ([8e67fce](https://github.com/cheminfo/file-collection/commit/8e67fcee0009db8fe89d5214e0303df4c46232e1))
+
+
+### Bug Fixes
+
+* no absolute path for zip ([#53](https://github.com/cheminfo/file-collection/issues/53)) ([8e67fce](https://github.com/cheminfo/file-collection/commit/8e67fcee0009db8fe89d5214e0303df4c46232e1))
+
 ## [5.3.0](https://github.com/cheminfo/file-collection/compare/v5.2.2...v5.3.0) (2025-10-22)
 
 
