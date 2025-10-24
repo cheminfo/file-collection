@@ -1,7 +1,6 @@
 <html>
 
 <head>
-  <script src="../dist/file-collection.js"></script>
 </head>
 
 <body>
@@ -9,26 +8,41 @@
     You should build the project `npm run build` before testing this page.
   </p>
   Select files:
-  <input type="file" id="filepicker" name="fileCollection" multiple onchange="uploadFiles(event)" />
+  <input type="file" id="file-picker" name="fileCollection" multiple />
   or select directories:
-  <input type="file" id="filepicker" name="fileCollection" multiple webkitdirectory="true"
-    onchange="uploadFiles(event)" />
+  <input type="file" id="directory-picker" name="fileCollection" multiple webkitdirectory="true" />
   Upload a 'ium' (zip) file
-  <input type="file" id="filepicker" name="fileCollection" onchange="fromIum(event)" />
-  <button onclick="downloadZip()">Download zip</button>
-  <button onclick="appendWebSource()">appendWebSource</button>
+  <input type="file" id="ium-picker" name="fileCollection" />
+  <button id="ium-downloader">Download ium</button>
+  <button id="zip-downloader">Download zip</button>
+  <button id="web-source-picker">appendWebSource</button>
 
   <div style="display: flex">
     <div style="background-color: pink" id="listing"></div>
     <div style="background-color: lightgreen" id="listingCollection"></div>
   </div>
 
-  <script>
+  <script type="module">
+    import { FileCollection } from '../dist/file-collection.esm.js';
 
-    let fileCollection
+    let fileCollection;
+
+    const $filePicker = document.getElementById('file-picker');
+    const $directoryPicker = document.getElementById('directory-picker');
+    const $iumPicker = document.getElementById('ium-picker');
+    const $iumDownloader = document.getElementById('ium-downloader');
+    const $zipDownloader = document.getElementById('zip-downloader');
+    const $webSourceDownloader = document.getElementById('web-source-picker');
+
+    $filePicker.addEventListener('change', uploadFiles);
+    $directoryPicker.addEventListener('change', uploadFiles);
+    $iumPicker.addEventListener('change', fromIum);
+    $iumDownloader.addEventListener('click', downloadIum);
+    $zipDownloader.addEventListener('click', downloadZip);
+    $webSourceDownloader.addEventListener('click', appendWebSource);
 
     async function appendWebSource() {
-      fileCollection = new FileCollection.FileCollection();
+      fileCollection = new FileCollection();
       await fileCollection.appendWebSource('https://image-js.github.io/image-dataset-demo/index.json');
       displayFileCollection(fileCollection);
     }
@@ -40,7 +54,7 @@
         console.log(file);
       }
       displayFileList(files);
-      fileCollection = new FileCollection.FileCollection();
+      fileCollection = new FileCollection();
       await fileCollection.appendFileList(files);
       displayFileCollection(fileCollection);
     }
@@ -48,7 +62,7 @@
     async function fromIum(event) {
       let files = event.target.files;
       displayFileList(files);
-      fileCollection = await FileCollection.FileCollection.fromIum(files[0]);
+      fileCollection = await FileCollection.fromIum(files[0]);
       displayFileCollection(fileCollection);
     }
 
@@ -104,8 +118,17 @@
       listing.innerHTML = html.join('\n');
     }
 
-    async function downloadZip(e) {
+    async function downloadIum(e) {
       var blob = new Blob([await fileCollection.toIum()], { type: "application/zip" });
+      var url = window.URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = 'data.ium.zip';
+      a.click();
+    }
+
+    async function downloadZip(e) {
+      var blob = new Blob([await fileCollection.toZip()], { type: "application/zip" });
       var url = window.URL.createObjectURL(blob);
       var a = document.createElement("a");
       a.href = url;
@@ -114,7 +137,6 @@
     }
 
   </script>
-  <ul id="listing"></ul>
 </body>
 
 </html>
