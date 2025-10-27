@@ -16,6 +16,15 @@ export function sourceItemToExtendedSourceItem(
   }
 
   const fileURL = new URL(entry.relativePath, baseURL);
+  let _fetchPromise: Promise<Response> | undefined;
+  async function getFetchCached() {
+    if (!_fetchPromise) _fetchPromise = fetch(fileURL);
+
+    const response = await _fetchPromise;
+    // clone the response to prevent error when need to consume the response multiple times
+    return response.clone();
+  }
+
   return {
     uuid: entry.uuid ?? crypto.randomUUID(),
     name: entry.relativePath.split('/').pop() || '',
@@ -25,11 +34,11 @@ export function sourceItemToExtendedSourceItem(
     relativePath: entry.relativePath,
     lastModified: entry.lastModified,
     text: async (): Promise<string> => {
-      const response = await fetch(fileURL.toString());
+      const response = await getFetchCached();
       return response.text();
     },
     arrayBuffer: async (): Promise<ArrayBuffer> => {
-      const response = await fetch(fileURL.toString());
+      const response = await getFetchCached();
       return response.arrayBuffer();
     },
     stream: () => {
@@ -46,7 +55,7 @@ export function sourceItemToExtendedSourceItem(
       }
 
       async function pipeFetchToStream() {
-        const response = await fetch(fileURL.toString());
+        const response = await getFetchCached();
         // Should not be null
         const body = response.body as ReadableStream<Uint8Array>;
         await body.pipeTo(writable);
