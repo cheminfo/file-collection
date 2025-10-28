@@ -16,6 +16,13 @@ export function sourceItemToExtendedSourceItem(
   }
 
   const fileURL = new URL(entry.relativePath, baseURL);
+  let _blobPromise: Promise<Blob> | undefined;
+  async function getBlobCached() {
+    if (!_blobPromise) _blobPromise = fetch(fileURL).then((r) => r.blob());
+
+    return _blobPromise;
+  }
+
   return {
     uuid: entry.uuid ?? crypto.randomUUID(),
     name: entry.relativePath.split('/').pop() || '',
@@ -25,12 +32,12 @@ export function sourceItemToExtendedSourceItem(
     relativePath: entry.relativePath,
     lastModified: entry.lastModified,
     text: async (): Promise<string> => {
-      const response = await fetch(fileURL.toString());
-      return response.text();
+      const blob = await getBlobCached();
+      return blob.text();
     },
     arrayBuffer: async (): Promise<ArrayBuffer> => {
-      const response = await fetch(fileURL.toString());
-      return response.arrayBuffer();
+      const blob = await getBlobCached();
+      return blob.arrayBuffer();
     },
     stream: () => {
       const { writable, readable } = new TransformStream<
@@ -46,10 +53,8 @@ export function sourceItemToExtendedSourceItem(
       }
 
       async function pipeFetchToStream() {
-        const response = await fetch(fileURL.toString());
-        // Should not be null
-        const body = response.body as ReadableStream<Uint8Array>;
-        await body.pipeTo(writable);
+        const blob = await getBlobCached();
+        await blob.stream().pipeTo(writable);
       }
 
       void pipeFetchToStream().catch(propagateErrorToStream);

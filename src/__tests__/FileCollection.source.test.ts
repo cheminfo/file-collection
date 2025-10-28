@@ -85,8 +85,8 @@ describe('fileCollectionFromWebSource', () => {
 
     await firstFile.text();
 
-    // no cache it is reloaded a second time
-    expect(fileRequestedCounter).toBe(2);
+    // FileCollection must not fetch the file again
+    expect(fileRequestedCounter).toBe(1);
 
     const second = await secondFile.arrayBuffer();
 
