@@ -6,7 +6,7 @@ import { Readable } from 'node:stream';
 
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { AppendPathOptions, FileCollection } from '../FileCollection.ts';
-import { blobToStream } from '../utilities/blob_to_stream.ts';
+import { streamFromAsyncBlob } from '../utilities/stream_from_async_blob.ts';
 
 /**
  * Append files from a directory to a FileCollection.
@@ -60,7 +60,7 @@ async function appendFiles(
         lastModified: Math.round(info.mtimeMs),
         text: () => readCachedBlob().then((blob) => blob.text()),
         arrayBuffer: () => readCachedBlob().then((blob) => blob.arrayBuffer()),
-        stream: () => blobToStream(readCachedBlob),
+        stream: () => streamFromAsyncBlob(readCachedBlob),
       };
       await fileCollection.appendExtendedSource(source);
     }

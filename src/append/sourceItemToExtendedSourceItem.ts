@@ -1,6 +1,6 @@
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { SourceItem } from '../SourceItem.ts';
-import { blobToStream } from '../utilities/blob_to_stream.ts';
+import { streamFromAsyncBlob } from '../utilities/stream_from_async_blob.ts';
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 export function sourceItemToExtendedSourceItem(
@@ -40,6 +40,6 @@ export function sourceItemToExtendedSourceItem(
       const blob = await getBlobCached();
       return blob.arrayBuffer();
     },
-    stream: () => blobToStream(getBlobCached),
+    stream: () => streamFromAsyncBlob(getBlobCached),
   };
 }

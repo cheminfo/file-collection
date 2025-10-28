@@ -1,4 +1,4 @@
-export function blobToStream(blobGetter: () => Promise<Blob>) {
+export function streamFromAsyncBlob(blobGetter: () => Promise<Blob>) {
   const { writable, readable } = new TransformStream<
     Uint8Array<ArrayBuffer>,
     Uint8Array<ArrayBuffer>
