@@ -1,5 +1,6 @@
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { SourceItem } from '../SourceItem.ts';
+import { blobToStream } from '../utilities/blob_to_stream.ts';
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 export function sourceItemToExtendedSourceItem(
@@ -39,27 +40,6 @@ export function sourceItemToExtendedSourceItem(
       const blob = await getBlobCached();
       return blob.arrayBuffer();
     },
-    stream: () => {
-      const { writable, readable } = new TransformStream<
-        Uint8Array<ArrayBuffer>,
-        Uint8Array<ArrayBuffer>
-      >();
-
-      async function propagateErrorToStream(error: unknown) {
-        await Promise.allSettled([
-          writable.abort(error),
-          readable.cancel(error),
-        ]);
-      }
-
-      async function pipeFetchToStream() {
-        const blob = await getBlobCached();
-        await blob.stream().pipeTo(writable);
-      }
-
-      void pipeFetchToStream().catch(propagateErrorToStream);
-
-      return readable;
-    },
+    stream: () => blobToStream(getBlobCached),
   };
 }

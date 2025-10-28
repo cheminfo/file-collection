@@ -6,6 +6,7 @@ import { Readable } from 'node:stream';
 
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { AppendPathOptions, FileCollection } from '../FileCollection.ts';
+import { blobToStream } from '../utilities/blob_to_stream.ts';
 
 /**
  * Append files from a directory to a FileCollection.
@@ -42,6 +43,14 @@ async function appendFiles(
       }
     } else {
       const relativePath = base ? `${base}/${entry}` : entry;
+
+      let _blobPromise: Promise<Blob> | undefined;
+      function readCachedBlob() {
+        if (!_blobPromise) _blobPromise = openAsBlob(current);
+
+        return _blobPromise;
+      }
+
       const source: ExtendedSourceItem = {
         uuid: crypto.randomUUID(),
         name: entry,
@@ -49,13 +58,9 @@ async function appendFiles(
         size: info.size,
         relativePath,
         lastModified: Math.round(info.mtimeMs),
-        text: () => openAsBlob(current).then((blob) => blob.text()),
-        arrayBuffer: () =>
-          openAsBlob(current).then((blob) => blob.arrayBuffer()),
-        stream: () =>
-          Readable.toWeb(createReadStream(current)) as ReadableStream<
-            Uint8Array<ArrayBuffer>
-          >,
+        text: () => readCachedBlob().then((blob) => blob.text()),
+        arrayBuffer: () => readCachedBlob().then((blob) => blob.arrayBuffer()),
+        stream: () => blobToStream(readCachedBlob),
       };
       await fileCollection.appendExtendedSource(source);
     }
