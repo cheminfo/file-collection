@@ -16,13 +16,11 @@ export function sourceItemToExtendedSourceItem(
   }
 
   const fileURL = new URL(entry.relativePath, baseURL);
-  let _fetchPromise: Promise<Response> | undefined;
-  async function getFetchCached() {
-    if (!_fetchPromise) _fetchPromise = fetch(fileURL);
+  let _blobPromise: Promise<Blob> | undefined;
+  async function getBlobCached() {
+    if (!_blobPromise) _blobPromise = fetch(fileURL).then((r) => r.blob());
 
-    const response = await _fetchPromise;
-    // clone the response to prevent error when need to consume the response multiple times
-    return response.clone();
+    return _blobPromise;
   }
 
   return {
@@ -34,12 +32,12 @@ export function sourceItemToExtendedSourceItem(
     relativePath: entry.relativePath,
     lastModified: entry.lastModified,
     text: async (): Promise<string> => {
-      const response = await getFetchCached();
-      return response.text();
+      const blob = await getBlobCached();
+      return blob.text();
     },
     arrayBuffer: async (): Promise<ArrayBuffer> => {
-      const response = await getFetchCached();
-      return response.arrayBuffer();
+      const blob = await getBlobCached();
+      return blob.arrayBuffer();
     },
     stream: () => {
       const { writable, readable } = new TransformStream<
@@ -55,10 +53,8 @@ export function sourceItemToExtendedSourceItem(
       }
 
       async function pipeFetchToStream() {
-        const response = await getFetchCached();
-        // Should not be null
-        const body = response.body as ReadableStream<Uint8Array>;
-        await body.pipeTo(writable);
+        const blob = await getBlobCached();
+        await blob.stream().pipeTo(writable);
       }
 
       void pipeFetchToStream().catch(propagateErrorToStream);
