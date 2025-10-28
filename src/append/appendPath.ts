@@ -1,8 +1,7 @@
 /* eslint-disable no-await-in-loop */
-import { createReadStream, openAsBlob } from 'node:fs';
+import { openAsBlob } from 'node:fs';
 import { readdir, stat } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
-import { Readable } from 'node:stream';
 
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { AppendPathOptions, FileCollection } from '../FileCollection.ts';
