@@ -48,11 +48,6 @@ export interface Options {
    */
   ungzip?: UngzipExpandOptions;
   logger?: Logger;
-  /**
-   * Should we cache the data for each fileItem ?
-   * This allows to prevent fetching or unzipping the same file many times
-   */
-  cache?: boolean;
 }
 
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -66,6 +61,5 @@ export function mergeOptions(base: Options, override: Options) {
       ? { ...base.ungzip, ...override.ungzip }
       : base.ungzip,
     logger: override.logger ?? base.logger,
-    cache: override.cache ?? base.cache,
   };
 }
