@@ -12,8 +12,9 @@ jobs:
     with:
       lint-check-types: true
       npm-test-command: |
+        # https://github.com/mswjs/msw/issues/2615
         if [[ "$(node --version)" == "v25."* ]]; then
           NODE_OPTIONS="--no-webstorage" node --run test-only
         else
-          node --run test-only
+          npm run test-only
         fi
