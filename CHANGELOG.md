@@ -10,7 +10,7 @@
 ### Features
 
 * avoid refetch each time we read a file from an external source ([#55](https://github.com/cheminfo/file-collection/issues/55)) ([1a5c705](https://github.com/cheminfo/file-collection/commit/1a5c7056cd7ae4ec834feee89221bc6be660c8a8))
-
+* avoid re-read each time we read a file from filesystem ([#59](https://github.com/cheminfo/file-collection/issues/59)) ([68b6904](https://github.com/cheminfo/file-collection/commit/68b6904bf64964c0c7292659550b22ed219525fe))
 
 ### Code Refactoring
 
