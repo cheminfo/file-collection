@@ -1,5 +1,21 @@
 # Changelog
 
+## [6.0.0](https://github.com/cheminfo/file-collection/compare/v5.4.0...v6.0.0) (2025-10-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* cache option is removed from `FileCollection`, now each source / file use cached data, even streams. It's a breaking change only for typescript usage of the lib. If somehow, a `cache` option is given to `FileCollection` it would ignore it.
+
+### Features
+
+* avoid refetch each time we read a file from an external source ([#55](https://github.com/cheminfo/file-collection/issues/55)) ([1a5c705](https://github.com/cheminfo/file-collection/commit/1a5c7056cd7ae4ec834feee89221bc6be660c8a8))
+* avoid re-read each time we read a file from filesystem ([#59](https://github.com/cheminfo/file-collection/issues/59)) ([68b6904](https://github.com/cheminfo/file-collection/commit/68b6904bf64964c0c7292659550b22ed219525fe))
+
+### Code Refactoring
+
+* remove cache option ([#59](https://github.com/cheminfo/file-collection/issues/59)) ([68b6904](https://github.com/cheminfo/file-collection/commit/68b6904bf64964c0c7292659550b22ed219525fe))
+
 ## [5.4.0](https://github.com/cheminfo/file-collection/compare/v5.3.0...v5.4.0) (2025-10-24)
 
 
