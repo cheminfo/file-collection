@@ -11,3 +11,4 @@ jobs:
     uses: zakodium/workflows/.github/workflows/nodejs.yml@nodejs-v1
     with:
       lint-check-types: true
+      npm-test-command: NODE_OPTIONS="--no-webstorage" node --run test-only
