@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop */
-import { createReadStream, openAsBlob } from 'node:fs';
+import { openAsBlob } from 'node:fs';
 import { readdir, stat } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
-import { Readable } from 'node:stream';
 
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { AppendPathOptions, FileCollection } from '../FileCollection.ts';
+import { streamFromAsyncBlob } from '../utilities/stream_from_async_blob.ts';
 
 /**
  * Append files from a directory to a FileCollection.
@@ -42,6 +42,14 @@ async function appendFiles(
       }
     } else {
       const relativePath = base ? `${base}/${entry}` : entry;
+
+      let _blobPromise: Promise<Blob> | undefined;
+      function readCachedBlob() {
+        if (!_blobPromise) _blobPromise = openAsBlob(current);
+
+        return _blobPromise;
+      }
+
       const source: ExtendedSourceItem = {
         uuid: crypto.randomUUID(),
         name: entry,
@@ -49,13 +57,9 @@ async function appendFiles(
         size: info.size,
         relativePath,
         lastModified: Math.round(info.mtimeMs),
-        text: () => openAsBlob(current).then((blob) => blob.text()),
-        arrayBuffer: () =>
-          openAsBlob(current).then((blob) => blob.arrayBuffer()),
-        stream: () =>
-          Readable.toWeb(createReadStream(current)) as ReadableStream<
-            Uint8Array<ArrayBuffer>
-          >,
+        text: () => readCachedBlob().then((blob) => blob.text()),
+        arrayBuffer: () => readCachedBlob().then((blob) => blob.arrayBuffer()),
+        stream: () => streamFromAsyncBlob(readCachedBlob),
       };
       await fileCollection.appendExtendedSource(source);
     }

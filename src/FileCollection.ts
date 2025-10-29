@@ -1,4 +1,3 @@
-import { CachedFileItem } from './CachedFileItem.ts';
 import type { ExtendedSourceItem } from './ExtendedSourceItem.ts';
 import { cloneExtendedSourceItem } from './ExtendedSourceItem.ts';
 import type { FileItem } from './FileItem.ts';
@@ -41,11 +40,7 @@ export class FileCollection {
   constructor(options: Options = {}, toClone?: FileCollection) {
     this.options = toClone ? mergeOptions(toClone.options, options) : options;
     if (toClone) {
-      this.files = toClone.files.map((file) => {
-        file = cloneFileItem(file);
-
-        return this.options.cache ? new CachedFileItem(file) : file;
-      });
+      this.files = toClone.files.map(cloneFileItem);
       this.sources = toClone.sources.map(cloneExtendedSourceItem);
     } else {
       this.files = [];
@@ -80,11 +75,8 @@ export class FileCollection {
       if (existingFiles.has(file.relativePath)) {
         throw new Error(`Duplicate relativePath: ${file.relativePath}`);
       }
-      if (options.cache) {
-        this.files.push(new CachedFileItem(file));
-      } else {
-        this.files.push(file);
-      }
+
+      this.files.push(file);
     }
 
     return this;

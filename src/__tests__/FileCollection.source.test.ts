@@ -219,66 +219,6 @@ describe('fileCollectionFromWebSource', () => {
     delete globalThis.location;
   });
 
-  it('with cache', async () => {
-    const source = {
-      entries: [
-        {
-          relativePath: 'data/dir1/a.txt',
-        },
-        {
-          relativePath: 'data/dir1/b.txt',
-        },
-      ],
-      baseURL: 'http://localhost/',
-    };
-
-    const fileCollection = new FileCollection({ cache: true });
-    await fileCollection.appendSource(source);
-
-    expect(fileCollection.files).toHaveLength(2);
-
-    const file = fileCollection.files[0];
-    assert(file);
-
-    const first = await file.text();
-
-    expect(first).toBe('a');
-
-    await file.text();
-
-    // cached it is loaded only once
-    expect(fileRequestedCounter).toBe(1);
-  });
-
-  it('with cache and arrayBuffer conversion', async () => {
-    const source = {
-      entries: [
-        {
-          relativePath: 'data/dir1/a.txt',
-        },
-      ],
-      baseURL: 'http://localhost/',
-    };
-
-    const fileCollection = new FileCollection({ cache: true });
-    await fileCollection.appendSource(source);
-
-    expect(fileCollection.files).toHaveLength(1);
-
-    const file = fileCollection.files[0];
-    assert(file);
-    const first = await file.arrayBuffer();
-    const array = Array.from(Buffer.from(first));
-
-    expect(array[0]).toBe(97);
-
-    // cached it is loaded only once and we convert the arrayBuffer to text
-    const text = await file.text();
-
-    expect(text).toBe('a');
-    expect(fileRequestedCounter).toBe(1);
-  });
-
   it('with duplicate', async () => {
     const source = {
       entries: [

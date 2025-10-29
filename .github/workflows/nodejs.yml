@@ -11,3 +11,10 @@ jobs:
     uses: zakodium/workflows/.github/workflows/nodejs.yml@nodejs-v1
     with:
       lint-check-types: true
+      npm-test-command: |
+        # https://github.com/mswjs/msw/issues/2615
+        if [[ "$(node --version)" == "v25."* ]]; then
+          NODE_OPTIONS="--no-webstorage" node --run test-only
+        else
+          npm run test-only
+        fi

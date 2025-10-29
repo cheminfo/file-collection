@@ -19,16 +19,14 @@ describe('FileCollection.fromCollection', () => {
   it('should clone with merge options', async () => {
     const collection = await FileCollection.fromPath(
       join(import.meta.dirname, 'data'),
-      { cache: true, filter: { ignoreDotfiles: true } },
+      { filter: { ignoreDotfiles: true } },
     );
 
     const clonedCollection = FileCollection.fromCollection(collection, {
-      cache: false,
       filter: { ignoreDotfiles: false },
     });
 
     expect(clonedCollection.options.filter?.ignoreDotfiles).toBe(false);
-    expect(clonedCollection.options.cache).toBe(false);
 
     // match instead of strict equality because clone files / sources with cache false instead of cache true.
     expect(clonedCollection.files).toMatchObject(collection.files);
