@@ -52,7 +52,8 @@ export interface Options {
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 export function mergeOptions(base: Options, override: Options) {
-  return {
+  // merge options
+  const options: Options = {
     filter: override.filter
       ? { ...base.filter, ...override.filter }
       : base.filter,
@@ -62,4 +63,27 @@ export function mergeOptions(base: Options, override: Options) {
       : base.ungzip,
     logger: override.logger ?? base.logger,
   };
+
+  // remove undefined values
+  if (!options.filter) {
+    delete options.filter;
+  } else if (typeof options.filter.ignoreDotfiles !== 'boolean') {
+    delete options.filter.ignoreDotfiles;
+  }
+  if (!options.unzip) {
+    delete options.unzip;
+  } else {
+    if (typeof options.unzip.recursive !== 'boolean') {
+      delete options.unzip.recursive;
+    }
+    if (!options.unzip.zipExtensions) delete options.unzip.zipExtensions;
+  }
+  if (!options.ungzip) {
+    delete options.ungzip;
+  } else if (!options.ungzip.gzipExtensions) {
+    delete options.ungzip.gzipExtensions;
+  }
+  if (!options.logger) delete options.logger;
+
+  return options;
 }
