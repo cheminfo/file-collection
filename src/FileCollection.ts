@@ -50,6 +50,11 @@ export class FileCollection {
 
   /**
    * This is unexpected to be used directly
+   *
+   * About options merging, in merge in this order:
+   * 1. options passed to the collection constructor
+   * 2. options contained in the source
+   * 3. options passed to the method
    * @param source - The source to append, which should be an ExtendedSourceItem.
    * @param itemOptions - Options for the item, which will be merged with the collection's options.
    * @private
@@ -59,12 +64,15 @@ export class FileCollection {
     source: ExtendedSourceItem,
     itemOptions?: Options,
   ): Promise<this> {
-    const options = itemOptions
-      ? mergeOptions(this.options, itemOptions)
-      : this.options;
+    let options = this.options;
+    if (source.options) options = mergeOptions(options, source.options);
+    if (itemOptions) options = mergeOptions(options, itemOptions);
+
     const shouldAdd = shouldAddItem(source.relativePath, options.filter);
     if (!shouldAdd) return this;
 
+    source = cloneExtendedSourceItem(source);
+    source.options = options;
     this.sources.push(source);
 
     const sourceFile = convertExtendedSourceToFile(source);

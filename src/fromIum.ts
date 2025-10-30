@@ -82,8 +82,5 @@ async function appendEntry(
     text: () => blob.text(),
   };
 
-  await fileCollection.appendExtendedSource(
-    extendedSource,
-    extendedSource.options,
-  );
+  await fileCollection.appendExtendedSource(extendedSource);
 }

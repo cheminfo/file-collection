@@ -70,7 +70,7 @@ export async function toIum(
   );
 
   const sources: SourceItem[] = [];
-  const promises: Array<Promise<void>> = [];
+  const promises: Array<Promise<unknown>> = [];
   for (const source of fileCollection.sources) {
     const newSource: SourceItem = {
       uuid: source.uuid,
@@ -79,6 +79,7 @@ export async function toIum(
       lastModified: source.lastModified,
       size: source.size,
       extra: source.extra,
+      options: source.options,
     };
     sources.push(newSource);
     const shouldIncludeFile = includeData || source.baseURL === 'ium:/';
@@ -86,7 +87,7 @@ export async function toIum(
 
     newSource.baseURL = 'ium:/';
     const pathname = toIumSourceToPath(newSource);
-    promises.push(zipWriter.add(pathname, source.stream()).then(() => void 0));
+    promises.push(zipWriter.add(pathname, source.stream()));
   }
 
   await Promise.all(promises);
