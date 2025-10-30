@@ -87,3 +87,16 @@ export function mergeOptions(base: Options, override: Options) {
 
   return options;
 }
+
+export const defaultOptions = {
+  filter: {
+    ignoreDotfiles: true,
+  },
+  ungzip: {
+    gzipExtensions: ['gz'],
+  },
+  unzip: {
+    zipExtensions: ['zip'],
+    recursive: true,
+  },
+} as const satisfies Options;

@@ -3,7 +3,7 @@
 // So we explicitly support both types to avoid ts errors.
 import type { ReadableStream as NodeWebRS } from 'node:stream/web';
 
-import type { ZipReader } from '@zip.js/zip.js';
+import type { ZipReader, ZipWriterAddDataOptions } from '@zip.js/zip.js';
 import {
   BlobReader,
   TextReader,
@@ -13,9 +13,12 @@ import {
 } from '@zip.js/zip.js';
 
 import type { FileCollection } from './FileCollection.ts';
+import type { Options } from './Options.ts';
+import { mergeOptions } from './Options.ts';
 import type { SourceItem } from './SourceItem.ts';
 import type { ToIumIndex } from './transformation/ium.js';
 import { toIumSourceToPath } from './transformation/source_zip.js';
+import { shouldAvoidCompression } from './utilities/should_avoid_compression.ts';
 
 export interface ExtraFileContentInput {
   /**
@@ -40,6 +43,7 @@ export type ExtraFileContent =
 export interface ToIumOptionsExtraFile {
   relativePath: string;
   data: ExtraFileContent;
+  options?: Options;
 }
 
 export interface ToIumOptions {
@@ -87,7 +91,10 @@ export async function toIum(
 
     newSource.baseURL = 'ium:/';
     const pathname = toIumSourceToPath(newSource);
-    promises.push(zipWriter.add(pathname, source.stream()));
+
+    const addOptions: ZipWriterAddDataOptions | undefined =
+      shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
+    promises.push(zipWriter.add(pathname, source.stream(), addOptions));
   }
 
   await Promise.all(promises);
@@ -108,11 +115,19 @@ export async function toIum(
             extra: true,
             baseURL: 'ium:/',
             relativePath,
+            options: extraFile.options
+              ? mergeOptions(fileCollection.options, extraFile.options)
+              : fileCollection.options,
           };
           sources.push(source);
           const pathname = toIumSourceToPath(source);
 
-          await zipWriter.add(pathname, getExtraFileContentReader(data));
+          const addOptions: ZipWriterAddDataOptions | undefined =
+            shouldAvoidCompression(source)
+              ? { compressionMethod: 0 }
+              : undefined;
+          const fileReader = getExtraFileContentReader(data);
+          await zipWriter.add(pathname, fileReader, addOptions);
         },
       ),
     );
