@@ -129,6 +129,41 @@ describe('options merge', () => {
   });
 });
 
+describe('keep options as simple as possible', () => {
+  it('should have empty object options', async () => {
+    const fc = new FileCollection({});
+    const source: ExtendedSourceItem = { ...getSource(), options: {} };
+
+    await fc.appendExtendedSource(source, {});
+    const fcSource = fc.sources[0];
+    assert(fcSource);
+
+    expect(fcSource.options).toStrictEqual({});
+  });
+
+  it('should have empty filter', async () => {
+    const fc = new FileCollection({ filter: {} });
+    const source: ExtendedSourceItem = { ...getSource(), options: {} };
+
+    await fc.appendExtendedSource(source);
+    const fcSource = fc.sources[0];
+    assert(fcSource);
+
+    expect(fcSource.options).toStrictEqual({ filter: {} });
+  });
+
+  it('should have empty ungzip', async () => {
+    const fc = new FileCollection({ ungzip: {} });
+    const source: ExtendedSourceItem = { ...getSource(), options: {} };
+
+    await fc.appendExtendedSource(source);
+    const fcSource = fc.sources[0];
+    assert(fcSource);
+
+    expect(fcSource.options).toStrictEqual({ ungzip: {} });
+  });
+});
+
 function getSource(): ExtendedSourceItem {
   const blob = new Blob(['test']);
   return {
