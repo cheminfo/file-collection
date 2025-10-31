@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.1.0](https://github.com/cheminfo/file-collection/compare/v6.0.0...v6.1.0) (2025-10-31)
+
+
+### Features
+
+* avoid to compress files known to be already compressed ([#63](https://github.com/cheminfo/file-collection/issues/63)) ([e55020c](https://github.com/cheminfo/file-collection/commit/e55020c5ba2b8c5c07448a2dd24a445913bfb2ed))
+* improve source options serialization / deserialization ([#60](https://github.com/cheminfo/file-collection/issues/60)) ([e9c68e4](https://github.com/cheminfo/file-collection/commit/e9c68e4f3aebffedc6d045d5b9cb365ccc71c2de))
+
 ## [6.0.0](https://github.com/cheminfo/file-collection/compare/v5.4.0...v6.0.0) (2025-10-29)
 
 
