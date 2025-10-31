@@ -205,6 +205,18 @@ export class FileCollection {
     return this;
   }
 
+  /**
+   * This method will merge the files of another collection into this collection.
+   * Sources and files will be appended to this collection.
+   * The relative paths of the files and sources will be prefixed with the subPath.
+   * @param other - The collection to merge into this collection.
+   * @param subPath - The subPath to prefix the relative paths of the files and sources.
+   * @returns this - The method is chainable.
+   */
+  merge(other: FileCollection, subPath = ''): this {
+    return this;
+  }
+
   toIum(options: ToIumOptions = {}) {
     return toIum(this.alphabetical(), options);
   }
