@@ -213,6 +213,7 @@ export class FileCollection {
    * @param subPath - The subPath to prefix the relative paths of the files and sources.
    * @returns this - The method is chainable.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   merge(other: FileCollection, subPath = ''): this {
     return this;
   }
