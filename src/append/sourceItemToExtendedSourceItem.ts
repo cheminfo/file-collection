@@ -32,6 +32,7 @@ export function sourceItemToExtendedSourceItem(
     extra: entry.extra,
     relativePath: entry.relativePath,
     lastModified: entry.lastModified,
+    options: entry.options,
     text: async (): Promise<string> => {
       const blob = await getBlobCached();
       return blob.text();

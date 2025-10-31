@@ -1,8 +1,10 @@
+import type { ZipWriterAddDataOptions } from '@zip.js/zip.js';
 import { Uint8ArrayWriter, ZipWriter } from '@zip.js/zip.js';
 
 import type { ExtendedSourceItem } from '../ExtendedSourceItem.js';
 import type { FileCollection } from '../FileCollection.js';
 import { sourceToZipPath } from '../transformation/source_zip.js';
+import { shouldAvoidCompression } from '../utilities/should_avoid_compression.ts';
 
 /**
  * This method will zip a file collection and return the zip as an ArrayBuffer
@@ -25,7 +27,10 @@ export async function toZip(
       const path = sourceToZipPath(source, pathUsed);
       pathUsed.add(path);
       finalPaths?.set(source, path);
-      await zipWriter.add(path, source.stream());
+
+      const addOptions: ZipWriterAddDataOptions | undefined =
+        shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
+      await zipWriter.add(path, source.stream(), addOptions);
     }),
   );
 

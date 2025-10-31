@@ -1,5 +1,6 @@
 import type { FileItem } from '../../FileItem.ts';
 import type { Options } from '../../Options.ts';
+import { defaultOptions } from '../../Options.ts';
 import { shouldAddItem } from '../shouldAddItem.ts';
 
 import { expandAndFilter } from './expandAndFilter.ts';
@@ -18,8 +19,8 @@ export async function fileItemUnzip(
   options: Options = {},
 ): Promise<FileItem[]> {
   const { unzip = {}, filter = {}, logger } = options;
-  let { zipExtensions = ['zip'] } = unzip;
-  const { recursive = true } = unzip;
+  let { zipExtensions = defaultOptions.unzip.zipExtensions } = unzip;
+  const { recursive = defaultOptions.unzip.recursive } = unzip;
   zipExtensions = zipExtensions.map((extension) => extension.toLowerCase());
   const extension = fileItem.name.replace(/^.*\./, '').toLowerCase();
 

@@ -1,13 +1,14 @@
 import type { FileItem } from '../../FileItem.ts';
 import type { Options } from '../../Options.ts';
+import { defaultOptions } from '../../Options.ts';
 
 /**
  * Some files in the fileItems may actually be gzip. This method will ungzip those files.
  * The method will actually not really ungzip the files but decompress them if you need.
  * During this process the extension .gz will be removed
- * @param fileItem
- * @param options
- * @returns
+ * @param fileItem - The file item to check and potentially ungzip.
+ * @param options - Options to filter the files and control the ungzip behavior.
+ * @returns A file item with ungzipped data.
  */
 
 export async function fileItemUngzip(
@@ -15,7 +16,7 @@ export async function fileItemUngzip(
   options: Options = {},
 ): Promise<FileItem> {
   const { ungzip: ungzipOptions = {}, logger } = options;
-  let { gzipExtensions = ['gz'] } = ungzipOptions;
+  let { gzipExtensions = defaultOptions.ungzip.gzipExtensions } = ungzipOptions;
   gzipExtensions = gzipExtensions.map((extension) => extension.toLowerCase());
 
   const extension = fileItem.name.replace(/^.*\./, '').toLowerCase();

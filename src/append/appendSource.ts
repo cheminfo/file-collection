@@ -4,6 +4,14 @@ import { shouldAddItem } from '../utilities/shouldAddItem.ts';
 
 import { sourceItemToExtendedSourceItem } from './sourceItemToExtendedSourceItem.ts';
 
+/**
+ * Append a source to a FileCollection
+ * @param fileCollection - The FileCollection to append the files to.
+ * @param source - The source to append.
+ * @param options - Options for appending the source.
+ * @param options.baseURL - The base URL to use for the source if it doesn't have one.
+ * @returns Promise<void>
+ */
 export async function appendSource(
   fileCollection: FileCollection,
   source: Source,
@@ -19,7 +27,7 @@ export async function appendSource(
     if (!shouldAddItem(relativePath, entry.options?.filter ?? filter)) continue;
     const alternativeBaseURL = baseURL || options.baseURL;
     const source = sourceItemToExtendedSourceItem(entry, alternativeBaseURL);
-    promises.push(fileCollection.appendExtendedSource(source, entry.options));
+    promises.push(fileCollection.appendExtendedSource(source));
   }
   await Promise.all(promises);
 }
