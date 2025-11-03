@@ -79,6 +79,7 @@ export async function toIum(
     const newSource: SourceItem = {
       uuid: source.uuid,
       relativePath: source.relativePath,
+      originalRelativePath: source.originalRelativePath,
       baseURL: source.baseURL,
       lastModified: source.lastModified,
       size: source.size,

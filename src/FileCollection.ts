@@ -13,6 +13,7 @@ import { appendPath } from './append/appendPath.ts';
 import { appendSource } from './append/appendSource.ts';
 import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
+import { appendFileCollection } from './append/append_file_collection.ts';
 import { fromIum } from './fromIum.ts';
 import type { ToIumOptions } from './toIum.ts';
 import { toIum } from './toIum.ts';
@@ -112,11 +113,10 @@ export class FileCollection {
   removeFile(originalRelativePath: string): void | FileItem {
     const { relativePath } = getNameInfo(originalRelativePath);
     const index = this.files.findIndex((f) => f.relativePath === relativePath);
-    let removedFile;
+    const fileToRemove = this.files[index];
     if (index !== -1) {
-      const file = this.files[index];
-      const sourceUUID = file?.sourceUUID;
-      removedFile = this.files.splice(index, 1)[0];
+      const sourceUUID = fileToRemove?.sourceUUID;
+      this.files.splice(index, 1);
       // any other files with the same sourceUUID?
       if (this.files.some((f) => f.sourceUUID === sourceUUID)) return;
       // delete the source
@@ -127,7 +127,7 @@ export class FileCollection {
         throw new Error(`Source not found for UUID: ${sourceUUID}`);
       }
     }
-    return removedFile;
+    return fileToRemove;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -201,6 +201,21 @@ export class FileCollection {
     options: { dateModified?: number; extra?: boolean } = {},
   ): Promise<this> {
     await appendArrayBuffer(this, relativePath, arrayBuffer, options);
+
+    return this;
+  }
+
+  /**
+   * This method will merge the files and sources of another collection into this collection.
+   * Sources and files will be appended to this collection.
+   * The relative paths of the files and sources will be prefixed with the subPath.
+   * @param other - The collection to merge into this collection.
+   * @param subPath - Optional subPath to prefix the relative paths of the files and sources.
+   * @returns this - The method is chainable.
+   */
+
+  appendFileCollection(other: FileCollection, subPath = ''): this {
+    appendFileCollection(this, other, subPath);
 
     return this;
   }

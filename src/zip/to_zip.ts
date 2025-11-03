@@ -20,12 +20,9 @@ export async function toZip(
     new Uint8ArrayWriter(),
   );
 
-  const pathUsed = new Set<string>();
-
   await Promise.all(
     collection.sources.map(async (source) => {
-      const path = sourceToZipPath(source, pathUsed);
-      pathUsed.add(path);
+      const path = sourceToZipPath(source);
       finalPaths?.set(source, path);
 
       const addOptions: ZipWriterAddDataOptions | undefined =
