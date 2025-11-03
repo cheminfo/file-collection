@@ -25,7 +25,7 @@ describe('same root', () => {
     const self = new FileCollection();
     const other = new FileCollection();
 
-    self.merge(other);
+    self.appendFileCollection(other);
 
     expect(self.sources).toHaveLength(0);
     expect(self.files).toHaveLength(0);
@@ -36,7 +36,7 @@ describe('same root', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', 'Hello World!');
     await other.appendText('foo.txt', 'bar');
-    self.merge(other);
+    self.appendFileCollection(other);
 
     expect(self.sources).toHaveLength(2);
     expect(self.files).toHaveLength(2);
@@ -58,7 +58,7 @@ describe('same root', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', 'Hello World!');
     await other.appendText('foo.txt', 'bar');
-    self.merge(other);
+    self.appendFileCollection(other);
 
     expect(self.sources.find(isHello)).not.toBe(other.sources.find(isHello));
     expect(self.files.find(isHello)).not.toBe(other.files.find(isHello));
@@ -72,7 +72,7 @@ describe('same root', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', 'Hello World!');
     await other.appendText('foo.txt', 'bar');
-    self.merge(other);
+    self.appendFileCollection(other);
 
     const sources = self.sources.map(mapRelativePath);
     const files = self.files.map(mapRelativePath);
@@ -91,7 +91,7 @@ describe('same root', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', 'Hello World!');
     await other.appendText('foo.txt', 'bar');
-    self.merge(other);
+    self.appendFileCollection(other);
 
     const sources = other.sources.map(mapRelativePath);
     const files = other.files.map(mapRelativePath);
@@ -110,7 +110,7 @@ describe('same root', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', '!World Hello');
 
-    expect(() => self.merge(other)).toThrow(Error);
+    expect(() => self.appendFileCollection(other)).toThrow(Error);
   });
 
   it('should throw error on files without attached source', () => {
@@ -126,7 +126,7 @@ describe('same root', () => {
       stream: emptyBlob.stream.bind(emptyBlob),
     });
 
-    expect(() => self.merge(other)).toThrow(Error);
+    expect(() => self.appendFileCollection(other)).toThrow(Error);
   });
 });
 
@@ -135,7 +135,7 @@ describe('at subPath', () => {
     const self = new FileCollection();
     const other = new FileCollection();
 
-    self.merge(other, 'subPath');
+    self.appendFileCollection(other, 'subPath');
 
     expect(self.sources).toHaveLength(0);
     expect(self.files).toHaveLength(0);
@@ -146,7 +146,7 @@ describe('at subPath', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', 'Hello World!');
     await other.appendText('foo.txt', 'bar');
-    self.merge(other, 'subPath');
+    self.appendFileCollection(other, 'subPath');
 
     expect(self.sources).toHaveLength(2);
     expect(self.files).toHaveLength(2);
@@ -168,7 +168,7 @@ describe('at subPath', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', 'Hello World!');
     await other.appendText('foo.txt', 'bar');
-    self.merge(other, 'subPath');
+    self.appendFileCollection(other, 'subPath');
 
     const sources = self.sources.map(mapRelativePath);
     const files = self.files.map(mapRelativePath);
@@ -187,7 +187,7 @@ describe('at subPath', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', 'Hello World!');
     await other.appendText('foo.txt', 'bar');
-    self.merge(other, 'subPath');
+    self.appendFileCollection(other, 'subPath');
 
     const sources = other.sources.map(mapRelativePath);
     const files = other.files.map(mapRelativePath);
@@ -206,7 +206,7 @@ describe('at subPath', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', '!World Hello');
 
-    expect(() => self.merge(other, 'subPath')).toThrow(Error);
+    expect(() => self.appendFileCollection(other, 'subPath')).toThrow(Error);
   });
 
   it('should support recursive zip', async () => {
@@ -241,7 +241,7 @@ describe('at subPath', () => {
 
     const self = new FileCollection();
     const other = await FileCollection.fromZip(zipBlob);
-    self.merge(other, 'subPath');
+    self.appendFileCollection(other, 'subPath');
 
     const otherSources = other.sources.map(mapRelativePath);
     const otherFiles = other.files.map(mapRelativePath);
@@ -332,7 +332,7 @@ describe('at subPath', () => {
       expect(filesData).toStrictEqual(expectedData);
     }
 
-    self.merge(other, 'other');
+    self.appendFileCollection(other, 'other');
 
     // merge don't refetch
     expect(filesGet).toBe(6);

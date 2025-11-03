@@ -13,6 +13,7 @@ import { appendPath } from './append/appendPath.ts';
 import { appendSource } from './append/appendSource.ts';
 import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
+import { appendFileCollection } from './append/append_file_collection.ts';
 import { fromIum } from './fromIum.ts';
 import type { ToIumOptions } from './toIum.ts';
 import { toIum } from './toIum.ts';
@@ -20,7 +21,6 @@ import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceTo
 import { expandAndFilter } from './utilities/expand/expandAndFilter.ts';
 import { filterFileCollection } from './utilities/filter_file_collection.ts';
 import { getNameInfo } from './utilities/getNameInfo.ts';
-import { merge } from './utilities/merge.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
 import { fromZip } from './zip/from_zip.ts';
 import { toZip } from './zip/to_zip.js';
@@ -214,8 +214,8 @@ export class FileCollection {
    * @returns this - The method is chainable.
    */
 
-  merge(other: FileCollection, subPath = ''): this {
-    merge(this, other, subPath);
+  appendFileCollection(other: FileCollection, subPath = ''): this {
+    appendFileCollection(this, other, subPath);
 
     return this;
   }

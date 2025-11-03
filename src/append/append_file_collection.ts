@@ -2,11 +2,10 @@ import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import { cloneExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { FileCollection } from '../FileCollection.ts';
 import { cloneFileItem } from '../FileItem.ts';
-
-import { normalizeRelativePath } from './normalize_relative_path.ts';
+import { normalizeRelativePath } from '../utilities/normalize_relative_path.ts';
 
 // eslint-disable-next-line jsdoc/require-jsdoc
-export function merge(
+export function appendFileCollection(
   self: FileCollection,
   other: FileCollection,
   subPath: string,
