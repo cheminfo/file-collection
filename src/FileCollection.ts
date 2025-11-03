@@ -220,6 +220,42 @@ export class FileCollection {
     return this;
   }
 
+  /**
+   * This method will generate a new FileCollection.
+   * It filters files and sources from this collection based on the subPath.
+   * The files and sources will have the subPath removed from their relative paths.
+   *
+   * Think of this method like a cd command.
+   * Only with a relative path, and no possibility to go up.
+   * @param subPath - The subPath to filter the files and sources by.
+   * @returns A new FileCollection with the filtered files and sources with subPath as root.
+   * @example
+   * ```ts
+   * const collection = new FileCollection();
+   * collection.appendText('a/b/c.txt', 'hello');
+   * collection.appendText('a/b/d.txt', 'world');
+   * collection.appendText('a/e.txt', 'hello world');
+   *
+   * const subCollection = collection.subroot('a');
+   *
+   * expect(subCollection.files.map((f) => f.relativePath)).toStrictEqual([
+   *   'b/c.txt',
+   *   'b/d.txt',
+   *   'e.txt',
+   * ]);
+   * expect(subCollection.sources.map((s) => s.relativePath)).toStrictEqual([
+   *   'b/c.txt',
+   *   'b/d.txt',
+   *   'e.txt',
+   * ]);
+   * ```
+   */
+  subroot(subPath: string): FileCollection {
+    const collection = new FileCollection(this.options);
+
+    return collection;
+  }
+
   toIum(options: ToIumOptions = {}) {
     return toIum(this.alphabetical(), options);
   }
