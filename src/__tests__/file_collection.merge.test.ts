@@ -1,4 +1,9 @@
+import { createReadStream } from 'node:fs';
+import { join } from 'node:path';
+
 import { BlobReader, BlobWriter, TextReader, ZipWriter } from '@zip.js/zip.js';
+import { HttpResponse, http } from 'msw';
+import { setupServer } from 'msw/node';
 import { assert, describe, expect, it } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
@@ -99,26 +104,27 @@ describe('same root', () => {
     expect(files).toStrictEqual(expected);
   });
 
-  // TODO: discuss on what to do with duplicate
-  // throw an error, warn and skip, override, change path (add random folder on top of the file)
-  // for source, duplicate are on relativePath and uuid
-  // for file, duplicate are on relativePath
-  // Consider we merge the files before the sources,
-  // if we have a duplicated file
-  //   if sourceUUID exists in this file collection and both files share the same UUID
-  //   then we can ignore safely the file
-  // else ???
-  // if source with same uuid already exists
-  //   if they share the same relative path
-  //     we can ignore safely the source
-  //   else ???
-  // else (it means two different sources with same relative path)
-  //   ???
   it('should throw error on duplicate files', async () => {
     const self = new FileCollection();
     await self.appendText('hello.txt', 'Hello World!');
     const other = new FileCollection();
     await other.appendText('hello.txt', '!World Hello');
+
+    expect(() => self.merge(other)).toThrow(Error);
+  });
+
+  it('should throw error on files without attached source', () => {
+    const self = new FileCollection();
+    const other = new FileCollection();
+    const emptyBlob = new Blob();
+    other.files.push({
+      sourceUUID: crypto.randomUUID(),
+      name: 'test.txt',
+      relativePath: 'test.txt',
+      text: emptyBlob.text.bind(emptyBlob),
+      arrayBuffer: emptyBlob.arrayBuffer.bind(emptyBlob),
+      stream: emptyBlob.stream.bind(emptyBlob),
+    });
 
     expect(() => self.merge(other)).toThrow(Error);
   });
@@ -150,7 +156,7 @@ describe('at subPath', () => {
     sources.sort();
     files.sort();
 
-    const expected = ['subPath/hello.txt', 'subPath/foo.txt'];
+    const expected = ['subPath/foo.txt', 'subPath/hello.txt'];
 
     expect(sources).toStrictEqual(expected);
     expect(files).toStrictEqual(expected);
@@ -278,5 +284,140 @@ describe('at subPath', () => {
 
     expect(sources).toStrictEqual(sourcesExpected);
     expect(files).toStrictEqual(filesExpected);
+  });
+
+  it('should works with complete scenario imply Web-Source and complete serialization processus', async (testCtx) => {
+    let filesGet = 0;
+    const server = setupServer(
+      http.get('http://localhost/*', async ({ request }) => {
+        const serverRoot = join(import.meta.dirname, 'webSource');
+        const pathname = join(serverRoot, new URL(request.url).pathname);
+        const stream = createReadStream(pathname);
+        filesGet++;
+        return new HttpResponse(stream, { status: 200 });
+      }),
+    );
+    server.listen();
+    testCtx.onTestFinished(() => server.close());
+
+    const self = new FileCollection();
+    await self.appendWebSource('http://localhost/self/index.json');
+    await self.appendText('self.txt', 'Self Hello World!');
+    self.alphabetical();
+
+    {
+      const sourcesData = await Promise.all(self.sources.map((s) => s.text()));
+      const filesData = await Promise.all(self.files.map((f) => f.text()));
+      const expectedData = ['a', 'b', 'Self Hello World!'];
+
+      // fetch the web source + 2 file entries
+      expect(filesGet).toBe(3);
+      expect(sourcesData).toStrictEqual(expectedData);
+      expect(filesData).toStrictEqual(expectedData);
+    }
+
+    const other = new FileCollection();
+    await other.appendWebSource('http://localhost/other/index.json');
+    await other.appendText('other.txt', 'Other Hello World!');
+    other.alphabetical();
+
+    {
+      const sourcesData = await Promise.all(other.sources.map((s) => s.text()));
+      const filesData = await Promise.all(other.files.map((f) => f.text()));
+      const expectedData = ['a', 'b', 'Other Hello World!'];
+
+      // fetch the web source + 2 file entries
+      expect(filesGet).toBe(6);
+      expect(sourcesData).toStrictEqual(expectedData);
+      expect(filesData).toStrictEqual(expectedData);
+    }
+
+    self.merge(other, 'other');
+
+    // merge don't refetch
+    expect(filesGet).toBe(6);
+
+    const iumBuffer = await self.toIum({ includeData: false });
+    const deserialized = await FileCollection.fromIum(iumBuffer);
+
+    const expectedPaths = [
+      'dir1/a.txt',
+      'dir2/b.txt',
+      'other/dir1/a.txt',
+      'other/dir2/b.txt',
+      'other/other.txt',
+      'self.txt',
+    ];
+
+    {
+      const sourcesData = await Promise.all(
+        deserialized.sources.map((s) => s.text()),
+      );
+      const filesData = await Promise.all(
+        deserialized.files.map((f) => f.text()),
+      );
+      const expectedData = [
+        'a',
+        'b',
+        'a',
+        'b',
+        'Other Hello World!',
+        'Self Hello World!',
+      ];
+
+      // 2 file entries for each web source (+4)
+      expect(filesGet).toBe(10);
+      expect(sourcesData).toStrictEqual(expectedData);
+      expect(filesData).toStrictEqual(expectedData);
+    }
+
+    {
+      const deserializedSources = deserialized.sources.map(mapRelativePath);
+      const deserializedFiles = deserialized.files.map(mapRelativePath);
+      const selfSources = self.sources.map(mapRelativePath);
+      const selfFiles = self.files.map(mapRelativePath);
+
+      expect(deserializedSources).toStrictEqual(expectedPaths);
+      expect(deserializedFiles).toStrictEqual(expectedPaths);
+      expect(selfSources).toStrictEqual(expectedPaths);
+      expect(selfFiles).toStrictEqual(expectedPaths);
+    }
+
+    const iumBufferFull = await deserialized.toIum();
+    const deserializedFull = await FileCollection.fromIum(iumBufferFull);
+
+    {
+      const sourcesData = await Promise.all(
+        deserializedFull.sources.map((s) => s.text()),
+      );
+      const filesData = await Promise.all(
+        deserializedFull.files.map((f) => f.text()),
+      );
+      const expectedData = [
+        'a',
+        'b',
+        'a',
+        'b',
+        'Other Hello World!',
+        'Self Hello World!',
+      ];
+
+      // all data embed into the ium, no fetch.
+      expect(filesGet).toBe(10);
+      expect(sourcesData).toStrictEqual(expectedData);
+      expect(filesData).toStrictEqual(expectedData);
+    }
+
+    {
+      const deserializedSources = deserializedFull.sources.map(mapRelativePath);
+      const deserializedFiles = deserializedFull.files.map(mapRelativePath);
+      const selfSources = self.sources.map(mapRelativePath);
+      const selfFiles = self.files.map(mapRelativePath);
+
+      expect(deserializedSources).toStrictEqual(expectedPaths);
+      expect(deserializedFiles).toStrictEqual(expectedPaths);
+      expect(selfSources).toStrictEqual(expectedPaths);
+      expect(selfFiles).toStrictEqual(expectedPaths);
+    }
   });
 });

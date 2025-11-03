@@ -20,6 +20,7 @@ import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceTo
 import { expandAndFilter } from './utilities/expand/expandAndFilter.ts';
 import { filterFileCollection } from './utilities/filter_file_collection.ts';
 import { getNameInfo } from './utilities/getNameInfo.ts';
+import { merge } from './utilities/merge.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
 import { fromZip } from './zip/from_zip.ts';
 import { toZip } from './zip/to_zip.js';
@@ -112,11 +113,10 @@ export class FileCollection {
   removeFile(originalRelativePath: string): void | FileItem {
     const { relativePath } = getNameInfo(originalRelativePath);
     const index = this.files.findIndex((f) => f.relativePath === relativePath);
-    let removedFile;
+    const fileToRemove = this.files[index];
     if (index !== -1) {
-      const file = this.files[index];
-      const sourceUUID = file?.sourceUUID;
-      removedFile = this.files.splice(index, 1)[0];
+      const sourceUUID = fileToRemove?.sourceUUID;
+      this.files.splice(index, 1);
       // any other files with the same sourceUUID?
       if (this.files.some((f) => f.sourceUUID === sourceUUID)) return;
       // delete the source
@@ -127,7 +127,7 @@ export class FileCollection {
         throw new Error(`Source not found for UUID: ${sourceUUID}`);
       }
     }
-    return removedFile;
+    return fileToRemove;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -206,15 +206,17 @@ export class FileCollection {
   }
 
   /**
-   * This method will merge the files of another collection into this collection.
+   * This method will merge the files and sources of another collection into this collection.
    * Sources and files will be appended to this collection.
    * The relative paths of the files and sources will be prefixed with the subPath.
    * @param other - The collection to merge into this collection.
-   * @param subPath - The subPath to prefix the relative paths of the files and sources.
+   * @param subPath - Optional subPath to prefix the relative paths of the files and sources.
    * @returns this - The method is chainable.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   merge(other: FileCollection, subPath = ''): this {
+    merge(this, other, subPath);
+
     return this;
   }
 

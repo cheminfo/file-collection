@@ -1,0 +1,11 @@
+{
+  "baseURL": "http://localhost/other/",
+  "entries": [
+    {
+      "relativePath": "dir1/a.txt"
+    },
+    {
+      "relativePath": "dir2/b.txt"
+    }
+  ]
+}

@@ -16,7 +16,10 @@ export function sourceItemToExtendedSourceItem(
     }
   }
 
-  const fileURL = new URL(entry.relativePath, baseURL);
+  const fileURL = new URL(
+    entry.originalRelativePath ?? entry.relativePath,
+    baseURL,
+  );
   let _blobPromise: Promise<Blob> | undefined;
   async function getBlobCached() {
     if (!_blobPromise) _blobPromise = fetch(fileURL).then((r) => r.blob());
