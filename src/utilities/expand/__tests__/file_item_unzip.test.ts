@@ -1,5 +1,3 @@
-import * as trace_events from 'node:trace_events';
-
 import { BlobReader, BlobWriter, TextReader, ZipWriter } from '@zip.js/zip.js';
 import { FifoLogger } from 'fifo-logger';
 import { expect, test } from 'vitest';
