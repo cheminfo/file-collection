@@ -6,7 +6,7 @@ import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { assert, describe, expect, it } from 'vitest';
 
-import { FileCollection } from '../FileCollection.ts';
+import { FileCollection } from '../index.ts';
 
 function isHello(item: { relativePath: string }) {
   return item.relativePath === 'hello.txt';
