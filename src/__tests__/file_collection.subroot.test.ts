@@ -132,7 +132,7 @@ describe.sequential('web source', () => {
     return collection;
   }
 
-  it('should works with mixed data sources', async () => {
+  it('should work with mixed data sources', async () => {
     const collection = await getCollectionWithMixedData();
     const self = collection.subroot('self').alphabetical();
     const sources = self.sources.map(mapRelativePath);
@@ -175,7 +175,7 @@ describe.sequential('web source', () => {
     ium.alphabetical();
     await Promise.all(ium.files.map((f) => f.arrayBuffer()));
 
-    expect(requestCounter).toBe(6); // no fetch entries, there are embed into the archive
+    expect(requestCounter).toBe(6); // no fetch entries, there are embeded into the archive
 
     const sources = ium.sources.map(mapRelativePath);
     const files = ium.files.map(mapRelativePath);
