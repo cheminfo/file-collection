@@ -15,6 +15,7 @@ import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
 import { appendFileCollection } from './append/append_file_collection.ts';
 import { fromIum } from './fromIum.ts';
+import { subroot } from './subroot.ts';
 import type { ToIumOptions } from './toIum.ts';
 import { toIum } from './toIum.ts';
 import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile.ts';
@@ -218,6 +219,44 @@ export class FileCollection {
     appendFileCollection(this, other, subPath);
 
     return this;
+  }
+
+  /**
+   * This method will generate a new FileCollection.
+   * It filters files and sources from this collection based on the subPath.
+   * The files and sources will have the subPath removed from their relative paths.
+   *
+   * Think of this method like a cd command.
+   * Only with a relative path, and no possibility to go up.
+   * @param subPath - The subPath to filter the files and sources by.
+   * @returns A new FileCollection with the filtered files and sources with subPath as root.
+   * @example
+   * ```ts
+   * const collection = new FileCollection();
+   * collection.appendText('a/b/c.txt', 'hello');
+   * collection.appendText('a/b/d.txt', 'world');
+   * collection.appendText('a/e.txt', 'hello world');
+   *
+   * const subCollection = collection.subroot('a');
+   *
+   * expect(subCollection.files.map((f) => f.relativePath)).toStrictEqual([
+   *   'b/c.txt',
+   *   'b/d.txt',
+   *   'e.txt',
+   * ]);
+   * expect(subCollection.sources.map((s) => s.relativePath)).toStrictEqual([
+   *   'b/c.txt',
+   *   'b/d.txt',
+   *   'e.txt',
+   * ]);
+   * ```
+   */
+  subroot(subPath: string): FileCollection {
+    const sub = new FileCollection(this.options);
+
+    subroot(this, sub, subPath);
+
+    return sub;
   }
 
   toIum(options: ToIumOptions = {}) {
