@@ -87,7 +87,7 @@ describe.concurrent('basic', () => {
   );
 });
 
-describe('web source', () => {
+describe.sequential('web source', () => {
   let requestCounter: number;
   const server = setupServer(
     http.get('http://localhost/*', (ctx) => {
