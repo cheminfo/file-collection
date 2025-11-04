@@ -11,7 +11,6 @@ import {
   describe,
   expect,
   it,
-  test,
 } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
@@ -20,52 +19,72 @@ function mapRelativePath(item: { relativePath: string }) {
   return item.relativePath;
 }
 
-test('should support empty collection', () => {
-  const collection = new FileCollection();
-  const subCollection = collection.subroot('subPath');
+describe.concurrent('basic', () => {
+  it('should support empty collection', () => {
+    const collection = new FileCollection();
+    const subCollection = collection.subroot('subPath');
 
-  expect(subCollection.sources).toStrictEqual([]);
-  expect(subCollection.files).toStrictEqual([]);
-});
+    expect(subCollection.sources).toStrictEqual([]);
+    expect(subCollection.files).toStrictEqual([]);
+  });
 
-test('should support collection with no files at path', async () => {
-  const collection = new FileCollection();
-  await collection.appendText('foo/bar.txt', 'hello');
-  const subCollection = collection.subroot('subPath');
+  it('should support collection with no files at path', async () => {
+    const collection = new FileCollection();
+    await collection.appendText('foo/bar.txt', 'hello');
+    const subCollection = collection.subroot('subPath');
 
-  expect(subCollection.sources).toStrictEqual([]);
-  expect(subCollection.files).toStrictEqual([]);
-});
+    expect(subCollection.sources).toStrictEqual([]);
+    expect(subCollection.files).toStrictEqual([]);
+  });
 
-test('should include files at subPath', async () => {
-  const collection = new FileCollection();
-  await collection.appendText('a.txt', 'hello');
-  await collection.appendText('foo/bar.txt', 'hello');
-  await collection.appendText('subPath/baz.txt', 'world');
-  await collection.appendText('subPath/bar.txt', 'world');
-  const subCollection = collection.subroot('subPath');
+  it('should include files at subPath', async () => {
+    const collection = new FileCollection();
+    await collection.appendText('a.txt', 'hello');
+    await collection.appendText('foo/bar.txt', 'hello');
+    await collection.appendText('subPath/baz.txt', 'world');
+    await collection.appendText('subPath/bar.txt', 'world');
+    const subCollection = collection.subroot('subPath');
 
-  const sources = subCollection.sources.map(mapRelativePath).toSorted();
-  const files = subCollection.files.map(mapRelativePath).toSorted();
-  const expected = ['baz.txt', 'bar.txt'].toSorted();
+    const sources = subCollection.sources.map(mapRelativePath).toSorted();
+    const files = subCollection.files.map(mapRelativePath).toSorted();
+    const expected = ['baz.txt', 'bar.txt'].toSorted();
 
-  expect(sources).toStrictEqual(expected);
-  expect(files).toStrictEqual(expected);
-});
+    expect(sources).toStrictEqual(expected);
+    expect(files).toStrictEqual(expected);
+  });
 
-test('should not include "subPath" file', async () => {
-  const collection = new FileCollection();
-  await collection.appendText('subPath/baz.txt', 'world');
-  await collection.appendText('subPath/bar.txt', 'world');
-  await collection.appendText('subPath', 'world');
-  const subCollection = collection.subroot('subPath');
+  it('should not include "subPath" file', async () => {
+    const collection = new FileCollection();
+    await collection.appendText('subPath/baz.txt', 'world');
+    await collection.appendText('subPath/bar.txt', 'world');
+    await collection.appendText('subPath', 'world');
+    const subCollection = collection.subroot('subPath');
 
-  const sources = subCollection.sources.map(mapRelativePath).toSorted();
-  const files = subCollection.files.map(mapRelativePath).toSorted();
-  const expected = ['baz.txt', 'bar.txt'].toSorted();
+    const sources = subCollection.sources.map(mapRelativePath).toSorted();
+    const files = subCollection.files.map(mapRelativePath).toSorted();
+    const expected = ['baz.txt', 'bar.txt'].toSorted();
 
-  expect(sources).toStrictEqual(expected);
-  expect(files).toStrictEqual(expected);
+    expect(sources).toStrictEqual(expected);
+    expect(files).toStrictEqual(expected);
+  });
+
+  it.each(['subPath/', '/subPath', './subPath', './subPath/'])(
+    'should sanitize subPath',
+    async (subPath) => {
+      const collection = new FileCollection();
+      await collection.appendText('subPath/baz.txt', 'world');
+      await collection.appendText('subPath/bar.txt', 'world');
+      await collection.appendText('subPath', 'world');
+      const subCollection = collection.subroot(subPath);
+
+      const sources = subCollection.sources.map(mapRelativePath).toSorted();
+      const files = subCollection.files.map(mapRelativePath).toSorted();
+      const expected = ['baz.txt', 'bar.txt'].toSorted();
+
+      expect(sources).toStrictEqual(expected);
+      expect(files).toStrictEqual(expected);
+    },
+  );
 });
 
 describe('web source', () => {
@@ -91,21 +110,6 @@ describe('web source', () => {
 
   afterAll(() => server.close());
 
-  it('should works with mixed data sources', async () => {
-    const collection = new FileCollection();
-    await collection.appendWebSource('http://localhost/self/index.json');
-    await collection.appendWebSource('http://localhost/other/index.json');
-    await collection.appendText('self/foo.txt', 'bar');
-    await collection.appendText('other/bar.txt', 'baz');
-    const self = collection.subroot('self').alphabetical();
-    const sources = self.sources.map(mapRelativePath);
-    const files = self.files.map(mapRelativePath);
-    const expected = ['dir1/a.txt', 'dir2/b.txt', 'foo.txt'].toSorted();
-
-    expect(sources).toStrictEqual(expected);
-    expect(files).toStrictEqual(expected);
-  });
-
   // eslint-disable-next-line unicorn/consistent-function-scoping
   async function getCollectionWithMixedData() {
     const _self = new FileCollection();
@@ -128,6 +132,17 @@ describe('web source', () => {
     return collection;
   }
 
+  it('should works with mixed data sources', async () => {
+    const collection = await getCollectionWithMixedData();
+    const self = collection.subroot('self').alphabetical();
+    const sources = self.sources.map(mapRelativePath);
+    const files = self.files.map(mapRelativePath);
+    const expected = ['dir1/a.txt', 'dir2/b.txt', 'foo.txt'].toSorted();
+
+    expect(sources).toStrictEqual(expected);
+    expect(files).toStrictEqual(expected);
+  });
+
   it('should be able to serialize / deserialize mixed data sources with includeData: false', async () => {
     const collection = await getCollectionWithMixedData();
     const self = collection.subroot('self').alphabetical();
@@ -139,7 +154,7 @@ describe('web source', () => {
     ium.alphabetical();
     await Promise.all(ium.files.map((f) => f.arrayBuffer()));
 
-    expect(requestCounter).toBe(10); // fetch entries
+    expect(requestCounter).toBe(8); // fetch entries (2 into webSource/self)
 
     const sources = ium.sources.map(mapRelativePath);
     const files = ium.files.map(mapRelativePath);

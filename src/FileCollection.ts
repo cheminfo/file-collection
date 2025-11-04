@@ -15,6 +15,7 @@ import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
 import { appendFileCollection } from './append/append_file_collection.ts';
 import { fromIum } from './fromIum.ts';
+import { subroot } from './subroot.ts';
 import type { ToIumOptions } from './toIum.ts';
 import { toIum } from './toIum.ts';
 import { convertExtendedSourceToFile } from './utilities/convertExtendedSourceToFile.ts';
@@ -251,9 +252,11 @@ export class FileCollection {
    * ```
    */
   subroot(subPath: string): FileCollection {
-    const collection = new FileCollection(this.options);
+    const sub = new FileCollection(this.options);
 
-    return collection;
+    subroot(this, sub, subPath);
+
+    return sub;
   }
 
   toIum(options: ToIumOptions = {}) {
