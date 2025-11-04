@@ -19,7 +19,7 @@ function mapRelativePath(item: { relativePath: string }) {
   return item.relativePath;
 }
 
-describe.concurrent('basic', () => {
+describe('basic', () => {
   it('should support empty collection', () => {
     const collection = new FileCollection();
     const subCollection = collection.subroot('subPath');
@@ -87,7 +87,7 @@ describe.concurrent('basic', () => {
   );
 });
 
-describe.sequential('web source', () => {
+describe('web source', () => {
   let requestCounter: number;
   const server = setupServer(
     http.get('http://localhost/*', (ctx) => {
