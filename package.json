@@ -1,6 +1,6 @@
 {
   "name": "file-collection",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "license": "MIT",
   "description": "Library to manage large amount of files coming from different sources",
   "keywords": [],
