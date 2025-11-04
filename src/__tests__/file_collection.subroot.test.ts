@@ -110,28 +110,6 @@ describe.sequential('web source', () => {
 
   afterAll(() => server.close());
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  async function getCollectionWithMixedData() {
-    const _self = new FileCollection();
-    await _self.appendWebSource('http://localhost/self/index.json');
-
-    const _other = new FileCollection();
-    await _other.appendWebSource('http://localhost/other/index.json');
-
-    const collection = new FileCollection();
-
-    collection.appendFileCollection(_self, 'self');
-    await collection.appendText('self/foo.txt', 'bar');
-
-    collection.appendFileCollection(_other, 'other');
-    await collection.appendText('other/bar.txt', 'baz');
-
-    // ensure consume files for requestCounter
-    await Promise.all(collection.files.map((f) => f.arrayBuffer()));
-
-    return collection;
-  }
-
   it('should work with mixed data sources', async () => {
     const collection = await getCollectionWithMixedData();
     const self = collection.subroot('self').alphabetical();
@@ -185,3 +163,24 @@ describe.sequential('web source', () => {
     expect(files).toStrictEqual(expected);
   });
 });
+
+async function getCollectionWithMixedData() {
+  const _self = new FileCollection();
+  await _self.appendWebSource('http://localhost/self/index.json');
+
+  const _other = new FileCollection();
+  await _other.appendWebSource('http://localhost/other/index.json');
+
+  const collection = new FileCollection();
+
+  collection.appendFileCollection(_self, 'self');
+  await collection.appendText('self/foo.txt', 'bar');
+
+  collection.appendFileCollection(_other, 'other');
+  await collection.appendText('other/bar.txt', 'baz');
+
+  // ensure consume files for requestCounter
+  await Promise.all(collection.files.map((f) => f.arrayBuffer()));
+
+  return collection;
+}
