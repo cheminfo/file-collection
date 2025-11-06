@@ -13,6 +13,7 @@ import { appendPath } from './append/appendPath.ts';
 import { appendSource } from './append/appendSource.ts';
 import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
+import type { AppendFileCollectionOptions } from './append/append_file_collection.ts';
 import { appendFileCollection } from './append/append_file_collection.ts';
 import { fromIum } from './fromIum.ts';
 import { subroot } from './subroot.ts';
@@ -212,11 +213,15 @@ export class FileCollection {
    * The relative paths of the files and sources will be prefixed with the subPath.
    * @param other - The collection to merge into this collection.
    * @param subPath - Optional subPath to prefix the relative paths of the files and sources.
+   * @param options - Options to appendFiles with mergeStrategy
    * @returns this - The method is chainable.
    */
-
-  appendFileCollection(other: FileCollection, subPath = ''): this {
-    appendFileCollection(this, other, subPath);
+  appendFileCollection(
+    other: FileCollection,
+    subPath = '',
+    options: AppendFileCollectionOptions = {},
+  ): this {
+    appendFileCollection(this, other, subPath, options);
 
     return this;
   }

@@ -2,10 +2,12 @@ import { createReadStream } from 'node:fs';
 import { join } from 'node:path';
 
 import { BlobReader, BlobWriter, TextReader, ZipWriter } from '@zip.js/zip.js';
+import { FifoLogger } from 'fifo-logger';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { assert, describe, expect, it } from 'vitest';
 
+import { cloneExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import { FileCollection } from '../index.ts';
 
 function isHello(item: { relativePath: string }) {
@@ -109,22 +111,6 @@ describe('same root', () => {
     await self.appendText('hello.txt', 'Hello World!');
     const other = new FileCollection();
     await other.appendText('hello.txt', '!World Hello');
-
-    expect(() => self.appendFileCollection(other)).toThrow(Error);
-  });
-
-  it('should throw error on files without attached source', () => {
-    const self = new FileCollection();
-    const other = new FileCollection();
-    const emptyBlob = new Blob();
-    other.files.push({
-      sourceUUID: crypto.randomUUID(),
-      name: 'test.txt',
-      relativePath: 'test.txt',
-      text: emptyBlob.text.bind(emptyBlob),
-      arrayBuffer: emptyBlob.arrayBuffer.bind(emptyBlob),
-      stream: emptyBlob.stream.bind(emptyBlob),
-    });
 
     expect(() => self.appendFileCollection(other)).toThrow(Error);
   });
@@ -419,5 +405,115 @@ describe('at subPath', () => {
       expect(selfSources).toStrictEqual(expectedPaths);
       expect(selfFiles).toStrictEqual(expectedPaths);
     }
+  });
+});
+
+describe('with merge strategy', () => {
+  it('should not throw error with ignore strategy, logger, and not matching uuid', async () => {
+    const self = new FileCollection();
+    await self.appendText('hello.txt', 'Hello World!');
+    const other = new FileCollection();
+    await other.appendText('hello.txt', '!World Hello');
+    await other.appendText('foo.txt', 'foo');
+
+    const logger = new FifoLogger();
+    self.appendFileCollection(other, '', { mergeStrategy: 'ignore', logger });
+
+    expect(self.sources).toHaveLength(2);
+    expect(logger.getLogs({ level: 'warn' })).toHaveLength(1);
+
+    const hello = self.sources.find(isHello);
+    assert(hello);
+
+    await expect(hello.text()).resolves.toBe('Hello World!');
+
+    const foo = self.sources.find(isFoo);
+    assert(foo);
+
+    await expect(foo.text()).resolves.toBe('foo');
+  });
+
+  it('should not throw error with ignore strategy, logger, and matching uuid', async () => {
+    const self = new FileCollection();
+    await self.appendText('hello.txt', 'Hello World!');
+
+    const other = new FileCollection();
+    await other.appendText('hello.txt', '!World Hello');
+    {
+      const selfSource = self.sources.find(isHello);
+      assert(selfSource);
+      const otherSource = cloneExtendedSourceItem(selfSource);
+      otherSource.relativePath = 'not-hello.txt';
+      await other.appendExtendedSource(otherSource);
+      await other.appendText('foo.txt', 'foo');
+    }
+
+    self.appendFileCollection(other, '', { mergeStrategy: 'ignore' });
+
+    expect(self.sources).toHaveLength(2);
+
+    const hello = self.sources.find(isHello);
+    assert(hello);
+
+    await expect(hello.text()).resolves.toBe('Hello World!');
+
+    const foo = self.sources.find(isFoo);
+    assert(foo);
+
+    await expect(foo.text()).resolves.toBe('foo');
+  });
+
+  it('should not throw error with ignore-similar strategy', async () => {
+    const self = new FileCollection();
+    await self.appendText('other/hello.txt', 'Hello World!');
+    const other = self.subroot('other');
+    self.appendFileCollection(other, 'other', {
+      mergeStrategy: 'ignore-similar',
+    });
+
+    expect(self.sources).toHaveLength(1);
+  });
+
+  it('should throw an error with duplicate files ignore-similar strategy when files are not similar', async () => {
+    const self = new FileCollection();
+    await self.appendText('hello.txt', 'Hello World!');
+    const other = new FileCollection();
+    await other.appendText('hello.txt', 'Hello World!');
+
+    expect(() => {
+      self.appendFileCollection(other, '', {
+        mergeStrategy: 'ignore-similar',
+      });
+    }).toThrow(Error);
+  });
+
+  it('should not throw error with ignore-similar strategy and no duplicates', async () => {
+    const self = new FileCollection();
+    await self.appendText('hello.txt', 'Hello World!');
+    const other = new FileCollection();
+    await other.appendText('foo.txt', 'foo');
+
+    self.appendFileCollection(other, '', {
+      mergeStrategy: 'ignore-similar',
+    });
+
+    self.alphabetical();
+    const sources = self.sources.map(mapRelativePath);
+    const files = self.files.map(mapRelativePath);
+    const expected = ['foo.txt', 'hello.txt'];
+
+    expect(sources).toStrictEqual(expected);
+    expect(files).toStrictEqual(expected);
+  });
+
+  it('should throw an error on invalid merge strategy', () => {
+    const self = new FileCollection();
+    const other = new FileCollection();
+
+    expect(() => {
+      self.appendFileCollection(other, '', {
+        mergeStrategy: 'unsupported-strategy' as never,
+      });
+    }).toThrow(Error);
   });
 });

@@ -24,6 +24,11 @@ export type {
 export type { ToIumIndex } from './transformation/ium.js';
 export type { Source } from './Source.js';
 export type { SourceItem } from './SourceItem.js';
+export { MERGE_STRATEGY } from './append/append_file_collection.ts';
+export type {
+  AppendFileCollectionOptions,
+  MergeStrategy,
+} from './append/append_file_collection.ts';
 
 /**
  * Tools using this package can configure zip.js with the following `zipJsConfigure` method
