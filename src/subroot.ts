@@ -12,7 +12,7 @@ export function subroot(
   const sanitizedSubPath = normalizeRelativePath(subPath).replace(/\/+$/, '');
   const pathMatch = `${sanitizedSubPath}/`;
   const sources = new Map(top.sources.map((source) => [source.uuid, source]));
-  const addedSources = new Map<string, string>(); // top source uuid -> sub source uuid
+  const addedSources = new Set<string>();
 
   for (const topFile of top.files) {
     if (!topFile.relativePath.startsWith(pathMatch)) continue;
@@ -22,18 +22,14 @@ export function subroot(
       assert(source, 'source');
 
       const subSource = cloneExtendedSourceItem(source);
-      subSource.uuid = crypto.randomUUID();
       subSource.originalRelativePath =
         source.originalRelativePath ?? source.relativePath;
       subSource.relativePath = source.relativePath.slice(pathMatch.length);
-      addedSources.set(topFile.sourceUUID, subSource.uuid);
+      addedSources.add(subSource.uuid);
       sub.sources.push(subSource);
     }
 
     const file = cloneFileItem(topFile);
-    const sourceUUID = addedSources.get(topFile.sourceUUID);
-    assert(sourceUUID, 'sourceUUID');
-    file.sourceUUID = sourceUUID;
     file.relativePath = file.relativePath.slice(pathMatch.length);
     sub.files.push(file);
   }
