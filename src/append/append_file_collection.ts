@@ -1,4 +1,3 @@
-import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import { cloneExtendedSourceItem } from '../ExtendedSourceItem.ts';
 import type { FileCollection } from '../FileCollection.ts';
 import { cloneFileItem } from '../FileItem.ts';
@@ -10,20 +9,16 @@ export function appendFileCollection(
   other: FileCollection,
   subPath: string,
 ) {
-  const sanitizedSubPath = normalizeRelativePath(subPath).replace(/\/$/, '');
-  const otherSourcesToSelfSources = new Map<
-    ExtendedSourceItem['uuid'],
-    ExtendedSourceItem['uuid']
-  >();
+  const sanitizedSubPath = normalizeRelativePath(subPath)
+    // trim ending slash
+    .replace(/\/$/, '');
 
   for (const otherSource of other.sources) {
     const source = cloneExtendedSourceItem(otherSource);
-    source.uuid = crypto.randomUUID();
-    source.originalRelativePath = source.relativePath;
+    source.originalRelativePath ??= source.relativePath;
     source.relativePath = normalizeRelativePath(
       `${sanitizedSubPath}/${source.relativePath}`,
     );
-    otherSourcesToSelfSources.set(otherSource.uuid, source.uuid);
 
     self.sources.push(source);
   }
@@ -38,11 +33,6 @@ export function appendFileCollection(
     }
     const file = cloneFileItem(otherFile);
     file.relativePath = relativePath;
-    const sourceUUID = otherSourcesToSelfSources.get(file.sourceUUID);
-    if (!sourceUUID) {
-      throw new Error('Unreachable: sourceUUID should be defined');
-    }
-    file.sourceUUID = sourceUUID;
 
     self.files.push(file);
   }

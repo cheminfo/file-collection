@@ -112,22 +112,6 @@ describe('same root', () => {
 
     expect(() => self.appendFileCollection(other)).toThrow(Error);
   });
-
-  it('should throw error on files without attached source', () => {
-    const self = new FileCollection();
-    const other = new FileCollection();
-    const emptyBlob = new Blob();
-    other.files.push({
-      sourceUUID: crypto.randomUUID(),
-      name: 'test.txt',
-      relativePath: 'test.txt',
-      text: emptyBlob.text.bind(emptyBlob),
-      arrayBuffer: emptyBlob.arrayBuffer.bind(emptyBlob),
-      stream: emptyBlob.stream.bind(emptyBlob),
-    });
-
-    expect(() => self.appendFileCollection(other)).toThrow(Error);
-  });
 });
 
 describe('at subPath', () => {
