@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.2.0](https://github.com/cheminfo/file-collection/compare/v6.1.0...v6.2.0) (2025-11-10)
+
+
+### Features
+
+* stable source uuid with subroot and appendFileCollection ([#69](https://github.com/cheminfo/file-collection/issues/69)) ([b3331c6](https://github.com/cheminfo/file-collection/commit/b3331c6fdea8defde94ab30e67e78330c22fc33a))
+
 ## [6.1.0](https://github.com/cheminfo/file-collection/compare/v6.0.0...v6.1.0) (2025-11-04)
 
 
