@@ -33,6 +33,7 @@ export function sourceItemToExtendedSourceItem(
     size: entry.size,
     baseURL,
     extra: entry.extra,
+    originalRelativePath: entry.originalRelativePath,
     relativePath: entry.relativePath,
     lastModified: entry.lastModified,
     options: entry.options,
