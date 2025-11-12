@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.2.1](https://github.com/cheminfo/file-collection/compare/v6.2.0...v6.2.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* keep tracks of `originalRelativePath` ([#71](https://github.com/cheminfo/file-collection/issues/71)) ([d2d0d92](https://github.com/cheminfo/file-collection/commit/d2d0d92c6c1a87ba9021ad0d2ac15715e1c8044b))
+
 ## [6.2.0](https://github.com/cheminfo/file-collection/compare/v6.1.0...v6.2.0) (2025-11-10)
 
 
