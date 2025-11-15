@@ -6,7 +6,7 @@ import {
 } from '@zip.js/zip.js';
 import { describe, expect, it, test } from 'vitest';
 
-import { isZip } from '../zip.ts';
+import { isIum, isZip } from '../zip.ts';
 
 describe('valid zip', () => {
   it('should validate normal zip', async () => {
@@ -133,6 +133,91 @@ describe('invalid zip', () => {
 
       // eslint-disable-next-line vitest/no-standalone-expect
       expect(isZip(await blob.arrayBuffer())).toBe(false);
+    },
+  );
+});
+
+describe('valid ium', () => {
+  it('should valid ium without mimetype', async () => {
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('index.json', new TextReader('{}'));
+    const blob = await zipWriter.close();
+
+    expect(isIum(await blob.arrayBuffer(), undefined)).toBe(true);
+  });
+
+  it('should valid ium with application/ium+zip mimetype', async () => {
+    const mimetype = 'application/ium+zip';
+
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('mimetype', new TextReader(mimetype), {
+      compressionMethod: 0,
+    });
+    await zipWriter.add('index.json', new TextReader('{}'));
+    const blob = await zipWriter.close();
+
+    expect(isIum(await blob.arrayBuffer(), mimetype)).toBe(true);
+  });
+
+  it('should valid ium with application/nmrium+zip mimetype', async () => {
+    const mimetype = 'application/nmrium+zip';
+
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('mimetype', new TextReader(mimetype), {
+      compressionMethod: 0,
+    });
+    await zipWriter.add('index.json', new TextReader('{}'));
+    const blob = await zipWriter.close();
+
+    expect(isIum(await blob.arrayBuffer(), mimetype)).toBe(true);
+  });
+
+  it('should invalid ium if mimetype do not match', async () => {
+    const mimetype = 'application/nmrium+zip';
+
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('mimetype', new TextReader(mimetype), {
+      compressionMethod: 0,
+    });
+    await zipWriter.add('index.json', new TextReader('{}'));
+    const blob = await zipWriter.close();
+
+    expect(isIum(await blob.arrayBuffer(), 'application/ium+zip')).toBe(false);
+  });
+
+  it('should invalid ium if mimetype is compressed', async () => {
+    const mimetype = 'application/nmrium+zip';
+
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('mimetype', new TextReader(mimetype));
+    await zipWriter.add('index.json', new TextReader('{}'));
+    const blob = await zipWriter.close();
+
+    expect(isIum(await blob.arrayBuffer(), 'application/nmrium+zip')).toBe(
+      false,
+    );
+  });
+
+  it.fails(
+    'should invalidate ium if stored mimetype startsWith expected mimetype',
+    async () => {
+      const mimetypeStored = 'application/nmrium+zip';
+      const mimetypeExpected = 'application/nmrium';
+
+      const zipWriter = new ZipWriter(new BlobWriter());
+      await zipWriter.add('mimetype', new TextReader(mimetypeStored), {
+        compressionMethod: 0,
+      });
+      await zipWriter.add('index.json', new TextReader('{}'));
+      const blob = await zipWriter.close();
+
+      // It should return false, but it returns true because "uncompressed size" (and "compressed size")
+      // may not be set in the "Local file header",
+      // but it could be set in the "Data descriptor" or in the "Central directory header".
+      // For fast check we consider this edge case is OK,
+      // but if it is possible to fix it without having to parse the whole zip file,
+      // it would be better.
+      expect(isIum(await blob.arrayBuffer(), mimetypeExpected)).toBe(false);
     },
   );
 });
