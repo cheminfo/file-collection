@@ -57,7 +57,13 @@ const EXTRA_FIELD_SIZE_OFFSET = FILENAME_SIZE_OFFSET + 2; // file name length;
 const LOCAL_FILE_HEADER_MINIMAL_SIZE = EXTRA_FIELD_SIZE_OFFSET + 2; // extra field length;
 
 /**
- * Check if the buffer is a valid ium archive
+ * Check if the buffer is a valid ium archive.
+ * Check the mimetype if provided.
+ * The check assume the first entry:
+ *  - is a file with name "mimetype"
+ *  - the size of the file is in the local file header
+ *    (some zip tools can set it to 0 and put the size into the data descriptor)
+ *  - the compression method is 0 (store)
  * @param buffer - the buffer to check
  * @param mimetype - the mimetype to check as the first file in zip named "mimetype"
  * @returns boolean
@@ -82,12 +88,9 @@ export function isIum(
   if (compressionMethod > 0) return false;
 
   const nameSize = view.getUint16(FILENAME_SIZE_OFFSET, true);
-  if (nameSize === 8) return false; // if size is not 8, it cannot be a file named "mimetype"
+  if (nameSize !== 8) return false; // if size is not 8, it cannot be a file named "mimetype"
 
-  // "uncompressed size" can be empty if there is a data descriptor after the "file data".
-  // To avoid full parse of the buffer as zip, it's easier to check with expected mimetype size.
-  // But it's not 100% accurate, as the mimetype check can be truncated.
-  const fileSize = new TextEncoder().encode(mimetype).byteLength;
+  const fileSize = view.getUint32(UNCOMPRESSION_SIZE_OFFSET, true);
   const extraFieldLength = view.getUint16(EXTRA_FIELD_SIZE_OFFSET, true);
 
   const startFilename = LOCAL_FILE_HEADER_MINIMAL_SIZE;

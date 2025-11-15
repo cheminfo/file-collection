@@ -152,6 +152,7 @@ describe('valid ium', () => {
     const zipWriter = new ZipWriter(new BlobWriter());
     await zipWriter.add('mimetype', new TextReader(mimetype), {
       compressionMethod: 0,
+      dataDescriptor: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
@@ -165,6 +166,7 @@ describe('valid ium', () => {
     const zipWriter = new ZipWriter(new BlobWriter());
     await zipWriter.add('mimetype', new TextReader(mimetype), {
       compressionMethod: 0,
+      dataDescriptor: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
@@ -178,6 +180,7 @@ describe('valid ium', () => {
     const zipWriter = new ZipWriter(new BlobWriter());
     await zipWriter.add('mimetype', new TextReader(mimetype), {
       compressionMethod: 0,
+      dataDescriptor: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
@@ -189,7 +192,9 @@ describe('valid ium', () => {
     const mimetype = 'application/nmrium+zip';
 
     const zipWriter = new ZipWriter(new BlobWriter());
-    await zipWriter.add('mimetype', new TextReader(mimetype));
+    await zipWriter.add('mimetype', new TextReader(mimetype), {
+      dataDescriptor: false,
+    });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
 
@@ -198,26 +203,18 @@ describe('valid ium', () => {
     );
   });
 
-  it.fails(
-    'should invalidate ium if stored mimetype startsWith expected mimetype',
-    async () => {
-      const mimetypeStored = 'application/nmrium+zip';
-      const mimetypeExpected = 'application/nmrium';
+  it('should invalidate ium if stored mimetype startsWith expected mimetype', async () => {
+    const mimetypeStored = 'application/nmrium+zip';
+    const mimetypeExpected = 'application/nmrium';
 
-      const zipWriter = new ZipWriter(new BlobWriter());
-      await zipWriter.add('mimetype', new TextReader(mimetypeStored), {
-        compressionMethod: 0,
-      });
-      await zipWriter.add('index.json', new TextReader('{}'));
-      const blob = await zipWriter.close();
+    const zipWriter = new ZipWriter(new BlobWriter(), {});
+    await zipWriter.add('mimetype', new TextReader(mimetypeStored), {
+      compressionMethod: 0,
+      dataDescriptor: false,
+    });
+    await zipWriter.add('index.json', new TextReader('{}'));
+    const blob = await zipWriter.close();
 
-      // It should return false, but it returns true because "uncompressed size" (and "compressed size")
-      // may not be set in the "Local file header",
-      // but it could be set in the "Data descriptor" or in the "Central directory header".
-      // For fast check we consider this edge case is OK,
-      // but if it is possible to fix it without having to parse the whole zip file,
-      // it would be better.
-      expect(isIum(await blob.arrayBuffer(), mimetypeExpected)).toBe(false);
-    },
-  );
+    expect(isIum(await blob.arrayBuffer(), mimetypeExpected)).toBe(false);
+  });
 });
