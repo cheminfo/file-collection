@@ -126,7 +126,7 @@ describe('invalid zip', () => {
 
   // eslint-disable-next-line vitest/require-hook
   test.for(invalidBySize)(
-    'should not valid %i %i %i %i (invalid size)',
+    'should not valid %i %i %i %i (valid signature but invalid size)',
     async (array) => {
       const buffer = Uint8Array.from(array);
       const blob = new Blob([buffer], { type: 'application/zip' });
