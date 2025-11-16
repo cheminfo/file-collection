@@ -6,6 +6,7 @@ import {
 } from '@zip.js/zip.js';
 import { describe, expect, it, test } from 'vitest';
 
+import { FileCollection } from '../../FileCollection.ts';
 import { isIum, isZip } from '../zip.ts';
 
 describe('valid zip', () => {
@@ -153,6 +154,7 @@ describe('valid ium', () => {
     await zipWriter.add('mimetype', new TextReader(mimetype), {
       compressionMethod: 0,
       dataDescriptor: false,
+      extendedTimestamp: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
@@ -167,6 +169,7 @@ describe('valid ium', () => {
     await zipWriter.add('mimetype', new TextReader(mimetype), {
       compressionMethod: 0,
       dataDescriptor: false,
+      extendedTimestamp: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
@@ -174,6 +177,22 @@ describe('valid ium', () => {
     expect(isIum(await blob.arrayBuffer(), mimetype)).toBe(true);
   });
 
+  it('should validate if extra field is not empty', async () => {
+    const mimetype = 'application/nmrium+zip';
+
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('mimetype', new TextReader(mimetype), {
+      compressionMethod: 0,
+      dataDescriptor: false,
+    });
+    await zipWriter.add('index.json', new TextReader('{}'));
+    const blob = await zipWriter.close();
+
+    expect(isIum(await blob.arrayBuffer(), mimetype)).toBe(true);
+  });
+});
+
+describe('invalid ium', () => {
   it('should invalid ium if mimetype do not match', async () => {
     const mimetype = 'application/nmrium+zip';
 
@@ -181,6 +200,7 @@ describe('valid ium', () => {
     await zipWriter.add('mimetype', new TextReader(mimetype), {
       compressionMethod: 0,
       dataDescriptor: false,
+      extendedTimestamp: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
@@ -194,6 +214,7 @@ describe('valid ium', () => {
     const zipWriter = new ZipWriter(new BlobWriter());
     await zipWriter.add('mimetype', new TextReader(mimetype), {
       dataDescriptor: false,
+      extendedTimestamp: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
@@ -211,10 +232,60 @@ describe('valid ium', () => {
     await zipWriter.add('mimetype', new TextReader(mimetypeStored), {
       compressionMethod: 0,
       dataDescriptor: false,
+      extendedTimestamp: false,
     });
     await zipWriter.add('index.json', new TextReader('{}'));
     const blob = await zipWriter.close();
 
     expect(isIum(await blob.arrayBuffer(), mimetypeExpected)).toBe(false);
+  });
+});
+
+describe('FileCollection', () => {
+  it('should create and check ium from FileCollection', async () => {
+    const fileCollection = new FileCollection();
+    await fileCollection.appendText('/hello.txt', 'Hello World!');
+    const ium = await fileCollection.toIum();
+
+    expect(FileCollection.isZip(ium.buffer)).toBe(true);
+    expect(FileCollection.isIum(ium.buffer)).toBe(true);
+    expect(FileCollection.isIum(ium.buffer), 'application/x-ium+zip').toBe(
+      true,
+    );
+  });
+
+  it('should validate any mimetype', async () => {
+    const fileCollection = new FileCollection();
+    await fileCollection.appendText('/hello.txt', 'Hello World!');
+    const ium = await fileCollection.toIum({
+      mimetype: 'application/nmrium+zip',
+    });
+
+    expect(FileCollection.isZip(ium.buffer)).toBe(true);
+    expect(FileCollection.isIum(ium.buffer)).toBe(true);
+    expect(FileCollection.isIum(ium.buffer, 'application/x-ium+zip')).toBe(
+      false,
+    );
+    expect(FileCollection.isIum(ium.buffer, 'application/nmrium+zip')).toBe(
+      true,
+    );
+  });
+
+  it('should validate ium mimetype with fromIum', async () => {
+    const fileCollection = new FileCollection();
+    await fileCollection.appendText('/hello.txt', 'Hello World!');
+    const ium = await fileCollection.toIum({
+      mimetype: 'application/nmrium+zip',
+    });
+
+    await expect(
+      FileCollection.fromIum(ium, {
+        validateMimetype: 'application/x-ium+zip',
+      }),
+    ).rejects.toThrow(
+      'Invalid IUM file: invalid mimetype application/nmrium+zip, it should be application/x-ium+zip.',
+    );
+
+    await expect(FileCollection.fromIum(ium)).resolves.not.toThrow(Error);
   });
 });

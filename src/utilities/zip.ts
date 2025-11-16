@@ -7,11 +7,7 @@ const SIGNATURES = new Set([
   SIGNATURE_SPANNED,
 ]);
 
-/**
- * Fast check if the buffer is a zip file
- * @param buffer - the buffer to check
- * @returns boolean
- */
+// eslint-disable-next-line jsdoc/require-jsdoc
 export function isZip(buffer: ArrayBufferLike): boolean {
   // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT#:~:text=4.3.16%20end%20of%20central%20directory%20record%3A
   // empty zip file has minimal 22 bytes size (it's only an "end of central directory record")
@@ -56,18 +52,7 @@ const FILENAME_SIZE_OFFSET = UNCOMPRESSION_SIZE_OFFSET + 4; // uncompressed size
 const EXTRA_FIELD_SIZE_OFFSET = FILENAME_SIZE_OFFSET + 2; // file name length;
 const LOCAL_FILE_HEADER_MINIMAL_SIZE = EXTRA_FIELD_SIZE_OFFSET + 2; // extra field length;
 
-/**
- * Check if the buffer is a valid ium archive.
- * Check the mimetype if provided.
- * The check assume the first entry:
- *  - is a file with name "mimetype"
- *  - the size of the file is in the local file header
- *    (some zip tools can set it to 0 and put the size into the data descriptor)
- *  - the compression method is 0 (store)
- * @param buffer - the buffer to check
- * @param mimetype - the mimetype to check as the first file in zip named "mimetype"
- * @returns boolean
- */
+// eslint-disable-next-line jsdoc/require-jsdoc
 export function isIum(
   buffer: ArrayBufferLike,
   mimetype: string | undefined,

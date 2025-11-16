@@ -53,6 +53,14 @@ export interface ToIumOptions {
    */
   includeData?: boolean;
 
+  /**
+   * The mimetype of the zip file.
+   * It's put in the zip as the first entry,
+   * not compressed in the zip to be able to fast check it with signature and minimal parsing.
+   * @default 'application/x-ium+zip'
+   */
+  mimetype?: string;
+
   getExtraFiles?: (
     index: ToIumIndex,
     fileCollection: FileCollection,
@@ -68,10 +76,19 @@ export async function toIum(
   fileCollection: FileCollection,
   options: ToIumOptions = {},
 ): Promise<Uint8Array<ArrayBuffer>> {
-  const { includeData = true, getExtraFiles } = options;
+  const {
+    includeData = true,
+    getExtraFiles,
+    mimetype = 'application/x-ium+zip',
+  } = options;
   const zipWriter = new ZipWriter<Uint8Array<ArrayBuffer>>(
     new Uint8ArrayWriter(),
   );
+  await zipWriter.add('mimetype', new TextReader(mimetype), {
+    compressionMethod: 0,
+    dataDescriptor: false, // ensures the data length is written in the local file header
+    extendedTimestamp: false, // smaller payload, the extra field is empty
+  });
 
   const sources: SourceItem[] = [];
   const promises: Array<Promise<unknown>> = [];

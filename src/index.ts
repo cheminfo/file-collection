@@ -24,6 +24,7 @@ export type {
 export type { ToIumIndex } from './transformation/ium.js';
 export type { Source } from './Source.js';
 export type { SourceItem } from './SourceItem.js';
+export type { FromIumOptions } from './fromIum.js';
 
 /**
  * Tools using this package can configure zip.js with the following `zipJsConfigure` method

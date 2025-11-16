@@ -10,18 +10,39 @@ import type { ToIumIndex } from './transformation/ium.js';
 import { fromIumSourceToPath } from './transformation/source_zip.js';
 import { getZipReader } from './zip/get_zip_reader.ts';
 
+export interface FromIumOptions {
+  /**
+   * If set, the mimetype of the zip file will be validated against the stored mimetype.
+   * @default undefined
+   */
+  validateMimetype?: string;
+}
+
 /**
  * Creates a FileCollection from an IUM zip file.
  * @param zipContent - The content of the IUM zip file, which can be a Uint8Array, ArrayBuffer, Blob, or ReadableStream.
+ * @param options - the options for fromIum.
  * @returns A Promise that resolves to a FileCollection containing the data from the IUM file.
  */
 export async function fromIum(
   zipContent: ZipFileContent,
+  options: FromIumOptions,
 ): Promise<FileCollection> {
+  const { validateMimetype } = options;
   const zipReader = getZipReader(zipContent);
   const zipFiles = new Map<string, FileEntry>();
   for await (const entry of zipReader.getEntriesGenerator()) {
     if (entry.directory) continue;
+
+    if (entry.filename === 'mimetype' && typeof validateMimetype === 'string') {
+      const mimetype = await entry.getData(new TextWriter());
+      if (mimetype === validateMimetype) continue;
+
+      throw new Error(
+        `Invalid IUM file: invalid mimetype ${mimetype}, it should be ${validateMimetype}.`,
+      );
+    }
+
     const legacyPath = entry.filename.replaceAll(/\/\/+/g, '/');
     const relativePath = legacyPath.replace(/^\.?\/+/, '');
     zipFiles.set(legacyPath, entry);

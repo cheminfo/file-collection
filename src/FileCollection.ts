@@ -14,6 +14,7 @@ import { appendSource } from './append/appendSource.ts';
 import { appendText } from './append/appendText.ts';
 import { appendWebSource } from './append/appendWebSource.ts';
 import { appendFileCollection } from './append/append_file_collection.ts';
+import type { FromIumOptions } from './fromIum.ts';
 import { fromIum } from './fromIum.ts';
 import { subroot } from './subroot.ts';
 import type { ToIumOptions } from './toIum.ts';
@@ -23,6 +24,7 @@ import { expandAndFilter } from './utilities/expand/expandAndFilter.ts';
 import { filterFileCollection } from './utilities/filter_file_collection.ts';
 import { getNameInfo } from './utilities/getNameInfo.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
+import { isIum, isZip } from './utilities/zip.ts';
 import { fromZip } from './zip/from_zip.ts';
 import { toZip } from './zip/to_zip.js';
 
@@ -272,8 +274,8 @@ export class FileCollection {
     return toZip(this, finalPaths);
   }
 
-  static async fromIum(ium: ZipFileContent) {
-    const fileCollection = await fromIum(ium);
+  static async fromIum(ium: ZipFileContent, options: FromIumOptions = {}) {
+    const fileCollection = await fromIum(ium, options);
     return fileCollection.alphabetical();
   }
 
@@ -313,6 +315,32 @@ export class FileCollection {
     options?: Options,
   ): FileCollection {
     return new FileCollection(options, collection);
+  }
+  /**
+   * Fast check if the buffer is a valid ium container.
+   * Check the mimetype if provided.
+   * The check assume the first entry:
+   *  - is a file with name "mimetype"
+   *  - the size of the file is in the local file header
+   *    (some zip tools can set it to 0 and put the size into the data descriptor)
+   *  - the compression method is 0 (store)
+   * @param buffer - the buffer to check
+   * @param mimetype - the mimetype to check as the first file in zip named "mimetype"
+   * @returns boolean
+   */
+  static isIum(buffer: ArrayBufferLike, mimetype?: string): boolean {
+    return isIum(buffer, mimetype);
+  }
+
+  /**
+   * Fast check if the buffer is a zip file, checks are:
+   *  + size must be >= 22
+   *  + 4 first bytes must be a valid zip signature
+   * @param buffer - the buffer to check
+   * @returns boolean
+   */
+  static isZip(buffer: ArrayBufferLike): boolean {
+    return isZip(buffer);
   }
 
   alphabetical(): this {
