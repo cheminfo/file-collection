@@ -138,7 +138,10 @@ describe('FileCollection with exotic paths', () => {
 
     const zipReader = getZipReader(iumBuffer);
     const entries = await zipReader.getEntries();
-    const entry = entries.find((entry) => entry.filename !== '/index.json');
+    const entry = entries.find(
+      (entry) =>
+        entry.filename !== '/index.json' && entry.filename !== 'mimetype',
+    );
 
     // safely encoded for fs
     expect(entry?.filename).toBe(
