@@ -4,7 +4,7 @@ import {
   Uint8ArrayWriter,
   ZipWriter,
 } from '@zip.js/zip.js';
-import { describe, expect, it, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { FileCollection } from '../../FileCollection.ts';
 import { isIum, isZip } from '../zip.ts';
@@ -107,14 +107,12 @@ describe('invalid zip', () => {
 
   // it seems eslint does not support `it.for` `test.for`
 
-  // eslint-disable-next-line vitest/require-hook
-  test.for(invalidSignatures)(
+  it.for(invalidSignatures)(
     'should not valid %i %i %i %i ... (invalid signature)',
     async (array) => {
       const buffer = Uint8Array.from(array);
       const blob = new Blob([buffer], { type: 'application/zip' });
 
-      // eslint-disable-next-line vitest/no-standalone-expect
       expect(isZip(await blob.arrayBuffer())).toBe(false);
     },
   );
@@ -125,14 +123,12 @@ describe('invalid zip', () => {
     [0x50, 0x4b, 0x07, 0x08],
   ];
 
-  // eslint-disable-next-line vitest/require-hook
-  test.for(invalidBySize)(
+  it.for(invalidBySize)(
     'should not valid %i %i %i %i (valid signature but invalid size)',
     async (array) => {
       const buffer = Uint8Array.from(array);
       const blob = new Blob([buffer], { type: 'application/zip' });
 
-      // eslint-disable-next-line vitest/no-standalone-expect
       expect(isZip(await blob.arrayBuffer())).toBe(false);
     },
   );
