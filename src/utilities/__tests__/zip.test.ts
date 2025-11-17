@@ -16,7 +16,6 @@ describe('valid zip', () => {
     const blob = await zipWriter.close();
     const buffer = await blob.arrayBuffer();
 
-    // ensures isZip supports empty zip
     expect(isZip(buffer)).toBe(true);
   });
 
@@ -104,8 +103,6 @@ describe('invalid zip', () => {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     ],
   ];
-
-  // it seems eslint does not support `it.for` `test.for`
 
   it.for(invalidSignatures)(
     'should not valid %i %i %i %i ... (invalid signature)',
