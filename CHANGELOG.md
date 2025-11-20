@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.3.0](https://github.com/cheminfo/file-collection/compare/v6.2.1...v6.3.0) (2025-11-17)
+
+
+### Features
+
+* add `isIum` as `FileCollection` static method with mimetype check ([#73](https://github.com/cheminfo/file-collection/issues/73)) ([68d8c4f](https://github.com/cheminfo/file-collection/commit/68d8c4f354b9f4ba0d273d40cd4c98a246c6583e))
+* add `isZip` as `FileCollection` static method ([68d8c4f](https://github.com/cheminfo/file-collection/commit/68d8c4f354b9f4ba0d273d40cd4c98a246c6583e))
+* put mimetype file into ium archive for fast signature check ([#73](https://github.com/cheminfo/file-collection/issues/73)) ([68d8c4f](https://github.com/cheminfo/file-collection/commit/68d8c4f354b9f4ba0d273d40cd4c98a246c6583e))
+
+
+### Bug Fixes
+
+* `isZip` signature validation ([#73](https://github.com/cheminfo/file-collection/issues/73)) ([68d8c4f](https://github.com/cheminfo/file-collection/commit/68d8c4f354b9f4ba0d273d40cd4c98a246c6583e))
+
 ## [6.2.1](https://github.com/cheminfo/file-collection/compare/v6.2.0...v6.2.1) (2025-11-12)
 
 
