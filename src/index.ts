@@ -22,6 +22,7 @@ export type {
   ToIumOptionsExtraFile,
 } from './toIum.js';
 export type { ToIumIndex } from './transformation/ium.js';
+export { CURRENT_IUM_VERSION } from './transformation/ium.ts';
 export type { Source } from './Source.js';
 export type { SourceItem } from './SourceItem.js';
 export type { FromIumOptions } from './fromIum.js';
