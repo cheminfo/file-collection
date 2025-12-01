@@ -6,7 +6,7 @@ import { FileCollection } from './FileCollection.ts';
 import type { SourceItem } from './SourceItem.js';
 import type { ZipFileContent } from './ZipFileContent.ts';
 import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
-import type { ToIumIndex } from './transformation/ium.js';
+import type { ToIumIndexVersions } from './transformation/ium.js';
 import { fromIumSourceToPath } from './transformation/source_zip.js';
 import { getZipReader } from './zip/get_zip_reader.ts';
 
@@ -53,7 +53,7 @@ export async function fromIum(
     throw new Error('Invalid IUM file: missing index.json');
   }
   const rawData = await indexFile.getData(new TextWriter());
-  const index: ToIumIndex = await JSON.parse(rawData);
+  const index: ToIumIndexVersions = await JSON.parse(rawData);
   const fileCollection = new FileCollection(index.options);
 
   const promises: Array<Promise<unknown>> = [];

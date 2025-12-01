@@ -17,6 +17,7 @@ import type { Options } from './Options.ts';
 import { mergeOptions } from './Options.ts';
 import type { SourceItem } from './SourceItem.ts';
 import type { ToIumIndex } from './transformation/ium.js';
+import { CURRENT_IUM_VERSION } from './transformation/ium.js';
 import { toIumSourceToPath } from './transformation/source_zip.js';
 import { shouldAvoidCompression } from './utilities/should_avoid_compression.ts';
 
@@ -118,6 +119,7 @@ export async function toIum(
   await Promise.all(promises);
 
   const index: ToIumIndex = {
+    version: CURRENT_IUM_VERSION,
     options: fileCollection.options,
     sources,
   };
