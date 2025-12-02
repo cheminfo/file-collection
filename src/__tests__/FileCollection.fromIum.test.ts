@@ -54,7 +54,9 @@ describe('check input types', async () => {
   });
 
   it('ArrayBuffer', async () => {
-    await expect(FileCollection.fromIum(ium.buffer)).resolves.not.toThrowError();
+    await expect(
+      FileCollection.fromIum(ium.buffer),
+    ).resolves.not.toThrowError();
   });
 
   it('Blob', async () => {
