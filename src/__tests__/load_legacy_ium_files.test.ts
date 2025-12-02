@@ -40,7 +40,7 @@ test('Generate a ium archive with problematic characters', async () => {
     writeFile(join(import.meta.dirname, 'v5.2.2.ium.zip'), iumBuffer, {
       flag: 'wx',
     }),
-  ).rejects.toThrow(/EEXIST: file already exists.*/);
+  ).rejects.toThrowError(/EEXIST: file already exists.*/);
 });
 
 test('Is able to unpack a legacy ium archive', async () => {

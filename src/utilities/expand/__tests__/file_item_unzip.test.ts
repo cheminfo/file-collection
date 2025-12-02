@@ -22,7 +22,7 @@ test('should throw if no sourceUUID is provided', async () => {
     text: zipBlob.text.bind(zipBlob),
   };
 
-  await expect(fileItemUnzip(file)).rejects.toThrow(Error);
+  await expect(fileItemUnzip(file)).rejects.toThrowError(Error);
 });
 
 test('should warn if not a zip payload', async () => {

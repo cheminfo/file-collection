@@ -12,14 +12,14 @@ import {
   ZipWriter,
 } from '@zip.js/zip.js';
 
-import type { FileCollection } from './FileCollection.ts';
-import type { Options } from './Options.ts';
-import { mergeOptions } from './Options.ts';
-import type { SourceItem } from './SourceItem.ts';
-import type { ToIumIndex } from './transformation/ium.js';
-import { CURRENT_IUM_VERSION } from './transformation/ium.js';
-import { toIumSourceToPath } from './transformation/source_zip.js';
-import { shouldAvoidCompression } from './utilities/should_avoid_compression.ts';
+import type { FileCollection } from '../FileCollection.ts';
+import type { Options } from '../Options.ts';
+import { mergeOptions } from '../Options.ts';
+import { toIumSourceToPath } from '../transformation/source_zip.ts';
+import { shouldAvoidCompression } from '../utilities/should_avoid_compression.ts';
+
+import type { ToIumIndex } from './versions/index.ts';
+import { CURRENT_IUM_VERSION } from './versions/index.ts';
 
 export interface ExtraFileContentInput {
   /**
@@ -45,6 +45,7 @@ export interface ToIumOptionsExtraFile {
   relativePath: string;
   data: ExtraFileContent;
   options?: Options;
+  uuid?: string;
 }
 
 export interface ToIumOptions {
@@ -91,10 +92,11 @@ export async function toIum(
     extendedTimestamp: false, // smaller payload, the extra field is empty
   });
 
-  const sources: SourceItem[] = [];
+  const sources: ToIumIndex['sources'] = [];
+  const paths: Record<string, string> = {};
   const promises: Array<Promise<unknown>> = [];
   for (const source of fileCollection.sources) {
-    const newSource: SourceItem = {
+    const newSource: ToIumIndex['sources'][number] = {
       uuid: source.uuid,
       relativePath: source.relativePath,
       originalRelativePath: source.originalRelativePath,
@@ -114,6 +116,7 @@ export async function toIum(
     const addOptions: ZipWriterAddDataOptions | undefined =
       shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
     promises.push(zipWriter.add(pathname, source.stream(), addOptions));
+    paths[source.uuid] = pathname;
   }
 
   await Promise.all(promises);
@@ -122,6 +125,7 @@ export async function toIum(
     version: CURRENT_IUM_VERSION,
     options: fileCollection.options,
     sources,
+    paths,
   };
 
   if (getExtraFiles) {
@@ -129,9 +133,10 @@ export async function toIum(
       map(
         getExtraFiles(structuredClone(index), fileCollection),
         async (extraFile) => {
-          const { relativePath, data } = extraFile;
+          const { relativePath, data, uuid = crypto.randomUUID() } = extraFile;
 
-          const source: SourceItem = {
+          const source: ToIumIndex['sources'][number] = {
+            uuid,
             extra: true,
             baseURL: 'ium:/',
             relativePath,
@@ -148,6 +153,7 @@ export async function toIum(
               : undefined;
           const fileReader = getExtraFileContentReader(data);
           await zipWriter.add(pathname, fileReader, addOptions);
+          paths[uuid] = pathname;
         },
       ),
     );

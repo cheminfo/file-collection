@@ -20,12 +20,12 @@ export type {
   ExtraFileContent,
   ToIumOptions,
   ToIumOptionsExtraFile,
-} from './toIum.js';
-export type { ToIumIndex } from './transformation/ium.js';
-export { CURRENT_IUM_VERSION } from './transformation/ium.ts';
+} from './ium/to_ium.ts';
+export type { ToIumIndex } from './ium/versions/index.js';
+export { CURRENT_IUM_VERSION } from './ium/versions/index.js';
 export type { Source } from './Source.js';
 export type { SourceItem } from './SourceItem.js';
-export type { FromIumOptions } from './fromIum.js';
+export type { FromIumOptions } from './ium/from_ium.ts';
 
 /**
  * Tools using this package can configure zip.js with the following `zipJsConfigure` method

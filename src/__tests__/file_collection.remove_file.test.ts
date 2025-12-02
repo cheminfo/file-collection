@@ -47,5 +47,5 @@ test('should throw if incoherent sources', async () => {
   collection.removeFile('hello.zip/a.txt');
   collection.sources.splice(0, 1);
 
-  expect(() => collection.removeFile('hello.zip/b.txt')).toThrow(Error);
+  expect(() => collection.removeFile('hello.zip/b.txt')).toThrowError(Error);
 });

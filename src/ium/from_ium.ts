@@ -1,14 +1,15 @@
 import type { FileEntry } from '@zip.js/zip.js';
 import { TextWriter, Uint8ArrayWriter } from '@zip.js/zip.js';
 
-import type { ExtendedSourceItem } from './ExtendedSourceItem.js';
-import { FileCollection } from './FileCollection.ts';
-import type { SourceItem } from './SourceItem.js';
-import type { ZipFileContent } from './ZipFileContent.ts';
-import { sourceItemToExtendedSourceItem } from './append/sourceItemToExtendedSourceItem.ts';
-import type { ToIumIndexVersions } from './transformation/ium.js';
-import { fromIumSourceToPath } from './transformation/source_zip.js';
-import { getZipReader } from './zip/get_zip_reader.ts';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import { FileCollection } from '../FileCollection.ts';
+import type { SourceItem } from '../SourceItem.ts';
+import type { ZipFileContent } from '../ZipFileContent.ts';
+import { sourceItemToExtendedSourceItem } from '../append/sourceItemToExtendedSourceItem.ts';
+import { getZipReader } from '../zip/get_zip_reader.ts';
+
+import type { ToIumIndexVersions } from './versions/index.ts';
+import { migrateIumIndex } from './versions/index.ts';
 
 export interface FromIumOptions {
   /**
@@ -53,25 +54,30 @@ export async function fromIum(
     throw new Error('Invalid IUM file: missing index.json');
   }
   const rawData = await indexFile.getData(new TextWriter());
-  const index: ToIumIndexVersions = await JSON.parse(rawData);
+  const originalIndex: ToIumIndexVersions = await JSON.parse(rawData);
+  const index = migrateIumIndex(originalIndex);
   const fileCollection = new FileCollection(index.options);
 
   const promises: Array<Promise<unknown>> = [];
   for (const source of index.sources) {
-    const [url, key, legacyKey] = fromIumSourceToPath(source);
+    const url = new URL(source.relativePath, source.baseURL);
     if (url.protocol === 'ium:') {
-      const zipEntry = zipFiles.get(key) ?? zipFiles.get(legacyKey);
+      const pathname = index.paths[source.uuid];
+      const legacyPathname = index.paths[`${source.uuid}_legacy`];
+      const zipEntry =
+        (pathname && zipFiles.get(pathname)) ??
+        (legacyPathname && zipFiles.get(legacyPathname));
       if (!zipEntry) {
         throw new Error(`Invalid IUM file: missing ${url.pathname}`);
       }
       promises.push(appendEntry(zipEntry, source, fileCollection));
     } else {
+      // should come from the web
       promises.push(
         fileCollection.appendExtendedSource(
           sourceItemToExtendedSourceItem(source, undefined),
         ),
       );
-      // should come from the web
     }
   }
   await Promise.all(promises);
@@ -93,6 +99,7 @@ async function appendEntry(
     uuid: source.uuid ?? crypto.randomUUID(),
     name,
     relativePath: source.relativePath,
+    originalRelativePath: source.originalRelativePath,
     baseURL: source.baseURL ?? 'ium:/',
     lastModified: source.lastModified ?? entry.lastModDate.getTime(),
     size: source.size ?? entry.uncompressedSize,
