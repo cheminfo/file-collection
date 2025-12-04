@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.4.0](https://github.com/cheminfo/file-collection/compare/v6.3.0...v6.4.0) (2025-12-04)
+
+
+### Features
+
+* add paths mapping in ium index ([#78](https://github.com/cheminfo/file-collection/issues/78)) ([e1f1d02](https://github.com/cheminfo/file-collection/commit/e1f1d028332cf0df8210896a21665822ba991bbb))
+* add version to ium index ([#76](https://github.com/cheminfo/file-collection/issues/76)) ([1c792bf](https://github.com/cheminfo/file-collection/commit/1c792bf509c5c39bd31bae3d3a4c8a1c612dfc64))
+
 ## [6.3.0](https://github.com/cheminfo/file-collection/compare/v6.2.1...v6.3.0) (2025-11-17)
 
 
