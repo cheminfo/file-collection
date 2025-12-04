@@ -1,8 +1,9 @@
 import { assert, describe, expect, it } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
-import type { ToIumOptionsExtraFile } from '../toIum.js';
-import { UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR } from '../toIum.js';
+import type { ToIumOptionsExtraFile } from '../ium/to_ium.ts';
+import { UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR } from '../ium/to_ium.ts';
+import type { ToIumIndex } from '../ium/versions/index.ts';
 import { getZipReader } from '../zip/get_zip_reader.js';
 
 describe('FileCollection basic ium', async () => {
@@ -123,7 +124,9 @@ describe('FileCollection basic ium', async () => {
       },
     });
 
-    await expect(promise).rejects.toThrow(UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR);
+    await expect(promise).rejects.toThrowError(
+      UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR,
+    );
   });
 });
 
@@ -154,5 +157,26 @@ describe('FileCollection with exotic paths', () => {
     expect(ium.sources[0]?.relativePath).toBe(
       `deep/path/with%20special%20characters/foo/\\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
     );
+  });
+});
+
+describe('ium index paths', () => {
+  it('should have ium index paths mapping', async () => {
+    const fileCollection = new FileCollection();
+    await fileCollection.appendText('hello.txt', 'Hello word');
+
+    let iumIndex: ToIumIndex | undefined;
+    await fileCollection.toIum({
+      // eslint-disable-next-line require-yield
+      *getExtraFiles(index) {
+        iumIndex = index;
+      },
+    });
+
+    assert(iumIndex);
+    const uuid = Object.keys(iumIndex.paths)[0];
+    assert(uuid);
+
+    expect(iumIndex.paths).toStrictEqual({ [uuid]: 'data/hello.txt' });
   });
 });

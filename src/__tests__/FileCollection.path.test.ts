@@ -328,7 +328,7 @@ test('appendPath data with real duplicates', async () => {
     await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir2/'), {
       keepBasename: false,
     });
-  }).rejects.toThrow('Duplicate relativePath: a.txt');
+  }).rejects.toThrowError('Duplicate relativePath: a.txt');
 });
 
 test('appendPath data with subdir', async () => {

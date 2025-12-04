@@ -275,10 +275,10 @@ describe('FileCollection', () => {
       FileCollection.fromIum(ium, {
         validateMimetype: 'application/x-ium+zip',
       }),
-    ).rejects.toThrow(
+    ).rejects.toThrowError(
       'Invalid IUM file: invalid mimetype application/nmrium+zip, it should be application/x-ium+zip.',
     );
 
-    await expect(FileCollection.fromIum(ium)).resolves.not.toThrow(Error);
+    await expect(FileCollection.fromIum(ium)).resolves.not.toThrowError(Error);
   });
 });

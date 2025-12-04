@@ -16,7 +16,7 @@ describe('invalid ium file', () => {
     await zipWriter.add('not-index.json', new TextReader('{}'));
     const zipBuffer = await zipWriter.close();
 
-    await expect(FileCollection.fromIum(zipBuffer)).rejects.toThrow(
+    await expect(FileCollection.fromIum(zipBuffer)).rejects.toThrowError(
       'Invalid IUM file: missing index.json',
     );
   });
@@ -38,7 +38,7 @@ describe('invalid ium file', () => {
 
     const filteredIum = await zipWriter.close();
 
-    await expect(FileCollection.fromIum(filteredIum)).rejects.toThrow(
+    await expect(FileCollection.fromIum(filteredIum)).rejects.toThrowError(
       'Invalid IUM file: missing /hello.txt',
     );
   });
@@ -50,17 +50,19 @@ describe('check input types', async () => {
   const ium = await fileCollection.toIum();
 
   it('Uint8Array', async () => {
-    await expect(FileCollection.fromIum(ium)).resolves.not.toThrow();
+    await expect(FileCollection.fromIum(ium)).resolves.not.toThrowError();
   });
 
   it('ArrayBuffer', async () => {
-    await expect(FileCollection.fromIum(ium.buffer)).resolves.not.toThrow();
+    await expect(
+      FileCollection.fromIum(ium.buffer),
+    ).resolves.not.toThrowError();
   });
 
   it('Blob', async () => {
     const blob = new Blob([ium], { type: 'application/zip' });
 
-    await expect(FileCollection.fromIum(blob)).resolves.not.toThrow();
+    await expect(FileCollection.fromIum(blob)).resolves.not.toThrowError();
   });
 
   it('ReadableStream', async () => {
@@ -71,11 +73,11 @@ describe('check input types', async () => {
       },
     });
 
-    await expect(FileCollection.fromIum(stream)).resolves.not.toThrow();
+    await expect(FileCollection.fromIum(stream)).resolves.not.toThrowError();
   });
 
   it('unknown', async () => {
-    await expect(FileCollection.fromIum(null as never)).rejects.toThrow(
+    await expect(FileCollection.fromIum(null as never)).rejects.toThrowError(
       UNSUPPORTED_ZIP_CONTENT_ERROR,
     );
   });

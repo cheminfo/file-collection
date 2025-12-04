@@ -182,7 +182,7 @@ describe('fileCollectionFromWebSource', () => {
     await expect(async () => {
       const fileCollection = new FileCollection();
       await fileCollection.appendSource(source);
-    }).rejects.toThrow('We could not find a baseURL for data/dir1/a.txt');
+    }).rejects.toThrowError('We could not find a baseURL for data/dir1/a.txt');
   });
 
   it('without baseURL but with a global location href', async () => {
@@ -235,7 +235,7 @@ describe('fileCollectionFromWebSource', () => {
     await expect(async () => {
       const fileCollection = new FileCollection();
       await fileCollection.appendSource(source);
-    }).rejects.toThrow('Duplicate relativePath: data/dir1/a.txt');
+    }).rejects.toThrowError('Duplicate relativePath: data/dir1/a.txt');
   });
 
   it('with defaultBaseURL', async () => {

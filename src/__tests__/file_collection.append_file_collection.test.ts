@@ -110,7 +110,7 @@ describe('same root', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', '!World Hello');
 
-    expect(() => self.appendFileCollection(other)).toThrow(Error);
+    expect(() => self.appendFileCollection(other)).toThrowError(Error);
   });
 });
 
@@ -190,7 +190,9 @@ describe('at subPath', () => {
     const other = new FileCollection();
     await other.appendText('hello.txt', '!World Hello');
 
-    expect(() => self.appendFileCollection(other, 'subPath')).toThrow(Error);
+    expect(() => self.appendFileCollection(other, 'subPath')).toThrowError(
+      Error,
+    );
   });
 
   it('should support recursive zip', async () => {

@@ -16,7 +16,7 @@ test('error on invalid server URL', async () => {
     }
   }
 
-  await expect(consumeStream()).rejects.toThrow('fetch failed');
+  await expect(consumeStream()).rejects.toThrowError('fetch failed');
 });
 
 test('original relative path is preserved', async () => {
