@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.5.0](https://github.com/cheminfo/file-collection/compare/v6.4.0...v6.5.0) (2025-12-11)
+
+
+### Features
+
+* improve `file` cli tool support ([#80](https://github.com/cheminfo/file-collection/issues/80)) ([d164bd5](https://github.com/cheminfo/file-collection/commit/d164bd5a7af47155f2fb57994bf03e2d8cb20249))
+
 ## [6.4.0](https://github.com/cheminfo/file-collection/compare/v6.3.0...v6.4.0) (2025-12-04)
 
 
