@@ -88,8 +88,11 @@ export async function toIum(
   );
   await zipWriter.add('mimetype', new TextReader(mimetype), {
     compressionMethod: 0,
-    dataDescriptor: false, // ensures the data length is written in the local file header
-    extendedTimestamp: false, // smaller payload, the extra field is empty
+    // ensures the data length is written in the local file header
+    dataDescriptor: false,
+    dataDescriptorSignature: false,
+    // smaller payload, the extra field is empty
+    extendedTimestamp: false,
   });
 
   const sources: ToIumIndex['sources'] = [];
