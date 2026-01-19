@@ -36,7 +36,10 @@ export function isZip(buffer: ArrayBufferLike): boolean {
     file name (variable size)
     extra field (variable size)
  */
-const MIMETYPE_FILENAME = 'mimetype';
+const SUPPORTED_MIMETYPE_FILENAME = new Set(['mimetype', '.mimetype']);
+const SUPPORTED_MIMETYPE_FILENAME_SIZE = new Set(
+  [...SUPPORTED_MIMETYPE_FILENAME].map((str) => str.length),
+);
 const COMPRESSION_METHOD_OFFSET =
   4 + // local file header signature
   2 + // version needed to extract
@@ -73,7 +76,10 @@ export function isIum(
   if (compressionMethod > 0) return false;
 
   const nameSize = view.getUint16(FILENAME_SIZE_OFFSET, true);
-  if (nameSize !== 8) return false; // if size is not 8, it cannot be a file named "mimetype"
+  if (!SUPPORTED_MIMETYPE_FILENAME_SIZE.has(nameSize)) {
+    // if name size is not supported, it cannot be a file supported filename
+    return false;
+  }
 
   const fileSize = view.getUint32(UNCOMPRESSION_SIZE_OFFSET, true);
   const extraFieldLength = view.getUint16(EXTRA_FIELD_SIZE_OFFSET, true);
@@ -91,7 +97,9 @@ export function isIum(
   );
 
   // the first file of the zip is not a mimetype file
-  if (filename !== MIMETYPE_FILENAME) return false;
+  if (!SUPPORTED_MIMETYPE_FILENAME.has(filename)) {
+    return false;
+  }
 
   const mimetypeValue = new TextDecoder().decode(
     buffer.slice(startFileData, minimalTotalSize),

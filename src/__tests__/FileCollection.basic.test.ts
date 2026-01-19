@@ -143,7 +143,9 @@ describe('FileCollection with exotic paths', () => {
     const entries = await zipReader.getEntries();
     const entry = entries.find(
       (entry) =>
-        entry.filename !== '/index.json' && entry.filename !== 'mimetype',
+        entry.filename !== '/index.json' &&
+        entry.filename !== 'mimetype' &&
+        entry.filename !== '.mimetype',
     );
 
     // safely encoded for fs

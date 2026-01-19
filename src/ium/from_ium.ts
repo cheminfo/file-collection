@@ -35,7 +35,10 @@ export async function fromIum(
   for await (const entry of zipReader.getEntriesGenerator()) {
     if (entry.directory) continue;
 
-    if (entry.filename === 'mimetype' && typeof validateMimetype === 'string') {
+    if (
+      typeof validateMimetype === 'string' &&
+      (entry.filename === 'mimetype' || entry.filename === '.mimetype')
+    ) {
       const mimetype = await entry.getData(new TextWriter());
       if (mimetype === validateMimetype) continue;
 
