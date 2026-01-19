@@ -282,3 +282,33 @@ describe('FileCollection', () => {
     await expect(FileCollection.fromIum(ium)).resolves.not.toThrowError(Error);
   });
 });
+
+describe('arbitrary zip', () => {
+  it('should invalidate foo file with bar content', async () => {
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('foo', new TextReader('bar'), {
+      compressionMethod: 0,
+      dataDescriptor: false,
+      extendedTimestamp: false,
+    });
+    const blob = await zipWriter.close();
+
+    expect(
+      FileCollection.isIum(await blob.arrayBuffer(), 'application/x-ium+zip'),
+    ).toBe(false);
+  });
+
+  it('should invalidate .mimemime file with application/x-ium+zip content', async () => {
+    const zipWriter = new ZipWriter(new BlobWriter());
+    await zipWriter.add('.mimemime', new TextReader('application/x-ium+zip'), {
+      compressionMethod: 0,
+      dataDescriptor: false,
+      extendedTimestamp: false,
+    });
+    const blob = await zipWriter.close();
+
+    expect(
+      FileCollection.isIum(await blob.arrayBuffer(), 'application/x-ium+zip'),
+    ).toBe(false);
+  });
+});
