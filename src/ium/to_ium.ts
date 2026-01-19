@@ -86,7 +86,7 @@ export async function toIum(
   const zipWriter = new ZipWriter<Uint8Array<ArrayBuffer>>(
     new Uint8ArrayWriter(),
   );
-  await zipWriter.add('mimetype', new TextReader(mimetype), {
+  await zipWriter.add('.mimetype', new TextReader(mimetype), {
     compressionMethod: 0,
     // ensures the data length is written in the local file header
     dataDescriptor: false,
