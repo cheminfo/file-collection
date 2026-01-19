@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.6.0](https://github.com/cheminfo/file-collection/compare/v6.5.0...v6.6.0) (2026-01-19)
+
+
+### Features
+
+* use `.mimetype` instead `mimetype` for macos unarchiver ([#82](https://github.com/cheminfo/file-collection/issues/82)) ([7232d81](https://github.com/cheminfo/file-collection/commit/7232d81969763026d2bc8251bde793f2af5dfa22))
+
 ## [6.5.0](https://github.com/cheminfo/file-collection/compare/v6.4.0...v6.5.0) (2025-12-11)
 
 
