@@ -1,4 +1,3 @@
-import { write, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
@@ -332,7 +331,7 @@ test('appendPath data with real duplicates', async () => {
     await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir2/'), {
       keepBasename: false,
     });
-  }).rejects.toThrow('Duplicate relativePath: a.txt');
+  }).rejects.toThrowError('Duplicate relativePath: a.txt');
 });
 
 test('appendPath data with subdir', async () => {

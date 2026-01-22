@@ -132,7 +132,7 @@ describe('FileCollection basic ium', async () => {
 
 describe('FileCollection with exotic paths', () => {
   it('should support exotic paths and encode them safely for file-systems', async () => {
-    const relativePath = `deep/path/with special characters/foo/\\bar/08:50:12/[baz]/*/5 < 10 > 5/1=1/file.txt#anchor removed`;
+    const relativePath = String.raw`deep/path/with special characters/foo/\bar/08:50:12/[baz]/*/5 < 10 > 5/1=1/file.txt#anchor removed`;
 
     const fileCollection = new FileCollection();
     await fileCollection.appendText(relativePath, 'Hello word');
@@ -157,7 +157,7 @@ describe('FileCollection with exotic paths', () => {
 
     // keep url encoded path for internals
     expect(ium.sources[0]?.relativePath).toBe(
-      `deep/path/with%20special%20characters/foo/\\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
+      String.raw`deep/path/with%20special%20characters/foo/\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
     );
   });
 });

@@ -128,13 +128,13 @@ test('properly repack with zip from external datasources', async () => {
 });
 
 test('properly encode exotic path for filesystems', async () => {
-  const relativePath = `deep/path/with special characters/foo/\\bar/08:50:12/[baz]/*/5 < 10 > 5/1=1/file.txt#anchor removed`;
+  const relativePath = String.raw`deep/path/with special characters/foo/\bar/08:50:12/[baz]/*/5 < 10 > 5/1=1/file.txt#anchor removed`;
 
   const fileCollection = new FileCollection();
   await fileCollection.appendText(relativePath, 'Hello World!');
 
   expect(fileCollection.sources[0]?.relativePath).toBe(
-    `deep/path/with%20special%20characters/foo/\\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
+    String.raw`deep/path/with%20special%20characters/foo/\bar/08:50:12/[baz]/*/5%20%3C%2010%20%3E%205/1=1/file.txt`,
   );
 
   const sourcesTable = new Map<ExtendedSourceItem, string>();
