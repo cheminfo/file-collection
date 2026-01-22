@@ -1,5 +1,7 @@
+import { write, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { Uint8ArrayReader, ZipReader } from '@zip.js/zip.js';
 import { assert, expect, test } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
@@ -12,8 +14,10 @@ test('appendPath data folder', async () => {
   const ium = await fileCollection.toIum();
 
   const newCollection = [...(await FileCollection.fromIum(ium))];
+  const fileNames = newCollection.map((file) => file.relativePath);
 
   expect(newCollection).toHaveLength(9);
+  expect(fileNames).toHaveLength(9);
 
   const firstFile = newCollection[0];
   assert(firstFile);
@@ -328,7 +332,7 @@ test('appendPath data with real duplicates', async () => {
     await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir2/'), {
       keepBasename: false,
     });
-  }).rejects.toThrowError('Duplicate relativePath: a.txt');
+  }).rejects.toThrow('Duplicate relativePath: a.txt');
 });
 
 test('appendPath data with subdir', async () => {
@@ -343,4 +347,37 @@ test('appendPath data with subdir', async () => {
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
 
   expect(relativePaths).toStrictEqual(['a.txt', 'subdir/a.txt']);
+});
+
+test('show that zip files are saved back as zip in the .ium file', async () => {
+  const fileCollection = new FileCollection({});
+
+  await fileCollection.appendPath(join(__dirname, 'dataRecursiveZip'));
+  const relativePaths = fileCollection.files.map((file) => file.relativePath);
+
+  expect(relativePaths).toStrictEqual([
+    'dataRecursiveZip/a.txt',
+    'dataRecursiveZip/data.zip/dataRecursiveZip/data.zip/data/dir2/c.txt',
+    'dataRecursiveZip/data.zip/dataRecursiveZip/data.zip/data/dir2/d.txt',
+    'dataRecursiveZip/data.zip/dataRecursiveZip/data.zip/data/dir1/b.txt',
+    'dataRecursiveZip/data.zip/dataRecursiveZip/data.zip/data/dir1/a.txt',
+    'dataRecursiveZip/data.zip/dataRecursiveZip/data.zip/data/dir1/dir3/e.txt',
+    'dataRecursiveZip/data.zip/dataRecursiveZip/data.zip/data/dir1/dir3/f.txt',
+  ]);
+
+  const ium = await fileCollection.toIum();
+  const zipReader = new ZipReader(new Uint8ArrayReader(ium));
+  const filenames: string[] = [];
+  for await (const entry of zipReader.getEntriesGenerator()) {
+    if (entry.directory) continue;
+    filenames.push(entry.filename);
+  }
+  await zipReader.close();
+
+  expect(filenames).toStrictEqual([
+    '.mimetype',
+    'data/dataRecursiveZip/a.txt',
+    'data/dataRecursiveZip/data.zip',
+    'index.json',
+  ]);
 });
