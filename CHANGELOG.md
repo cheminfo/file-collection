@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.6.2](https://github.com/cheminfo/file-collection/compare/v6.6.1...v6.6.2) (2026-02-24)
+
+
+### Bug Fixes
+
+* avoid `toIum` take infinite time ([#89](https://github.com/cheminfo/file-collection/issues/89)) ([8d92f05](https://github.com/cheminfo/file-collection/commit/8d92f058b54cf52158a89a029f8564716f94e609))
+
 ## [6.6.1](https://github.com/cheminfo/file-collection/compare/v6.6.0...v6.6.1) (2026-02-24)
 
 
