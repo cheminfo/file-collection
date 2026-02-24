@@ -20,15 +20,33 @@ export async function toZip(
     new Uint8ArrayWriter(),
   );
 
-  for (const source of collection.sources) {
-    const path = sourceToZipPath(source);
-    finalPaths?.set(source, path);
-
-    const addOptions: ZipWriterAddDataOptions | undefined =
-      shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
+  const chunks = chunkify(collection.sources, 5);
+  for (const chunk of chunks) {
     // eslint-disable-next-line no-await-in-loop
-    await zipWriter.add(path, source.stream(), addOptions);
+    await Promise.all(
+      chunk.map(async (source) => {
+        const path = sourceToZipPath(source);
+        finalPaths?.set(source, path);
+
+        const addOptions: ZipWriterAddDataOptions | undefined =
+          shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
+        await zipWriter.add(path, source.stream(), addOptions);
+      }),
+    );
   }
 
   return await zipWriter.close();
+}
+
+function* chunkify<Item>(iterable: Iterable<Item>, size: number) {
+  let chunk: Item[] = [];
+
+  for (const item of iterable) {
+    chunk.push(item);
+    if (chunk.length !== size) continue;
+
+    yield chunk;
+    chunk = [];
+  }
+  if (chunk.length > 0) yield chunk;
 }
