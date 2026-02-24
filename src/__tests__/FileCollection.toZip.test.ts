@@ -1,5 +1,5 @@
 import { createReadStream, openAsBlob } from 'node:fs';
-import { readdir, stat } from 'node:fs/promises';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 
@@ -156,4 +156,11 @@ test('properly encode exotic path for filesystems', async () => {
 
   expect(source).toBe(fileCollection.sources[0]);
   expect(fc2.sources[0]?.relativePath).toBe(zipPath);
+});
+
+test('rezip a moderately-sized zip', async () => {
+  const zipContent = await readFile(join(import.meta.dirname, 'data_1MB.zip'));
+  const fileCollection = await FileCollection.fromZip(zipContent);
+  const fileMap = new Map();
+  await fileCollection.toZip(fileMap);
 });
