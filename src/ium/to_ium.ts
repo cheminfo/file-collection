@@ -97,7 +97,6 @@ export async function toIum(
 
   const sources: ToIumIndex['sources'] = [];
   const paths: Record<string, string> = {};
-  const promises: Array<Promise<unknown>> = [];
   for (const source of fileCollection.sources) {
     const newSource: ToIumIndex['sources'][number] = {
       uuid: source.uuid,
@@ -118,11 +117,10 @@ export async function toIum(
 
     const addOptions: ZipWriterAddDataOptions | undefined =
       shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
-    promises.push(zipWriter.add(pathname, source.stream(), addOptions));
     paths[source.uuid] = pathname;
+    // eslint-disable-next-line no-await-in-loop
+    await zipWriter.add(pathname, source.stream(), addOptions);
   }
-
-  await Promise.all(promises);
 
   const index: ToIumIndex = {
     version: CURRENT_IUM_VERSION,
@@ -132,34 +130,29 @@ export async function toIum(
   };
 
   if (getExtraFiles) {
-    await Promise.all(
-      map(
-        getExtraFiles(structuredClone(index), fileCollection),
-        async (extraFile) => {
-          const { relativePath, data, uuid = crypto.randomUUID() } = extraFile;
+    const extraFiles = getExtraFiles(structuredClone(index), fileCollection);
+    for (const extraFile of extraFiles) {
+      const { relativePath, data, uuid = crypto.randomUUID() } = extraFile;
 
-          const source: ToIumIndex['sources'][number] = {
-            uuid,
-            extra: true,
-            baseURL: 'ium:/',
-            relativePath,
-            options: extraFile.options
-              ? mergeOptions(fileCollection.options, extraFile.options)
-              : fileCollection.options,
-          };
-          sources.push(source);
-          const pathname = toIumSourceToPath(source);
+      const source: ToIumIndex['sources'][number] = {
+        uuid,
+        extra: true,
+        baseURL: 'ium:/',
+        relativePath,
+        options: extraFile.options
+          ? mergeOptions(fileCollection.options, extraFile.options)
+          : fileCollection.options,
+      };
+      sources.push(source);
+      const pathname = toIumSourceToPath(source);
 
-          const addOptions: ZipWriterAddDataOptions | undefined =
-            shouldAvoidCompression(source)
-              ? { compressionMethod: 0 }
-              : undefined;
-          const fileReader = getExtraFileContentReader(data);
-          await zipWriter.add(pathname, fileReader, addOptions);
-          paths[uuid] = pathname;
-        },
-      ),
-    );
+      const addOptions: ZipWriterAddDataOptions | undefined =
+        shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
+      const fileReader = getExtraFileContentReader(data);
+      paths[uuid] = pathname;
+      // eslint-disable-next-line no-await-in-loop
+      await zipWriter.add(pathname, fileReader, addOptions);
+    }
   }
 
   await zipWriter.add(
@@ -198,10 +191,4 @@ function getExtraFileContentReader(
   }
 
   throw new Error(UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR);
-}
-
-function* map<T, R>(items: Iterable<T>, mapFn: (item: T) => R) {
-  for (const item of items) {
-    yield mapFn(item);
-  }
 }
