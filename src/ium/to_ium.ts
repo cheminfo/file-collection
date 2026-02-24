@@ -97,7 +97,6 @@ export async function toIum(
 
   const sources: ToIumIndex['sources'] = [];
   const paths: Record<string, string> = {};
-  const promises: Array<Promise<unknown>> = [];
   for (const source of fileCollection.sources) {
     const newSource: ToIumIndex['sources'][number] = {
       uuid: source.uuid,
@@ -118,11 +117,10 @@ export async function toIum(
 
     const addOptions: ZipWriterAddDataOptions | undefined =
       shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
-    promises.push(zipWriter.add(pathname, source.stream(), addOptions));
     paths[source.uuid] = pathname;
+    // eslint-disable-next-line no-await-in-loop
+    await zipWriter.add(pathname, source.stream(), addOptions);
   }
-
-  await Promise.all(promises);
 
   const index: ToIumIndex = {
     version: CURRENT_IUM_VERSION,
