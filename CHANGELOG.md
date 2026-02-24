@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.6.1](https://github.com/cheminfo/file-collection/compare/v6.6.0...v6.6.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* avoid infinite loop in toZip when lot of files are zipped ([#86](https://github.com/cheminfo/file-collection/issues/86)) ([a16ce64](https://github.com/cheminfo/file-collection/commit/a16ce64bded81ae0e8f3fe82c7279ef7586ee48f))
+
 ## [6.6.0](https://github.com/cheminfo/file-collection/compare/v6.5.0...v6.6.0) (2026-01-19)
 
 
