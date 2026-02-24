@@ -20,16 +20,15 @@ export async function toZip(
     new Uint8ArrayWriter(),
   );
 
-  await Promise.all(
-    collection.sources.map(async (source) => {
-      const path = sourceToZipPath(source);
-      finalPaths?.set(source, path);
+  for (const source of collection.sources) {
+    const path = sourceToZipPath(source);
+    finalPaths?.set(source, path);
 
-      const addOptions: ZipWriterAddDataOptions | undefined =
-        shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
-      await zipWriter.add(path, source.stream(), addOptions);
-    }),
-  );
+    const addOptions: ZipWriterAddDataOptions | undefined =
+      shouldAvoidCompression(source) ? { compressionMethod: 0 } : undefined;
+    // eslint-disable-next-line no-await-in-loop
+    await zipWriter.add(path, source.stream(), addOptions);
+  }
 
   return await zipWriter.close();
 }

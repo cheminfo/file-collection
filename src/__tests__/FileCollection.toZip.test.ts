@@ -162,5 +162,6 @@ test('rezip a moderately-sized zip', async () => {
   const zipContent = await readFile(join(import.meta.dirname, 'data_1MB.zip'));
   const fileCollection = await FileCollection.fromZip(zipContent);
   const fileMap = new Map();
-  await fileCollection.toZip(fileMap);
+
+  await expect(fileCollection.toZip(fileMap)).resolves.toBeDefined();
 });
