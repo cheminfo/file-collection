@@ -6,7 +6,7 @@ import {
 } from '@zip.js/zip.js';
 import { assert, describe, expect, it } from 'vitest';
 
-import { fileItemsFromZip } from '../fileItemsFromZip.js';
+import { fileItemsFromZip } from '../fileItemsFromZip.ts';
 
 describe('generated FileItem equal to original', async () => {
   // TODO: remove explicit type when https://github.com/gildas-lormeau/zip.js/pull/594 is released.

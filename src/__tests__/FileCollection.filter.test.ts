@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import { expect, test } from 'vitest';
 
-import { FileCollection } from '../FileCollection.js';
+import { FileCollection } from '../FileCollection.ts';
 
 test('Should filter files', async () => {
   const collection = await FileCollection.fromPath(
