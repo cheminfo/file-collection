@@ -4,7 +4,7 @@ import { FileCollection } from '../FileCollection.ts';
 import type { ToIumOptionsExtraFile } from '../ium/to_ium.ts';
 import { UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR } from '../ium/to_ium.ts';
 import type { ToIumIndex } from '../ium/versions/index.ts';
-import { getZipReader } from '../zip/get_zip_reader.js';
+import { getZipReader } from '../zip/get_zip_reader.ts';
 
 describe('FileCollection basic ium', async () => {
   it('pack unpack single file', async () => {
@@ -124,9 +124,7 @@ describe('FileCollection basic ium', async () => {
       },
     });
 
-    await expect(promise).rejects.toThrowError(
-      UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR,
-    );
+    await expect(promise).rejects.toThrow(UNSUPPORTED_EXTRA_FILE_CONTENT_ERROR);
   });
 });
 

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
-import type { SourceItem } from '../../SourceItem.js';
-import { sourceItemToExtendedSourceItem } from '../sourceItemToExtendedSourceItem.js';
+import type { SourceItem } from '../../SourceItem.ts';
+import { sourceItemToExtendedSourceItem } from '../sourceItemToExtendedSourceItem.ts';
 
 test('error on invalid server URL', async () => {
   const entry: SourceItem = {
@@ -16,7 +16,7 @@ test('error on invalid server URL', async () => {
     }
   }
 
-  await expect(consumeStream()).rejects.toThrowError('fetch failed');
+  await expect(consumeStream()).rejects.toThrow('fetch failed');
 });
 
 test('original relative path is preserved', async () => {

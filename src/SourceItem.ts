@@ -1,4 +1,4 @@
-import type { Options } from './Options.js';
+import type { Options } from './Options.ts';
 
 export interface SourceItem {
   uuid?: string;
