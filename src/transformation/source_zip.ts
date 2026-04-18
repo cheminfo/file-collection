@@ -1,4 +1,4 @@
-import type { SourceItem } from '../SourceItem.js';
+import type { SourceItem } from '../SourceItem.ts';
 
 /**
  * This method will transform a source item to a path that can be used by filesystems

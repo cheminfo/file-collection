@@ -8,6 +8,9 @@ export default defineConfig({
       include: ['src/**'],
       exclude: ['**/*.browser.ts'],
     },
+    snapshotFormat: {
+      maxOutputLength: Number.MAX_SAFE_INTEGER,
+    },
     // https://stackoverflow.com/a/67445850
     // if we are debugging tests, we don't want to timeout
     // else we want the default timeout

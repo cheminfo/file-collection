@@ -7,8 +7,8 @@ import {
 } from '@zip.js/zip.js';
 import { describe, expect, it } from 'vitest';
 
-import { FileCollection } from '../FileCollection.js';
-import { UNSUPPORTED_ZIP_CONTENT_ERROR } from '../zip/get_zip_reader.js';
+import { FileCollection } from '../FileCollection.ts';
+import { UNSUPPORTED_ZIP_CONTENT_ERROR } from '../zip/get_zip_reader.ts';
 
 describe('invalid ium file', () => {
   it('missing index.json', async () => {
@@ -16,7 +16,7 @@ describe('invalid ium file', () => {
     await zipWriter.add('not-index.json', new TextReader('{}'));
     const zipBuffer = await zipWriter.close();
 
-    await expect(FileCollection.fromIum(zipBuffer)).rejects.toThrowError(
+    await expect(FileCollection.fromIum(zipBuffer)).rejects.toThrow(
       'Invalid IUM file: missing index.json',
     );
   });
@@ -38,7 +38,7 @@ describe('invalid ium file', () => {
 
     const filteredIum = await zipWriter.close();
 
-    await expect(FileCollection.fromIum(filteredIum)).rejects.toThrowError(
+    await expect(FileCollection.fromIum(filteredIum)).rejects.toThrow(
       'Invalid IUM file: missing /hello.txt',
     );
   });
@@ -50,19 +50,17 @@ describe('check input types', async () => {
   const ium = await fileCollection.toIum();
 
   it('Uint8Array', async () => {
-    await expect(FileCollection.fromIum(ium)).resolves.not.toThrowError();
+    await expect(FileCollection.fromIum(ium)).resolves.not.toThrow();
   });
 
   it('ArrayBuffer', async () => {
-    await expect(
-      FileCollection.fromIum(ium.buffer),
-    ).resolves.not.toThrowError();
+    await expect(FileCollection.fromIum(ium.buffer)).resolves.not.toThrow();
   });
 
   it('Blob', async () => {
     const blob = new Blob([ium], { type: 'application/zip' });
 
-    await expect(FileCollection.fromIum(blob)).resolves.not.toThrowError();
+    await expect(FileCollection.fromIum(blob)).resolves.not.toThrow();
   });
 
   it('ReadableStream', async () => {
@@ -73,11 +71,11 @@ describe('check input types', async () => {
       },
     });
 
-    await expect(FileCollection.fromIum(stream)).resolves.not.toThrowError();
+    await expect(FileCollection.fromIum(stream)).resolves.not.toThrow();
   });
 
   it('unknown', async () => {
-    await expect(FileCollection.fromIum(null as never)).rejects.toThrowError(
+    await expect(FileCollection.fromIum(null as never)).rejects.toThrow(
       UNSUPPORTED_ZIP_CONTENT_ERROR,
     );
   });
