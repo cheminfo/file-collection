@@ -11,9 +11,8 @@ import {
   assert,
   beforeAll,
   beforeEach,
-  describe,
   expect,
-  it,
+  test,
 } from 'vitest';
 
 import { FileCollection } from '../FileCollection.ts';
@@ -21,10 +20,10 @@ import { FileCollection } from '../FileCollection.ts';
 let fileRequestedCounter: number;
 const server = setupServer(
   http.get('http://localhost/data*', async ({ request }) => {
-    const pathname = join(__dirname, new URL(request.url).pathname);
+    const pathname = join(import.meta.dirname, new URL(request.url).pathname);
     const pathnameStat = await stat(pathname);
     if (pathnameStat.isDirectory()) {
-      const source = await getJSON(join(__dirname, 'dataUnzip'));
+      const source = await getJSON(join(import.meta.dirname, 'dataUnzip'));
       return HttpResponse.json(source);
     } else if (pathnameStat.isFile()) {
       fileRequestedCounter++;
@@ -56,263 +55,261 @@ afterAll(() => {
   server.close();
 });
 
-describe('fileCollectionFromWebSource', () => {
-  it('with baseURL in options', async () => {
-    const source = {
-      entries: [
-        {
-          relativePath: 'data/dir1/a.txt',
-        },
-        {
-          relativePath: 'data/dir1/b.txt',
-        },
-      ],
-      baseURL: 'http://localhost/',
-    };
+test('with baseURL in options', async () => {
+  const source = {
+    entries: [
+      {
+        relativePath: 'data/dir1/a.txt',
+      },
+      {
+        relativePath: 'data/dir1/b.txt',
+      },
+    ],
+    baseURL: 'http://localhost/',
+  };
 
-    const fileCollection = await FileCollection.fromSource(source);
+  const fileCollection = await FileCollection.fromSource(source);
 
-    expect(fileCollection.files).toHaveLength(2);
+  expect(fileCollection.files).toHaveLength(2);
 
-    const firstFile = fileCollection.files[0];
-    const secondFile = fileCollection.files[1];
-    assert(firstFile);
-    assert(secondFile);
+  const firstFile = fileCollection.files[0];
+  const secondFile = fileCollection.files[1];
+  assert(firstFile);
+  assert(secondFile);
 
-    const first = await firstFile.text();
+  const first = await firstFile.text();
 
-    expect(first).toBe('a');
+  expect(first).toBe('a');
 
-    await firstFile.text();
+  await firstFile.text();
 
-    // FileCollection must not fetch the file again
-    expect(fileRequestedCounter).toBe(1);
+  // FileCollection must not fetch the file again
+  expect(fileRequestedCounter).toBe(1);
 
-    const second = await secondFile.arrayBuffer();
+  const second = await secondFile.arrayBuffer();
 
-    expect(Array.from(Buffer.from(second))).toStrictEqual([98]);
-  });
+  expect(Array.from(Buffer.from(second))).toStrictEqual([98]);
+});
 
-  it('with 2 sources', async () => {
-    const source1 = {
-      entries: [
-        {
-          relativePath: 'a.txt',
-        },
-        {
-          relativePath: 'b.txt',
-        },
-      ],
-      baseURL: 'http://localhost/data/dir1/',
-    };
+test('with 2 sources', async () => {
+  const source1 = {
+    entries: [
+      {
+        relativePath: 'a.txt',
+      },
+      {
+        relativePath: 'b.txt',
+      },
+    ],
+    baseURL: 'http://localhost/data/dir1/',
+  };
 
-    const source2 = {
-      entries: [
-        {
-          relativePath: 'c.txt',
-        },
-        {
-          relativePath: 'd.txt',
-        },
-      ],
-      baseURL: 'http://localhost/data/dir2/',
-    };
+  const source2 = {
+    entries: [
+      {
+        relativePath: 'c.txt',
+      },
+      {
+        relativePath: 'd.txt',
+      },
+    ],
+    baseURL: 'http://localhost/data/dir2/',
+  };
 
-    const fileCollection = await FileCollection.fromSource(source1);
-    await fileCollection.appendSource(source2);
+  const fileCollection = await FileCollection.fromSource(source1);
+  await fileCollection.appendSource(source2);
 
-    expect(fileCollection.files).toHaveLength(4);
+  expect(fileCollection.files).toHaveLength(4);
 
-    const firstFile = fileCollection.files[0];
-    const thirdFile = fileCollection.files[2];
-    assert(firstFile);
-    assert(thirdFile);
+  const firstFile = fileCollection.files[0];
+  const thirdFile = fileCollection.files[2];
+  assert(firstFile);
+  assert(thirdFile);
 
-    const first = await firstFile.text();
+  const first = await firstFile.text();
 
-    expect(first).toBe('a');
+  expect(first).toBe('a');
 
-    await firstFile.text();
+  await firstFile.text();
 
-    const third = await thirdFile.text();
+  const third = await thirdFile.text();
 
-    expect(third).toBe('c');
+  expect(third).toBe('c');
 
-    await thirdFile.text();
-  });
+  await thirdFile.text();
+});
 
-  it('with 2 zip sources', async () => {
-    const source1 = {
-      entries: [
-        {
-          relativePath: 'data.zip',
-        },
-      ],
-      baseURL: 'http://localhost/dataRecursiveZip/',
-    };
+test('with 2 zip sources', async () => {
+  const source1 = {
+    entries: [
+      {
+        relativePath: 'data.zip',
+      },
+    ],
+    baseURL: 'http://localhost/dataRecursiveZip/',
+  };
 
-    const source2 = {
-      entries: [
-        {
-          relativePath: 'data.zip',
-        },
-      ],
-      baseURL: 'http://localhost/',
-    };
+  const source2 = {
+    entries: [
+      {
+        relativePath: 'data.zip',
+      },
+    ],
+    baseURL: 'http://localhost/',
+  };
 
-    const fileCollection = await FileCollection.fromSource(source1);
-    await fileCollection.appendSource(source2);
+  const fileCollection = await FileCollection.fromSource(source1);
+  await fileCollection.appendSource(source2);
 
-    expect(fileCollection.files).toHaveLength(12);
-    expect(fileCollection.sources).toHaveLength(2);
-  });
+  expect(fileCollection.files).toHaveLength(12);
+  expect(fileCollection.sources).toHaveLength(2);
+});
 
-  it('without any baseURL', async () => {
-    const source = {
-      entries: [
-        {
-          relativePath: 'data/dir1/a.txt',
-        },
-        {
-          relativePath: 'data/dir1/b.txt',
-        },
-      ],
-    };
+test('without any baseURL', async () => {
+  const source = {
+    entries: [
+      {
+        relativePath: 'data/dir1/a.txt',
+      },
+      {
+        relativePath: 'data/dir1/b.txt',
+      },
+    ],
+  };
 
-    await expect(async () => {
-      const fileCollection = new FileCollection();
-      await fileCollection.appendSource(source);
-    }).rejects.toThrowError('We could not find a baseURL for data/dir1/a.txt');
-  });
-
-  it('without baseURL but with a global location href', async () => {
-    // @ts-expect-error we want to test the behavior when location is set like in the browser
-    globalThis.location = { href: 'http://localhost/' };
-    const source = {
-      entries: [
-        {
-          relativePath: 'data/dir1/a.txt',
-        },
-        {
-          relativePath: 'data/dir1/b.txt',
-        },
-      ],
-    };
-
+  await expect(async () => {
     const fileCollection = new FileCollection();
     await fileCollection.appendSource(source);
+  }).rejects.toThrow('We could not find a baseURL for data/dir1/a.txt');
+});
 
-    const firstFile = fileCollection.files[0];
-    const secondFile = fileCollection.files[1];
-    assert(firstFile);
-    assert(secondFile);
+test('without baseURL but with a global location href', async () => {
+  // @ts-expect-error we want to test the behavior when location is set like in the browser
+  globalThis.location = { href: 'http://localhost/' };
+  const source = {
+    entries: [
+      {
+        relativePath: 'data/dir1/a.txt',
+      },
+      {
+        relativePath: 'data/dir1/b.txt',
+      },
+    ],
+  };
 
-    const first = await firstFile.text();
+  const fileCollection = new FileCollection();
+  await fileCollection.appendSource(source);
 
-    expect(first).toBe('a');
+  const firstFile = fileCollection.files[0];
+  const secondFile = fileCollection.files[1];
+  assert(firstFile);
+  assert(secondFile);
 
-    const second = await secondFile.text();
+  const first = await firstFile.text();
 
-    expect(second).toBe('b');
+  expect(first).toBe('a');
 
-    // @ts-expect-error need to remove it for the next test
-    delete globalThis.location;
-  });
+  const second = await secondFile.text();
 
-  it('with duplicate', async () => {
-    const source = {
-      entries: [
-        {
-          relativePath: 'data/dir1/a.txt',
-        },
-        {
-          relativePath: 'data/dir1/a.txt',
-        },
-      ],
-      baseURL: 'http://localhost/',
-    };
+  expect(second).toBe('b');
 
-    await expect(async () => {
-      const fileCollection = new FileCollection();
-      await fileCollection.appendSource(source);
-    }).rejects.toThrowError('Duplicate relativePath: data/dir1/a.txt');
-  });
+  // @ts-expect-error need to remove it for the next test
+  delete globalThis.location;
+});
 
-  it('with defaultBaseURL', async () => {
-    const url = 'http://localhost/data';
-    const response = await fetch(url);
-    const source = await response.json();
+test('with duplicate', async () => {
+  const source = {
+    entries: [
+      {
+        relativePath: 'data/dir1/a.txt',
+      },
+      {
+        relativePath: 'data/dir1/a.txt',
+      },
+    ],
+    baseURL: 'http://localhost/',
+  };
 
-    source.baseURL = 'http://localhost/';
-
+  await expect(async () => {
     const fileCollection = new FileCollection();
     await fileCollection.appendSource(source);
+  }).rejects.toThrow('Duplicate relativePath: data/dir1/a.txt');
+});
 
-    // it seems acceptable to me that the order is not guaranteed when appending a source
-    fileCollection.files.sort((a, b) =>
-      a.relativePath.localeCompare(b.relativePath),
-    );
+test('with defaultBaseURL', async () => {
+  const url = 'http://localhost/data';
+  const response = await fetch(url);
+  const source = await response.json();
 
-    expect(fileCollection.files).toHaveLength(15);
+  source.baseURL = 'http://localhost/';
 
-    const firstFile = fileCollection.files[0];
-    const secondFile = fileCollection.files[1];
-    const lastFile = fileCollection.files[14];
-    assert(firstFile);
-    assert(secondFile);
-    assert(lastFile);
+  const fileCollection = new FileCollection();
+  await fileCollection.appendSource(source);
 
-    const first = await firstFile.text();
+  // it seems acceptable to me that the order is not guaranteed when appending a source
+  fileCollection.files.sort((a, b) =>
+    a.relativePath.localeCompare(b.relativePath),
+  );
 
-    expect(first).toBe('c');
+  expect(fileCollection.files).toHaveLength(15);
 
-    const second = await secondFile.arrayBuffer();
+  const firstFile = fileCollection.files[0];
+  const secondFile = fileCollection.files[1];
+  const lastFile = fileCollection.files[14];
+  assert(firstFile);
+  assert(secondFile);
+  assert(lastFile);
 
-    expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
+  const first = await firstFile.text();
 
-    const third = await lastFile.arrayBuffer();
+  expect(first).toBe('c');
 
-    expect(Array.from(Buffer.from(third))).toHaveLength(580);
-  });
+  const second = await secondFile.arrayBuffer();
 
-  it('with baseURL in the file', async () => {
-    const url = 'http://localhost/data';
-    const response = await fetch(url);
-    const source = await response.json();
+  expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
 
-    for (const entry of source.entries) {
-      entry.baseURL = 'http://localhost/';
-    }
+  const third = await lastFile.arrayBuffer();
 
-    const fileCollection = new FileCollection();
-    await fileCollection.appendSource(source);
+  expect(Array.from(Buffer.from(third))).toHaveLength(580);
+});
 
-    // it seems acceptable to me that the order is not guaranteed when appending a source
-    fileCollection.files.sort((a, b) =>
-      a.relativePath.localeCompare(b.relativePath),
-    );
+test('with baseURL in the file', async () => {
+  const url = 'http://localhost/data';
+  const response = await fetch(url);
+  const source = await response.json();
 
-    expect(fileCollection.files).toHaveLength(15);
+  for (const entry of source.entries) {
+    entry.baseURL = 'http://localhost/';
+  }
 
-    const firstFile = fileCollection.files[0];
-    const secondFile = fileCollection.files[1];
-    const lastFile = fileCollection.files[14];
-    assert(firstFile);
-    assert(secondFile);
-    assert(lastFile);
+  const fileCollection = new FileCollection();
+  await fileCollection.appendSource(source);
 
-    const first = await firstFile.text();
+  // it seems acceptable to me that the order is not guaranteed when appending a source
+  fileCollection.files.sort((a, b) =>
+    a.relativePath.localeCompare(b.relativePath),
+  );
 
-    expect(first).toBe('c');
+  expect(fileCollection.files).toHaveLength(15);
 
-    const second = await secondFile.arrayBuffer();
+  const firstFile = fileCollection.files[0];
+  const secondFile = fileCollection.files[1];
+  const lastFile = fileCollection.files[14];
+  assert(firstFile);
+  assert(secondFile);
+  assert(lastFile);
 
-    expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
+  const first = await firstFile.text();
 
-    const third = await lastFile.arrayBuffer();
+  expect(first).toBe('c');
 
-    expect(Array.from(Buffer.from(third))).toHaveLength(580);
-  });
+  const second = await secondFile.arrayBuffer();
+
+  expect(Array.from(Buffer.from(second))).toStrictEqual([100]);
+
+  const third = await lastFile.arrayBuffer();
+
+  expect(Array.from(Buffer.from(third))).toHaveLength(580);
 });
 
 async function getJSON(path: string) {

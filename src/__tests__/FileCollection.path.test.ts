@@ -8,7 +8,7 @@ import { FileCollection } from '../FileCollection.ts';
 test('appendPath data folder', async () => {
   const fileCollection = new FileCollection();
 
-  await fileCollection.appendPath(join(__dirname, 'data/'));
+  await fileCollection.appendPath(join(import.meta.dirname, 'data/'));
 
   const ium = await fileCollection.toIum();
 
@@ -27,7 +27,7 @@ test('appendPath data folder', async () => {
 
 test('appendPath data folder and keepBasename', async () => {
   const fileCollection = await FileCollection.fromPath(
-    join(__dirname, 'data/'),
+    join(import.meta.dirname, 'data/'),
     {},
     { keepBasename: true },
   );
@@ -48,7 +48,7 @@ test('appendPath data folder and keepBasename', async () => {
 
 test('appendPath data folder and do not keepBasename', async () => {
   const fileCollection = await FileCollection.fromPath(
-    join(__dirname, 'data/'),
+    join(import.meta.dirname, 'data/'),
     {},
     { keepBasename: false },
   );
@@ -71,7 +71,7 @@ test('appendPath data folder and do not keepBasename', async () => {
 test('appendPath dataUnzip', async () => {
   const fileCollection = new FileCollection();
 
-  await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
+  await fileCollection.appendPath(join(import.meta.dirname, 'dataUnzip/'));
 
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(15);
@@ -98,7 +98,7 @@ test('appendPath dataUnzip', async () => {
 test('appendPath dataUnzip no unzip', async () => {
   const fileCollection = new FileCollection({ unzip: { zipExtensions: [] } });
 
-  await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
+  await fileCollection.appendPath(join(import.meta.dirname, 'dataUnzip/'));
 
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(8);
@@ -120,7 +120,7 @@ test('appendPath dataUnzip no unzip', async () => {
 test('appendPath dataUngzip', async () => {
   const fileCollection = new FileCollection();
 
-  await fileCollection.appendPath(join(__dirname, 'dataUngzip/'));
+  await fileCollection.appendPath(join(import.meta.dirname, 'dataUngzip/'));
 
   expect(fileCollection.sources).toHaveLength(6);
   expect(fileCollection.files).toHaveLength(6);
@@ -195,7 +195,7 @@ test('appendPath dataUnzip with custom extension', async () => {
     unzip: { zipExtensions: ['zipped'] },
   });
 
-  await fileCollection.appendPath(join(__dirname, 'dataUnzip/'));
+  await fileCollection.appendPath(join(import.meta.dirname, 'dataUnzip/'));
 
   expect(fileCollection.sources).toHaveLength(8);
   expect(fileCollection.files).toHaveLength(9);
@@ -266,7 +266,7 @@ test('appendPath data with keep dotfiles', async () => {
     filter: { ignoreDotfiles: false },
   });
 
-  await fileCollection.appendPath(join(__dirname, 'data/'));
+  await fileCollection.appendPath(join(import.meta.dirname, 'data/'));
 
   expect(fileCollection.sources).toHaveLength(11);
   expect(fileCollection.files).toHaveLength(11);
@@ -296,7 +296,7 @@ test('appendPath data with keep dotfiles', async () => {
 test('appendPath data with keep duplicates', async () => {
   const fileCollection = new FileCollection({});
 
-  await fileCollection.appendPath(join(__dirname, 'duplicates/'));
+  await fileCollection.appendPath(join(import.meta.dirname, 'duplicates/'));
 
   expect(fileCollection.sources).toHaveLength(3);
   expect(fileCollection.files).toHaveLength(3);
@@ -325,24 +325,36 @@ test('appendPath data with real duplicates', async () => {
   const fileCollection = new FileCollection({});
 
   await expect(async () => {
-    await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir1/'), {
-      keepBasename: false,
-    });
-    await fileCollection.appendPath(join(__dirname, 'real_duplicates/dir2/'), {
-      keepBasename: false,
-    });
-  }).rejects.toThrowError('Duplicate relativePath: a.txt');
+    await fileCollection.appendPath(
+      join(import.meta.dirname, 'real_duplicates/dir1/'),
+      {
+        keepBasename: false,
+      },
+    );
+    await fileCollection.appendPath(
+      join(import.meta.dirname, 'real_duplicates/dir2/'),
+      {
+        keepBasename: false,
+      },
+    );
+  }).rejects.toThrow('Duplicate relativePath: a.txt');
 });
 
 test('appendPath data with subdir', async () => {
   const fileCollection = new FileCollection({});
 
-  await fileCollection.appendPath(join(__dirname, 'dir_subdir/dir1/'), {
-    keepBasename: false,
-  });
-  await fileCollection.appendPath(join(__dirname, 'dir_subdir/dir2/'), {
-    keepBasename: false,
-  });
+  await fileCollection.appendPath(
+    join(import.meta.dirname, 'dir_subdir/dir1/'),
+    {
+      keepBasename: false,
+    },
+  );
+  await fileCollection.appendPath(
+    join(import.meta.dirname, 'dir_subdir/dir2/'),
+    {
+      keepBasename: false,
+    },
+  );
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
 
   expect(relativePaths).toStrictEqual(['a.txt', 'subdir/a.txt']);
@@ -351,7 +363,9 @@ test('appendPath data with subdir', async () => {
 test('show that zip files are saved back as zip in the .ium file', async () => {
   const fileCollection = new FileCollection({});
 
-  await fileCollection.appendPath(join(__dirname, 'dataRecursiveZip'));
+  await fileCollection.appendPath(
+    join(import.meta.dirname, 'dataRecursiveZip'),
+  );
   const relativePaths = fileCollection.files.map((file) => file.relativePath);
 
   expect(relativePaths).toStrictEqual([

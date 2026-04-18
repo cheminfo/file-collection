@@ -1,38 +1,36 @@
 import { join } from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { expect, test } from 'vitest';
 
-import { FileCollection } from '../FileCollection.js';
+import { FileCollection } from '../FileCollection.ts';
 
-describe('FileCollection.fromCollection', () => {
-  it('should basic clone', async () => {
-    const collection = await FileCollection.fromPath(
-      join(import.meta.dirname, 'data'),
-    );
-    const clonedCollection = FileCollection.fromCollection(collection);
+test('should basic clone', async () => {
+  const collection = await FileCollection.fromPath(
+    join(import.meta.dirname, 'data'),
+  );
+  const clonedCollection = FileCollection.fromCollection(collection);
 
-    expect(clonedCollection).toStrictEqual(clonedCollection);
-    expect(clonedCollection.files[0]).not.toBe(collection.files[0]);
-    expect(clonedCollection.sources[0]).not.toBe(collection.sources[0]);
+  expect(clonedCollection).toStrictEqual(clonedCollection);
+  expect(clonedCollection.files[0]).not.toBe(collection.files[0]);
+  expect(clonedCollection.sources[0]).not.toBe(collection.sources[0]);
+});
+
+test('should clone with merge options', async () => {
+  const collection = await FileCollection.fromPath(
+    join(import.meta.dirname, 'data'),
+    { filter: { ignoreDotfiles: true } },
+  );
+
+  const clonedCollection = FileCollection.fromCollection(collection, {
+    filter: { ignoreDotfiles: false },
   });
 
-  it('should clone with merge options', async () => {
-    const collection = await FileCollection.fromPath(
-      join(import.meta.dirname, 'data'),
-      { filter: { ignoreDotfiles: true } },
-    );
+  expect(clonedCollection.options.filter?.ignoreDotfiles).toBe(false);
 
-    const clonedCollection = FileCollection.fromCollection(collection, {
-      filter: { ignoreDotfiles: false },
-    });
+  // match instead of strict equality because clone files / sources with cache false instead of cache true.
+  expect(clonedCollection.files).toMatchObject(collection.files);
+  expect(clonedCollection.sources).toMatchObject(collection.sources);
 
-    expect(clonedCollection.options.filter?.ignoreDotfiles).toBe(false);
-
-    // match instead of strict equality because clone files / sources with cache false instead of cache true.
-    expect(clonedCollection.files).toMatchObject(collection.files);
-    expect(clonedCollection.sources).toMatchObject(collection.sources);
-
-    expect(clonedCollection.files[0]).not.toBe(collection.files[0]);
-    expect(clonedCollection.sources[0]).not.toBe(collection.sources[0]);
-  });
+  expect(clonedCollection.files[0]).not.toBe(collection.files[0]);
+  expect(clonedCollection.sources[0]).not.toBe(collection.sources[0]);
 });

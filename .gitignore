@@ -120,3 +120,6 @@ dist
 lib
 lib-esm
 dist
+
+.claude
+

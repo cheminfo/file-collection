@@ -1,4 +1,4 @@
-import type { ItemData } from './ItemData.js';
+import type { ItemData } from './ItemData.ts';
 import type { SourceItem } from './SourceItem.ts';
 
 export interface ExtendedSourceItem extends SourceItem, ItemData {

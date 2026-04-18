@@ -1,7 +1,7 @@
 import type { FileEntry } from '@zip.js/zip.js';
 import { TextWriter } from '@zip.js/zip.js';
 
-import type { ItemData } from '../ItemData.js';
+import type { ItemData } from '../ItemData.ts';
 
 /**
  * Converts a zip entry to an ItemData object.
