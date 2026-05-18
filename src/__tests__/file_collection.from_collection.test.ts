@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { FileCollection } from '../FileCollection.js';
+import { FileCollection } from '../FileCollection.ts';
 
 describe('FileCollection.fromCollection', () => {
   it('should basic clone', async () => {

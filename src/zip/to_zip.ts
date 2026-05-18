@@ -1,9 +1,9 @@
 import type { ZipWriterAddDataOptions } from '@zip.js/zip.js';
 import { Uint8ArrayWriter, ZipWriter } from '@zip.js/zip.js';
 
-import type { ExtendedSourceItem } from '../ExtendedSourceItem.js';
-import type { FileCollection } from '../FileCollection.js';
-import { sourceToZipPath } from '../transformation/source_zip.js';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import type { FileCollection } from '../FileCollection.ts';
+import { sourceToZipPath } from '../transformation/source_zip.ts';
 import { shouldAvoidCompression } from '../utilities/should_avoid_compression.ts';
 
 /**

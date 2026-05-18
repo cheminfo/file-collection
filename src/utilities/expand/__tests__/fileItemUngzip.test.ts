@@ -3,8 +3,8 @@ import { gzipSync } from 'node:zlib';
 
 import { describe, expect, it } from 'vitest';
 
-import type { FileItem } from '../../../FileItem.js';
-import { fileItemUngzip } from '../fileItemUngzip.js';
+import type { FileItem } from '../../../FileItem.ts';
+import { fileItemUngzip } from '../fileItemUngzip.ts';
 
 describe('fileItemUngzip.ts', () => {
   const payload = new TextEncoder().encode('Hello 🫱🏿‍🫲🏻, World! 👋');

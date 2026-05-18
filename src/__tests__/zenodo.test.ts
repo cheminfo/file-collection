@@ -5,7 +5,7 @@ import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { FileCollection } from '../FileCollection.js';
+import { FileCollection } from '../FileCollection.ts';
 
 const server = setupServer(
   http.get('http://localhost/zenodo/*', async ({ request }) => {

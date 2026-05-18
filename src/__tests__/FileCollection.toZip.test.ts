@@ -8,9 +8,9 @@ import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { assert, expect, onTestFinished, test } from 'vitest';
 
-import type { ExtendedSourceItem } from '../ExtendedSourceItem.js';
-import { FileCollection } from '../FileCollection.js';
-import { getZipReader } from '../zip/get_zip_reader.js';
+import type { ExtendedSourceItem } from '../ExtendedSourceItem.ts';
+import { FileCollection } from '../FileCollection.ts';
+import { getZipReader } from '../zip/get_zip_reader.ts';
 
 interface FsFile {
   name: string;
@@ -79,7 +79,7 @@ const server = setupServer(
     const pathname = join(import.meta.dirname, new URL(request.url).pathname);
     const pathnameStat = await stat(pathname);
     if (pathnameStat.isDirectory()) {
-      const source = await getJSON(join(__dirname, 'dataUnzip'));
+      const source = await getJSON(join(import.meta.dirname, 'dataUnzip'));
       return HttpResponse.json(source);
     } else if (pathnameStat.isFile()) {
       const data = await openAsBlob(pathname).then((blob) =>

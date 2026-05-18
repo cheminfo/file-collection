@@ -6,7 +6,7 @@ import { Readable } from 'node:stream';
 import { TextReader, Uint8ArrayWriter, ZipWriter } from '@zip.js/zip.js';
 import { assert, describe, expect, it } from 'vitest';
 
-import { FileCollection } from '../FileCollection.js';
+import { FileCollection } from '../FileCollection.ts';
 
 describe('FileCollection.fromZip', async () => {
   const zipWriter = new ZipWriter(new Uint8ArrayWriter());

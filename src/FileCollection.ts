@@ -26,7 +26,7 @@ import { getNameInfo } from './utilities/getNameInfo.ts';
 import { shouldAddItem } from './utilities/shouldAddItem.ts';
 import { isIum, isZip } from './utilities/zip.ts';
 import { fromZip } from './zip/from_zip.ts';
-import { toZip } from './zip/to_zip.js';
+import { toZip } from './zip/to_zip.ts';
 
 export interface AppendPathOptions {
   /**

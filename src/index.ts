@@ -15,16 +15,16 @@ export type {
   Options,
   UngzipExpandOptions,
   UnzipExpandOptions,
-} from './Options.js';
+} from './Options.ts';
 export type {
   ExtraFileContent,
   ToIumOptions,
   ToIumOptionsExtraFile,
 } from './ium/to_ium.ts';
-export type { ToIumIndex } from './ium/versions/index.js';
-export { CURRENT_IUM_VERSION } from './ium/versions/index.js';
-export type { Source } from './Source.js';
-export type { SourceItem } from './SourceItem.js';
+export type { ToIumIndex } from './ium/versions/index.ts';
+export { CURRENT_IUM_VERSION } from './ium/versions/index.ts';
+export type { Source } from './Source.ts';
+export type { SourceItem } from './SourceItem.ts';
 export type { FromIumOptions } from './ium/from_ium.ts';
 
 /**

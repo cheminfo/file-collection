@@ -21,10 +21,10 @@ import { FileCollection } from '../FileCollection.ts';
 let fileRequestedCounter: number;
 const server = setupServer(
   http.get('http://localhost/data*', async ({ request }) => {
-    const pathname = join(__dirname, new URL(request.url).pathname);
+    const pathname = join(import.meta.dirname, new URL(request.url).pathname);
     const pathnameStat = await stat(pathname);
     if (pathnameStat.isDirectory()) {
-      const source = await getJSON(join(__dirname, 'dataUnzip'));
+      const source = await getJSON(join(import.meta.dirname, 'dataUnzip'));
       return HttpResponse.json(source);
     } else if (pathnameStat.isFile()) {
       fileRequestedCounter++;
@@ -182,7 +182,7 @@ describe('fileCollectionFromWebSource', () => {
     await expect(async () => {
       const fileCollection = new FileCollection();
       await fileCollection.appendSource(source);
-    }).rejects.toThrowError('We could not find a baseURL for data/dir1/a.txt');
+    }).rejects.toThrow('We could not find a baseURL for data/dir1/a.txt');
   });
 
   it('without baseURL but with a global location href', async () => {
@@ -235,7 +235,7 @@ describe('fileCollectionFromWebSource', () => {
     await expect(async () => {
       const fileCollection = new FileCollection();
       await fileCollection.appendSource(source);
-    }).rejects.toThrowError('Duplicate relativePath: data/dir1/a.txt');
+    }).rejects.toThrow('Duplicate relativePath: data/dir1/a.txt');
   });
 
   it('with defaultBaseURL', async () => {

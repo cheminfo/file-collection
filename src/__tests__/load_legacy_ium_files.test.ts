@@ -5,8 +5,8 @@ import { Readable } from 'node:stream';
 
 import { expect, test } from 'vitest';
 
-import { FileCollection } from '../FileCollection.js';
-import { getZipReader } from '../zip/get_zip_reader.js';
+import { FileCollection } from '../FileCollection.ts';
+import { getZipReader } from '../zip/get_zip_reader.ts';
 
 /**
  * Run once on v5.2.2 to generate the legacy archive, pre-fix path encoding for filesystems.
@@ -40,7 +40,7 @@ test('Generate a ium archive with problematic characters', async () => {
     writeFile(join(import.meta.dirname, 'v5.2.2.ium.zip'), iumBuffer, {
       flag: 'wx',
     }),
-  ).rejects.toThrowError(/EEXIST: file already exists.*/);
+  ).rejects.toThrow(/EEXIST: file already exists.*/);
 });
 
 test('Is able to unpack a legacy ium archive', async () => {

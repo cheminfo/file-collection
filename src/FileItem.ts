@@ -1,4 +1,4 @@
-import type { ItemData } from './ItemData.js';
+import type { ItemData } from './ItemData.ts';
 
 export interface FileItem extends ItemData {
   relativePath: string;

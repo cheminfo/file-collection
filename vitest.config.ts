@@ -4,9 +4,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    experimental: {
+      viteModuleRunner: false,
+    },
     coverage: {
-      include: ['src/**'],
-      exclude: ['**/*.browser.ts'],
+      include: ['src/**/*.ts'],
     },
     // https://stackoverflow.com/a/67445850
     // if we are debugging tests, we don't want to timeout
