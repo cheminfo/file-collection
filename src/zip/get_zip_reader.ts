@@ -9,7 +9,9 @@ import type { ZipFileContent } from '../ZipFileContent.ts';
  */
 export function getZipReader(buffer: ZipFileContent): ZipReader<unknown> {
   const contentReader = getZipContentReader(buffer);
-  return new ZipReader(contentReader);
+  return new ZipReader(contentReader, {
+    filenameValidation: 'tolerant',
+  });
 }
 
 export const UNSUPPORTED_ZIP_CONTENT_ERROR = `Unsupported zip content type.
