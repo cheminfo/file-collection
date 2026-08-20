@@ -1,5 +1,18 @@
 # Changelog
 
+## [6.7.0](https://github.com/cheminfo/file-collection/compare/v6.6.1...v6.7.0) (2026-08-20)
+
+
+### Features
+
+* add include/exclude pattern filtering to shouldAddItem ([9406e50](https://github.com/cheminfo/file-collection/commit/9406e5011ae9305a6d66fce13b5ab0fa1317d828))
+
+
+### Bug Fixes
+
+* avoid `toIum` take infinite time ([#89](https://github.com/cheminfo/file-collection/issues/89)) ([8d92f05](https://github.com/cheminfo/file-collection/commit/8d92f058b54cf52158a89a029f8564716f94e609))
+* support legacy ZIP filenames with newer zip.js ([f85d933](https://github.com/cheminfo/file-collection/commit/f85d933f2e66680921a7d50a24b94e247efc384b))
+
 ## [6.6.1](https://github.com/cheminfo/file-collection/compare/v6.6.0...v6.6.1) (2026-02-24)
 
 
