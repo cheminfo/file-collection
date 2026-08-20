@@ -1,11 +1,14 @@
 import type { Logger } from 'cheminfo-types';
 
+type FilterPattern = string | RegExp | Array<string | RegExp>;
 export interface FilterOptions {
   /**
    * Should we ignored files starting with dot
    * @default true
    */
   ignoreDotfiles?: boolean;
+  include?: FilterPattern;
+  exclude?: FilterPattern;
 }
 
 export interface UnzipExpandOptions {
