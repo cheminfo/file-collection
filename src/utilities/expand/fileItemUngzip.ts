@@ -65,6 +65,5 @@ async function isGzip(file: FileItem) {
 }
 
 function toUngzip(file: FileItem) {
-  // @ts-expect-error `stream()` may return a stream of SharedArrayBuffer, which is not supported by the types of `DecompressionStream`.
   return file.stream().pipeThrough(new DecompressionStream('gzip'));
 }
