@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.7.1](https://github.com/cheminfo/file-collection/compare/v6.7.0...v6.7.1) (2026-11-25)
+
+
+### Bug Fixes
+
+* narrow array buffer type of ItemData ([#95](https://github.com/cheminfo/file-collection/issues/95)) ([ef248f7](https://github.com/cheminfo/file-collection/commit/ef248f72bdd81c70c776ab1437dbc9987198558b))
+
 ## [6.7.0](https://github.com/cheminfo/file-collection/compare/v6.6.1...v6.7.0) (2026-08-20)
 
 
