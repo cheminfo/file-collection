@@ -1,5 +1,5 @@
 export interface ItemData {
-  arrayBuffer: () => Promise<ArrayBufferLike>;
+  arrayBuffer: () => Promise<ArrayBuffer>;
   text: () => Promise<string>;
-  stream: () => ReadableStream<Uint8Array>;
+  stream: () => ReadableStream<Uint8Array<ArrayBuffer>>;
 }
